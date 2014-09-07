@@ -1,0 +1,102 @@
+import org.gradle.api.XmlProvider
+import org.gradle.api.artifacts.maven.MavenDeployment
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = 'com.badlogicgames.gdx'
+version = '1.3.1'
+ext.packaging = 'jar'
+
+def isDevBuild
+def isCiBuild
+def isReleaseBuild
+
+def sonatypeRepositoryUrl
+
+//set build variables based on build type (release, continuous integration, development)
+if(hasProperty("release")) {
+    isReleaseBuild = true
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    println "Performing release build"
+} else if (hasProperty("snapshot")) {
+    isCiBuild = true
+    version += "-SNAPSHOT"
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+    println "Performing snapshot build"
+} else {
+    isDevBuild = true
+    println "Performing local build"
+}
+
+repositories {
+    mavenCentral()
+}
+
+task artifactDocs(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task artifactSources(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives artifactDocs
+    archives artifactSources
+}
+
+if(isReleaseBuild) {
+    signing {
+        sign configurations.archives
+    }
+} else {
+    task signArchives {
+        // do nothing
+    }
+}
+
+uploadArchives {
+    repositories {
+        if (isDevBuild) {
+            mavenLocal()
+        }
+        else {
+            mavenDeployer {
+                if(isReleaseBuild) {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                }
+
+                repository(url: sonatypeRepositoryUrl) {
+                  authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+
+                pom.version = version
+                pom.packaging = 'jar'
+
+                pom.project {
+                   name 'libGDX AI'
+                   description 'AI algorithms for libGDX'
+                   url 'https://github.com/libgdx/gdx-ai'
+
+                   scm {
+                       url 'scm:git@github.com:libgdx/gdx-ai.git'
+                       connection 'scm:git@github.com:libgdx/gdx-ai.git'
+                       developerConnection 'scm:git@github.com:libgdx/gdx-ai.git'
+                   }
+
+                   licenses {
+                       license {
+                           name 'The Apache Software License, Version 2.0'
+                           url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                           distribution 'repo'
+                       }
+                   }                   
+               }
+            }
+        }
+    }
+}

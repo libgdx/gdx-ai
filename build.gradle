@@ -1,0 +1,51 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        mavenLocal()
+    }
+}
+
+ext {
+	projectGroup = "gdx-ai"
+	gdxVersion = '1.3.1'
+}
+
+/** needed to disable Java 8 doclint which throws errors **/
+allprojects {
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+project(":gdx-ai") {
+    apply from : '../publish.gradle'
+
+	dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    }
+}
+
+project(":tests") {
+    dependencies {
+        compile project(":gdx-ai")
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}
