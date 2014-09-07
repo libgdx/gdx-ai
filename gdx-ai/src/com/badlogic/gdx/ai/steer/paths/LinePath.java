@@ -16,7 +16,8 @@
 
 package com.badlogic.gdx.ai.steer.paths;
 
-import com.badlogic.gdx.ai.steer.behaviors.FollowPath.Path;
+import com.badlogic.gdx.ai.steer.behaviors.PathParam;
+import com.badlogic.gdx.ai.steer.behaviors.Path;
 import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
@@ -208,7 +209,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		return segments;
 	}
 
-	public static class LinePathParam implements Param {
+	public static class LinePathParam implements PathParam {
 		int segmentIndex;
 		float distance;
 
