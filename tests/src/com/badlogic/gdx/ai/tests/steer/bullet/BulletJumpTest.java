@@ -64,8 +64,6 @@ public class BulletJumpTest extends BulletSteeringTest {
 	int airbornePlanarVelocityToUse = 0;
 	float runUpLength = 3.5f;
 
-	private Vector3 tmp = new Vector3();
-
 	public BulletJumpTest (SteeringBehaviorTest container) {
 		super(container, "Bullet Jump");
 	}
@@ -302,6 +300,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 		jumpVel.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
+				@SuppressWarnings("unchecked")
 				SelectBox<String> selectBox = (SelectBox<String>)actor;
 				airbornePlanarVelocityToUse = selectBox.getSelectedIndex();
 			}

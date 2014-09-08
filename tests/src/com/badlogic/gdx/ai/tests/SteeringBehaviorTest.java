@@ -16,22 +16,9 @@
 
 package com.badlogic.gdx.ai.tests;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.AIUtils;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletJumpTest;
@@ -50,11 +37,27 @@ import com.badlogic.gdx.ai.tests.steer.tests.PursueTest;
 import com.badlogic.gdx.ai.tests.steer.tests.RaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.tests.SeekTest;
 import com.badlogic.gdx.ai.tests.steer.tests.WanderTest;
-import com.badlogic.gdx.ai.tests.utils.BaseG3dHudTest.CollapsableWindow;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class SteeringBehaviorTest extends ApplicationAdapter {
+/** Test class for steering behaviors.
+ * 
+ * @author davebaol */
+public class SteeringBehaviorTest extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
@@ -137,7 +140,7 @@ public class SteeringBehaviorTest extends ApplicationAdapter {
 			behaviorNames[i] = behaviors[i].name;
 		}
 
-		final List<String> behaviorsList = new List(skin);
+		final List<String> behaviorsList = new List<String>(skin);
 		behaviorsList.setItems(behaviorNames);
 		behaviorsList.addListener(new ClickListener() {
 			@Override
@@ -205,7 +208,7 @@ public class SteeringBehaviorTest extends ApplicationAdapter {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 	}
 
-	protected CollapsableWindow addListWindow (String title, List list, float x, float y) {
+	protected CollapsableWindow addListWindow (String title, List<String> list, float x, float y) {
 		CollapsableWindow window = new CollapsableWindow(title, skin);
 		window.row();
 		ScrollPane pane = new ScrollPane(list, skin);

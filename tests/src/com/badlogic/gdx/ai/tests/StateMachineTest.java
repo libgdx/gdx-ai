@@ -14,15 +14,17 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.fsm;
+package com.badlogic.gdx.ai.tests;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.tests.fsm.Bob;
+import com.badlogic.gdx.ai.tests.fsm.Elsa;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 
 /** A simple test to demonstrate state machines combined with message handling.
  * @author davebaol */
-public class StateMachineTest extends ApplicationAdapter {
+public class StateMachineTest extends GdxAiTest {
 
 	Bob bob;
 	Elsa elsa;

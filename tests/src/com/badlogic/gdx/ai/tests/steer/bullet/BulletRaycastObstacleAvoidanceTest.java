@@ -63,6 +63,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		super(container, "Bullet Raycast Obstacle Avoidance");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void create (Table table) {
 		super.create(table);
@@ -99,9 +100,9 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		character.setMaxLinearAcceleration(1500);
 		character.setMaxLinearSpeed(250);
 
-		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration(character, 2),
-			new ParallelSideRayConfiguration<Vector3>(character, 2, character.getBoundingRadius()),
-			new CentralRayWithWhiskersConfiguration<Vector3>(character, 2, 1, 35 * MathUtils.degreesToRadians)};
+		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration<Vector3>(character, 3),
+			new ParallelSideRayConfiguration<Vector3>(character, 3, character.getBoundingRadius()),
+			new CentralRayWithWhiskersConfiguration<Vector3>(character, 3, 1.5f, 35 * MathUtils.degreesToRadians)};
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector3> raycastCollisionDetector = new BulletRaycastCollisionDetector(world.collisionWorld,
 			character.body);
@@ -123,7 +124,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 			.add(raycastObstacleAvoidanceSB) //
 			.add(wanderSB);
 
-		character.setSteeringBehavior(wanderSB);
+		character.setSteeringBehavior(prioritySteeringSB);
 
 		Table detailTable = new Table(container.skin);
 

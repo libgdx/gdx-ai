@@ -17,6 +17,9 @@
 package com.badlogic.gdx.ai.tests.steer;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,9 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
-import com.badlogic.gdx.ai.tests.utils.BaseG3dHudTest.CollapsableWindow;
 import com.badlogic.gdx.utils.Array;
 
 public abstract class SteeringTest {

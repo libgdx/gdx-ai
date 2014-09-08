@@ -53,8 +53,6 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 	final boolean openPath;
 	Slider pathOffset;
 
-	private Vector3 tmp = new Vector3();
-
 	public BulletFollowPathTest (SteeringBehaviorTest container, boolean openPath) {
 		super(container, "Bullet Follow " + (openPath ? "Open" : "Closed") + " Path");
 		this.openPath = openPath;
