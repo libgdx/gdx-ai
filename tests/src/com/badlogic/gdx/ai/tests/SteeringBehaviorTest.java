@@ -18,7 +18,6 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.ai.AIUtils;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletJumpTest;
@@ -65,7 +64,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	Label fpsLabel;
 	StringBuilder fpsStringBuilder;
 
-	// sorted!
+	// Keep it sorted!
 	SteeringTest[] behaviors = {
 		new ArriveTest(this),
 		new BulletFollowPathTest(this, false),
@@ -102,14 +101,14 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	public TextureRegion badlogicSmall;
 	public TextureRegion target;
 
-	private int previousFrameId;
+	private long previousFrameId;
 	private long lastConflictTime;
 
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
-		previousFrameId = AIUtils.getFrameId();
+		previousFrameId = Gdx.graphics.getFrameId();
 		lastConflictTime = TimeUtils.nanoTime();
 
 		fpsStringBuilder = new StringBuilder();
@@ -161,13 +160,14 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	@Override
 	public void render () {
-		if (AIUtils.getFrameId() == previousFrameId) {
+		if (Gdx.graphics.getFrameId() == previousFrameId) {
+			// Now that frameId is supported by libgdx this should never happen
 			long now = TimeUtils.nanoTime();
 			float elapsed = (now - lastConflictTime) / 1000000000f;
 			Gdx.app.log("SteeringBehaviorTest", "FrameId conflict after " + elapsed + " seconds.");
 			lastConflictTime = now;
 		} else {
-			previousFrameId = AIUtils.getFrameId();
+			previousFrameId = Gdx.graphics.getFrameId();
 		}
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

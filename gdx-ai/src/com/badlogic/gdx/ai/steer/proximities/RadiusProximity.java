@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.steer.proximities;
 
-import com.badlogic.gdx.ai.AIUtils;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.utils.Array;
@@ -31,7 +31,7 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 	/** The radius of this proximity. */
 	protected float radius;
 
-	private int frameId;
+	private long frameId;
 
 	/** Creates a {@code RadiusProximity} for the specified owner, agents and radius.
 	 * @param owner the owner of this proximity
@@ -60,9 +60,9 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 
 		// Check current frame id to avoid repeating calculations
 		// when this proximity is used by multiple group behaviors.
-		if (this.frameId != AIUtils.getFrameId()) {
+		if (this.frameId != Gdx.graphics.getFrameId()) {
 			// Save the frame id
-			this.frameId = AIUtils.getFrameId();
+			this.frameId = Gdx.graphics.getFrameId();
 
 			T ownerPosition = owner.getPosition();
 
