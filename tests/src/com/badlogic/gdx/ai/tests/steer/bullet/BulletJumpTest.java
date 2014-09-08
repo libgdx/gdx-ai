@@ -49,6 +49,20 @@ import com.badlogic.gdx.utils.Array;
 /** A class to test and experiment with the {@link Jump} behavior.
  * @author davebaol */
 public class BulletJumpTest extends BulletSteeringTest {
+	
+	static final AxisHandler<Vector3> axisHandler = new AxisHandler<Vector3>() {
+
+		@Override
+		public float getVerticalComponent (Vector3 vector) {
+			return vector.y;
+		}
+
+		@Override
+		public void setVerticalComponent (Vector3 vector, float value) {
+			vector.y = value;
+		}
+	};
+
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
@@ -135,26 +149,6 @@ public class BulletJumpTest extends BulletSteeringTest {
 		System.out.println("takeoffPoint: " + takeoffPoint);
 		System.out.println("landingPoint: " + landingPoint);
 		jumpDescriptor = new JumpDescriptor<Vector3>(takeoffPoint, landingPoint);
-		AxisHandler<Vector3> axisHandler = new AxisHandler<Vector3>() {
-
-			@Override
-			public float getVerticalComponent (Vector3 vector) {
-				return vector.y;
-			}
-
-			@Override
-			public float calculatePlanarVelocity (Vector3 out, Vector3 space, float time) {
-				out.x = space.x / time;
-				out.z = space.z / time;
-				return out.x * out.x + out.z * out.z;
-			}
-
-			@Override
-			public void mergePlanarVelocity (Vector3 out, Vector3 planarVelocity) {
-				out.x = planarVelocity.x;
-				out.z = planarVelocity.z;
-			}
-		};
 
 		JumpCallback jumpCallback = new JumpCallback() {
 			JumpDescriptor<Vector3> newJumpDescriptor = new JumpDescriptor<Vector3>(new Vector3(), new Vector3());

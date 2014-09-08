@@ -16,15 +16,25 @@
 
 package com.badlogic.gdx.ai.steer.behaviors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.math.Vector;
 
-/** @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
+/** First the {@code Jump} behavior calculates the linear velocity required to achieve the jump. If the calculated velocity doesn't
+ * exceed the maximum linear velocity the jump is achievable; otherwise it's not. In either cases, the given callback gets
+ * informed through the {@link JumpCallback#reportAchievability(boolean) reportAchievability} method. Also, if the jump is
+ * achievable the run up phase begins and the {@code Jump} behavior will start to produce the linear acceleration required to match
+ * the calculated velocity. Once the jump point and the linear velocity are reached with a precision within the given tolerance
+ * the callback is told to jump through the {@link JumpCallback#takeoff(float, float) takeoff} method.
+ * 
+ * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
  * @autor davebaol */
 public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
+
+	public static final boolean DEBUG_ENABLED = false;
 
 	/** The jump descriptor to use */
 	protected JumpDescriptor<T> jumpDescriptor;
@@ -51,6 +61,12 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	private JumpTarget<T> jumpTarget;
 	private T planarVelocity;
 
+	/** Creates a {@code Jump} behavior.
+	 * @param owner the owner of this behavior
+	 * @param jumpDescriptor the descriptor of the jump to make
+	 * @param gravity the gravity vector
+	 * @param axisHandler the handler giving access to the vertical axis
+	 * @param callback the callback that gets informed about jump achievability and when to jump */
 	public Jump (Steerable<T> owner, JumpDescriptor<T> jumpDescriptor, T gravity, AxisHandler<T> axisHandler, JumpCallback callback) {
 		super(owner);
 		this.gravity = gravity;
@@ -75,17 +91,19 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
 		// Check if the owner has reached target position and velocity with acceptable tolerance
 		if (owner.getPosition().epsilonEquals(target.getPosition(), takeoffPositionTolerance)) {
-			System.out.println("Good position!!!");
+			if (DEBUG_ENABLED) Gdx.app.log("Jump", "Good position!!!");
 			if (owner.getLinearVelocity().epsilonEquals(target.getLinearVelocity(), takeoffVelocityTolerance)) {
-				System.out.println("Good Velocity!!!");
+				if (DEBUG_ENABLED) Gdx.app.log("Jump", "Good Velocity!!!");
 				isJumpAchievable = false;
 				// Perform the jump, and return no steering (the owner is airborne, no need to steer).
 				callback.takeoff(maxVerticalVelocity, airborneTime);
 				return steering.setZero();
 			} else {
-				System.out.println("Bad Velocity: Speed diff. = "
-					+ planarVelocity.set(target.getLinearVelocity()).sub(owner.getLinearVelocity()).len() + ", diff = ("
-					+ planarVelocity + ")");
+				if (DEBUG_ENABLED)
+					Gdx.app.log("Jump",
+						"Bad Velocity: Speed diff. = "
+							+ planarVelocity.set(target.getLinearVelocity()).sub(owner.getLinearVelocity()).len() + ", diff = ("
+							+ planarVelocity + ")");
 			}
 		}
 
@@ -102,8 +120,8 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		return jumpTarget;
 	}
 
-	/** Returns the airborne time and set the {@code outVelocity} vector to the airborne planar velocity required to achieve the
-	 * jump.
+	/** Returns the airborne time and sets the {@code outVelocity} vector to the airborne planar velocity required to achieve the
+	 * jump. If the jump is not achievable -1 is returned and the {@code outVelocity} vector remains unchanged.
 	 * <p>
 	 * Be aware that you should avoid using unlimited or very high max velocity, because this might produce a time of flight close
 	 * to 0. Actually, the motion equation for T has 2 solutions and Jump always try to use the fastest time.
@@ -122,13 +140,13 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		float sqrtTerm = (float)Math.sqrt(2f * gravityValue * axisHandler.getVerticalComponent(jumpDescriptor.delta)
 			+ maxVerticalVelocity * maxVerticalVelocity);
 		float time = (-maxVerticalVelocity + sqrtTerm) / gravityValue;
-		System.out.println("1st jump time = " + time);
+		if (DEBUG_ENABLED) Gdx.app.log("Jump", "1st jump time = " + time);
 
 		// Check if we can use it
 		if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 			// Otherwise try the other time
 			time = (-maxVerticalVelocity - sqrtTerm) / gravityValue;
-			System.out.println("2nd jump time = " + time);
+			if (DEBUG_ENABLED) Gdx.app.log("Jump", "2nd jump time = " + time);
 			if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 				return -1f; // Unachievable jump
 			}
@@ -138,14 +156,17 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
 	private boolean checkAirborneTimeAndCalculateVelocity (T outVelocity, float time, JumpDescriptor<T> jumpDescriptor,
 		float maxLinearSpeed) {
-		// Calculate the planar velocity and the squared planar speed
-		float speedSq = axisHandler.calculatePlanarVelocity(planarVelocity, jumpDescriptor.delta, time);
+		// Calculate the planar velocity
+		planarVelocity.set(jumpDescriptor.delta).scl(1f / time);
+		axisHandler.setVerticalComponent(planarVelocity, 0f);
 
-		// Check it
-		if (speedSq < maxLinearSpeed * maxLinearSpeed) {
-			// We have a valid solution, so store it
-			axisHandler.mergePlanarVelocity(outVelocity, planarVelocity);
-			System.out.println("targetLinearVelocity = " + outVelocity + "; targetLinearSpeed = " + outVelocity.len());
+		// Check the planar linear speed
+		if (planarVelocity.len2() < maxLinearSpeed * maxLinearSpeed) {
+			// We have a valid solution, so store it by merging vertical and non-vertical axes
+			float verticalValue = axisHandler.getVerticalComponent(outVelocity);
+			axisHandler.setVerticalComponent(outVelocity.set(planarVelocity), verticalValue);
+			if (DEBUG_ENABLED)
+				Gdx.app.log("Jump", "targetLinearVelocity = " + outVelocity + "; targetLinearSpeed = " + outVelocity.len());
 			return true;
 		}
 		return false;
@@ -244,7 +265,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	}
 
 	/** Sets the limiter of this steering behavior. The given limiter must at least take care of the maximum linear acceleration and
-	 * velocity.
+	 * speed.
 	 * @return this behavior for chaining. */
 	@Override
 	public Jump<T> setLimiter (Limiter limiter) {
@@ -370,7 +391,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		}
 	}
 
-	/** A {@code JumpDescriptor} contains jump information like the target and the landing position.
+	/** A {@code JumpDescriptor} contains jump information like the take-off and the landing position.
 	 * 
 	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
@@ -405,43 +426,43 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		}
 	}
 
+	/** An {@code AxisHandler} distinguishes between the vertical axis and the other ones.
+	 * 
+	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
+	 * 
+	 * @autor davebaol */
 	public interface AxisHandler<T extends Vector<T>> {
 
 		/** Returns the vertical component of the given vector, where "vertical" stands for the axis where gravity operates.
 		 * <p>
-		 * Assuming that the gravity is acting along the y-axis, this method will be implemented as follows:
+		 * Assuming a 3D coordinate system where the gravity is acting along the y-axis, this method will be implemented as follows:
 		 * 
 		 * <pre>
-		 * public float getVerticalComponent (T vector) {
+		 * public float getVerticalComponent (Vector3 vector) {
 		 * 	return vector.y;
 		 * }
 		 * </pre>
+		 * 
+		 * Of course, the equivalent 2D implementation will use Vector2 instead of Vector3.
 		 * @param vector the vector
 		 * @return the gravity component. */
 		public float getVerticalComponent (T vector);
 
-		/** <pre>
-		 * public float PlanarVelocity (T out, T space, float time) {
-		 * 	out.x = space.x / time;
-		 * 	out.z = space.z / time;
-		 * 	return out.x * out.x + out.z * out.z;
+		/** Sets the vertical component of the given vector to the specified value, where "vertical" stands for the axis where
+		 * gravity operates.
+		 * <p>
+		 * Assuming a 3D coordinate system where the gravity is acting along the y-axis, this method will be implemented as follows:
+		 * 
+		 * <pre>
+		 * public void setVerticalComponent (Vector3 vector, float value) {
+		 * 	vector.y = value;
 		 * }
 		 * </pre>
-		 * @param out
-		 * @param space
-		 * @param time
-		 * @return */
-		public float calculatePlanarVelocity (T out, T space, float time);
-
-		/** <pre>
-		 * public float mergePlanarVelocity (T out, T planarVelocity) {
-		 * 	out.x = planarVelocity.x;
-		 * 	out.z = planarVelocity.z;
-		 * }
-		 * </pre>
-		 * @param out
-		 * @param planarVelocity */
-		public void mergePlanarVelocity (T out, T planarVelocity);
+		 * 
+		 * Of course, the equivalent 2D implementation will use Vector2 instead of Vector3.
+		 * @param vector the vector
+		 * @param value the value of the vertical component */
+		public void setVerticalComponent (T vector, float value);
 	}
 
 	/** The {@code JumpCallback} allows you to know whether a jump is achievable and when to jump.
