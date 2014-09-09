@@ -18,6 +18,11 @@ package com.badlogic.gdx.ai.tests.steer.bullet;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.Limiter;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletConstructor;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletWorld;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -42,10 +47,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.linearmath.LinearMath;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawModes;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletConstructor;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletWorld;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -55,8 +56,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public abstract class BulletSteeringTest extends SteeringTest {
 
 	public PerspectiveCamera camera;
-	Viewport viewport;
-	CameraInputController cameraController;
+	protected Viewport viewport;
+	protected CameraInputController cameraController;
 
 // Set this to the path of the lib to use it on desktop instead of default lib.
 	private final static String customDesktopLib = null;// "C:\\Xoppa\\code\\libgdx\\extensions\\gdx-bullet\\jni\\vs\\gdxBullet\\Debug\\gdxBullet.dll";
@@ -235,6 +236,14 @@ public abstract class BulletSteeringTest extends SteeringTest {
 
 		if (shadows) ((DirectionalShadowLight)light).dispose();
 		light = null;
+	}
+	
+	protected void addMaxSpeedController (Table table, final Limiter limiter) {
+		addMaxSpeedController(table, limiter, 0, 50, 0.1f);
+	}
+	
+	protected void addMaxLinearAccelerationController (Table table, final Limiter limiter) {
+		addMaxLinearAccelerationController(table, limiter, 0, 50, 0.1f);
 	}
 
 }

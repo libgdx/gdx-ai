@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.tests;
+package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
@@ -24,6 +24,10 @@ import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
 import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
 import com.badlogic.gdx.ai.steer.proximities.InfiniteProximity;
 import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
@@ -33,16 +37,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.steer.TargetInputProcessor;
 import com.badlogic.gdx.utils.Array;
 
 /** A class to test and experiment with the {@link Hide} behavior.
  * 
  * @autor davebaol */
-public class HideTest extends SteeringTest {
+public class HideTest extends Scene2dSteeringTest {
 
 	private static final float DISTANCE_FROM_BOUNDARY = 35;
 	private static final float THREAT_RADIUS = 200;
@@ -128,7 +128,7 @@ public class HideTest extends SteeringTest {
 
 		table.addActor(character);
 
-		inputProcessor = new TargetInputProcessor(target);
+		inputProcessor = new Scene2dTargetInputProcessor(target);
 
 		Table detailTable = new Table(container.skin);
 

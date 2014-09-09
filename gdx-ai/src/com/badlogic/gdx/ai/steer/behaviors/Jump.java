@@ -34,7 +34,7 @@ import com.badlogic.gdx.math.Vector;
  * @autor davebaol */
 public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
-	public static final boolean DEBUG_ENABLED = false;
+	public static boolean DEBUG_ENABLED = false;
 
 	/** The jump descriptor to use */
 	protected JumpDescriptor<T> jumpDescriptor;

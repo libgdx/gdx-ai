@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.bullet;
+package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Collision;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;

@@ -14,21 +14,21 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.tests;
+package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.steer.TargetInputProcessor;
 
 /** A class to test and experiment with the {@link Seek} behavior.
  * 
  * @autor davebaol */
-public class SeekTest extends SteeringTest {
+public class SeekTest extends Scene2dSteeringTest {
 
 	SteeringActor character;
 	SteeringActor target;
@@ -41,7 +41,7 @@ public class SeekTest extends SteeringTest {
 	public void create (Table table) {
 		character = new SteeringActor(container.badlogicSmall, false);
 		target = new SteeringActor(container.target);
-		inputProcessor = new TargetInputProcessor(target);
+		inputProcessor = new Scene2dTargetInputProcessor(target);
 
 		character.setMaxLinearSpeed(250);
 		character.setMaxLinearAcceleration(2000);

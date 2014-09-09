@@ -14,9 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.tests;
+package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,15 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.steer.TargetInputProcessor;
 
 /** A class to test and experiment with the {@link Arrive} behavior.
  * 
  * @autor davebaol */
-public class ArriveTest extends SteeringTest {
+public class ArriveTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor target;
 
@@ -44,7 +44,7 @@ public class ArriveTest extends SteeringTest {
 	public void create (Table table) {
 		character = new SteeringActor(container.badlogicSmall, false);
 		target = new SteeringActor(container.target);
-		inputProcessor = new TargetInputProcessor(target);
+		inputProcessor = new Scene2dTargetInputProcessor(target);
 
 		// Set character's limiter
 		character.setMaxLinearSpeed(100);

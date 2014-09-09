@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer;
+package com.badlogic.gdx.ai.tests.steer.scene2d;
 
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -23,10 +23,10 @@ import com.badlogic.gdx.math.Vector2;
 /** An {@link InputProcessor} that allows you to manually move a {@link SteeringActor}.
  * 
  * @autor davebaol */
-public class TargetInputProcessor extends InputAdapter {
+public class Scene2dTargetInputProcessor extends InputAdapter {
 	SteeringActor target;
 
-	public TargetInputProcessor (SteeringActor target) {
+	public Scene2dTargetInputProcessor (SteeringActor target) {
 		this.target = target;
 	}
 

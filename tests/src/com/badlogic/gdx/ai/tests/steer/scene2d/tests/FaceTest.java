@@ -14,9 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.tests;
+package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Face;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,15 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.steer.TargetInputProcessor;
 
 /** A class to test and experiment with the {@link Face} behavior.
  * 
  * @autor davebaol */
-public class FaceTest extends SteeringTest {
+public class FaceTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor target;
 
@@ -50,7 +50,7 @@ public class FaceTest extends SteeringTest {
 		target = new SteeringActor(container.target);
 		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
 
-		inputProcessor = new TargetInputProcessor(target);
+		inputProcessor = new Scene2dTargetInputProcessor(target);
 
 		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
 			.setTimeToTarget(0.1f) //

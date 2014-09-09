@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.bullet;
+package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
@@ -43,6 +43,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.utils.Array;
 
@@ -74,7 +76,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 
 	JumpDescriptor<Vector3> jumpDescriptor;
 	Jump<Vector3> jumpSB;
-
+	
 	int airbornePlanarVelocityToUse = 0;
 	float runUpLength = 3.5f;
 
@@ -88,6 +90,8 @@ public class BulletJumpTest extends BulletSteeringTest {
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
+
+		Jump.DEBUG_ENABLED = true; 
 
 		BulletEntity ground = world.add("ground", 0f, 0f, 0f);
 		ground.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),

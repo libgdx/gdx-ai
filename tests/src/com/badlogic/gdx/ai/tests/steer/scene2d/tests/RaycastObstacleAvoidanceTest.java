@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.tests;
+package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
@@ -27,6 +27,10 @@ import com.badlogic.gdx.ai.steer.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.steer.rays.ParallelSideRayConfiguration;
 import com.badlogic.gdx.ai.steer.rays.RayConfigurationBase;
 import com.badlogic.gdx.ai.steer.rays.SingleRayConfiguration;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRaycastCollisionDetector;
+import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
@@ -47,15 +51,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
-import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRaycastCollisionDetector;
 
 /** A class to test and experiment with the {@link RaycastObstacleAvoidance} behavior.
  * 
  * @autor davebaol */
-public class RaycastObstacleAvoidanceTest extends SteeringTest {
+public class RaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	int rayConfigurationIndex;
 	RayConfigurationBase<Vector2>[] rayConfigurations;
@@ -180,6 +180,7 @@ public class RaycastObstacleAvoidanceTest extends SteeringTest {
 		rayConfig.setItems(new String[] {"Single Ray", "Parallel Side Rays", "Central Ray with Whiskers"});
 		rayConfig.setSelectedIndex(0);
 		rayConfig.addListener(new ChangeListener() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				SelectBox<String> selectBox = (SelectBox<String>)actor;
