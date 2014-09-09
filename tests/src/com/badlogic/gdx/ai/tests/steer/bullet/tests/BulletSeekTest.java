@@ -35,7 +35,7 @@ public class BulletSeekTest extends BulletSteeringTest {
 	SteeringBulletEntity target;
 
 	public BulletSeekTest (SteeringBehaviorTest container) {
-		super(container, "Bullet Seek");
+		super(container, "Seek");
 	}
 
 	@Override

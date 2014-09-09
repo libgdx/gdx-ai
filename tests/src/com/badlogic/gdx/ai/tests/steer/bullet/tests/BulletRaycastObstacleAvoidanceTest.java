@@ -62,7 +62,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 	private Vector3 tmp = new Vector3();
 
 	public BulletRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
-		super(container, "Bullet Raycast Obstacle Avoidance");
+		super(container, "Raycast Obstacle Avoidance");
 	}
 
 	@SuppressWarnings("unchecked")

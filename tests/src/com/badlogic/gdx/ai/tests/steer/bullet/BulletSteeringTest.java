@@ -52,7 +52,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/** @author Daniel Holderbaum */
+/** Base class for bullet steering behavior tests.
+ * 
+ * @author Daniel Holderbaum */
 public abstract class BulletSteeringTest extends SteeringTest {
 
 	public PerspectiveCamera camera;
@@ -92,8 +94,7 @@ public abstract class BulletSteeringTest extends SteeringTest {
 	protected final static Vector3 tmpV1 = new Vector3(), tmpV2 = new Vector3();
 
 	public BulletSteeringTest (SteeringBehaviorTest container, String name) {
-		super(container, name);
-
+		super(container, "Bullet", name);
 	}
 
 	public BulletWorld createWorld () {

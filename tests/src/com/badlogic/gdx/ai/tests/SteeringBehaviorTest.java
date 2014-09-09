@@ -38,6 +38,7 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.tests.SeekTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.WanderTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
+import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -50,6 +51,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -60,31 +62,39 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
-	public CollapsableWindow behaviorsWindow;
+	private static final String[] ENGINES = {"Scene2d", "Box2d", "Bullet"};
+
+	public CollapsableWindow behaviorSelectionWindow;
 	Label fpsLabel;
 	StringBuilder fpsStringBuilder;
 
 	// Keep it sorted!
-	SteeringTest[] behaviors = {
-		new ArriveTest(this),
-		new BulletFollowPathTest(this, false),
-		new BulletFollowPathTest(this, true),
-		new BulletJumpTest(this),
-		new BulletRaycastObstacleAvoidanceTest(this),
-		new BulletSeekTest(this),
-		new CollisionAvoidanceTest(this),
-		new FaceTest(this),
-		new FlockingTest(this),
-		new FollowFlowFieldTest(this),
-		new FollowPathTest(this, false),
-		new FollowPathTest(this, true),
-		new HideTest(this),
-		new InterposeTest(this),
-		new LookWhereYouAreGoingTest(this),
-		new PursueTest(this),
-		new RaycastObstacleAvoidanceTest(this),
-		new SeekTest(this),
-		new WanderTest(this)
+	SteeringTest[][] behaviors = {
+		{ // Scene2d
+			new ArriveTest(this),
+			new CollisionAvoidanceTest(this),
+			new FaceTest(this),
+			new FlockingTest(this),
+			new FollowFlowFieldTest(this),
+			new FollowPathTest(this, false),
+			new FollowPathTest(this, true),
+			new HideTest(this),
+			new InterposeTest(this),
+			new LookWhereYouAreGoingTest(this),
+			new PursueTest(this),
+			new RaycastObstacleAvoidanceTest(this),
+			new SeekTest(this),
+			new WanderTest(this)
+		},
+		{ // Box2d coming soon :)
+		},
+		{ // Bullet
+			new BulletFollowPathTest(this, false),
+			new BulletFollowPathTest(this, true),
+			new BulletJumpTest(this),
+			new BulletRaycastObstacleAvoidanceTest(this),
+			new BulletSeekTest(this),
+		}
 	};
 
 	Table behaviorTable;
@@ -94,7 +104,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	public float stageWidth;
 	public float stageHeight;
 	public Skin skin;
-	String behaviorNames[];
+	String behaviorNames[][];
 
 	public TextureRegion greenFish;
 	public TextureRegion cloud;
@@ -133,26 +143,15 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		behaviorTable = new Table();
 		stack.add(behaviorTable);
 
-		// Create behavior names
-		behaviorNames = new String[behaviors.length];
-		for (int i = 0; i < behaviors.length; i++) {
-			behaviorNames[i] = behaviors[i].name;
+		// Create behavior selection window
+		Array<List<String>> engineBehaviors = new Array<List<String>>(); 
+		for (int k = 0; k < behaviors.length; k++) {
+			engineBehaviors.add(createBehaviorList(k));
 		}
+		behaviorSelectionWindow = addBehaviorSelectionWindow ("Behaviors", ENGINES, engineBehaviors,  0, -1);
 
-		final List<String> behaviorsList = new List<String>(skin);
-		behaviorsList.setItems(behaviorNames);
-		behaviorsList.addListener(new ClickListener() {
-			@Override
-			public void clicked (InputEvent event, float x, float y) {
-				if (!behaviorsWindow.isCollapsed() && getTapCount() == 2) {
-					changeBehavior(behaviorsList.getSelectedIndex());
-					behaviorsWindow.collapse();
-				}
-			}
-		});
-		behaviorsWindow = addListWindow("Behaviors", behaviorsList, 0, -1);
-
-		changeBehavior(0);
+		// Set selected behavior
+		changeBehavior(0, 0);
 
 		fpsLabel = new Label("FPS: 999", skin);
 		stage.addActor(fpsLabel);
@@ -208,12 +207,43 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 	}
 
-	protected CollapsableWindow addListWindow (String title, List<String> list, float x, float y) {
+	private List<String> createBehaviorList(final int engineIndex) {
+		// Create behavior names
+		int numBehaviors = behaviors[engineIndex].length;
+		String[] behaviorNames = new String[numBehaviors];
+		for (int i = 0; i < numBehaviors; i++) {
+			behaviorNames[i] = behaviors[engineIndex][i].behaviorName;
+		}
+
+		final List<String> behaviorsList = new List<String>(skin);
+		behaviorsList.setItems(behaviorNames);
+		behaviorsList.addListener(new ClickListener() {
+			@Override
+			public void clicked (InputEvent event, float x, float y) {
+				if (!behaviorSelectionWindow.isCollapsed() && getTapCount() == 2) {
+					changeBehavior(engineIndex, behaviorsList.getSelectedIndex());
+					behaviorSelectionWindow.collapse();
+				}
+			}
+		});
+		return behaviorsList;
+	}
+
+	protected CollapsableWindow addBehaviorSelectionWindow (String title, String[] tabTitles, Array<List<String>> tabLists, float x, float y) {
+		if (tabTitles.length != tabLists.size)
+			throw new IllegalArgumentException("tabTitles and tabList must have the same size.");
 		CollapsableWindow window = new CollapsableWindow(title, skin);
 		window.row();
-		ScrollPane pane = new ScrollPane(list, skin);
-		pane.setFadeScrollBars(false);
-		window.add(pane);
+		TabbedPane tabbedPane = new TabbedPane(skin);
+		for (int i = 0; i < tabLists.size; i++) {
+			ScrollPane pane = new ScrollPane(tabLists.get(i), skin);
+			pane.setFadeScrollBars(false);
+			pane.setScrollX(0);
+			pane.setScrollY(0);
+
+			tabbedPane.addTab(tabTitles[i], pane);
+		}
+		window.add(tabbedPane);
 		window.pack();
 		window.pack();
 		if (window.getHeight() > stage.getHeight()) {
@@ -224,12 +254,11 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		window.layout();
 		window.collapse();
 		stage.addActor(window);
-		pane.setScrollX(0);
-		pane.setScrollY(0);
+
 		return window;
 	}
 
-	void changeBehavior (int selectedIndex) {
+	void changeBehavior (int engineIndex, int behaviorIndex) {
 		// Remove the old behavior and its window
 		behaviorTable.clear();
 		if (currentBehavior != null) {
@@ -238,7 +267,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		}
 
 		// Add the new behavior and its window
-		currentBehavior = behaviors[selectedIndex];
+		currentBehavior = behaviors[engineIndex][behaviorIndex];
 		currentBehavior.create(behaviorTable);
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);

@@ -27,19 +27,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+/** Base class for cross-engine steering behavior tests.
+ * 
+ * @author davebaol */
 public abstract class SteeringTest {
 	protected SteeringBehaviorTest container;
-	public String name;
+	public String engineName;
+	public String behaviorName;
 	protected InputProcessor inputProcessor;
 	protected CollapsableWindow detailWindow;
 
-	public SteeringTest (SteeringBehaviorTest container, String name) {
-		this(container, name, null);
+	public SteeringTest (SteeringBehaviorTest container, String engineName, String name) {
+		this(container, engineName, name, null);
 	}
 
-	public SteeringTest (SteeringBehaviorTest container, String name, InputProcessor inputProcessor) {
+	public SteeringTest (SteeringBehaviorTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
 		this.container = container;
-		this.name = name;
+		this.engineName = engineName;
+		this.behaviorName = behaviorName;
 		this.inputProcessor = inputProcessor;
 	}
 
@@ -62,7 +67,7 @@ public abstract class SteeringTest {
 	}
 
 	protected CollapsableWindow createDetailWindow (Table table) {
-		CollapsableWindow window = new CollapsableWindow(this.name, container.skin);
+		CollapsableWindow window = new CollapsableWindow(this.engineName + " " + this.behaviorName, container.skin);
 		window.row();
 		window.add(table);
 		window.pack();
@@ -83,7 +88,8 @@ public abstract class SteeringTest {
 	// Limiter controllers
 	//
 
-	protected void addMaxLinearAccelerationController (Table table, final Limiter limiter, float minValue, float maxValue, float step) {
+	protected void addMaxLinearAccelerationController (Table table, final Limiter limiter, float minValue, float maxValue,
+		float step) {
 		final Label labelMaxLinAcc = new Label("Max.Linear Acc.[" + limiter.getMaxLinearAcceleration() + "]", container.skin);
 		table.add(labelMaxLinAcc);
 		table.row();
@@ -117,7 +123,8 @@ public abstract class SteeringTest {
 		table.add(maxSpeed);
 	}
 
-	protected void addMaxAngularAccelerationController (Table table, final Limiter limiter, float minValue, float maxValue, float step) {
+	protected void addMaxAngularAccelerationController (Table table, final Limiter limiter, float minValue, float maxValue,
+		float step) {
 		final Label labelMaxAngAcc = new Label("Max.Ang.Acc.[" + limiter.getMaxAngularAcceleration() + "]", container.skin);
 		table.add(labelMaxAngAcc);
 		table.row();

@@ -81,7 +81,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 	float runUpLength = 3.5f;
 
 	public BulletJumpTest (SteeringBehaviorTest container) {
-		super(container, "Bullet Jump");
+		super(container, "Jump");
 	}
 
 	@Override
@@ -304,6 +304,9 @@ public class BulletJumpTest extends BulletSteeringTest {
 			}
 		});
 		detailTable.add(jumpVel);
+
+		detailTable.row();
+		addSeparator(detailTable);
 
 		detailTable.row();
 		Button buttonRestart = new TextButton("Restart", container.skin);

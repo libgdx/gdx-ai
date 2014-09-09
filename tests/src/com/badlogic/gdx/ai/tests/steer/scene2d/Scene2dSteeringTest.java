@@ -27,14 +27,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
+/** Base class for scene2d steering behavior tests.
+ * 
+ * @author davebaol */
 public abstract class Scene2dSteeringTest extends SteeringTest {
 
 	public Scene2dSteeringTest (SteeringBehaviorTest container, String name) {
-		super(container, name, null);
+		super(container, "Scene2d", name, null);
 	}
 
 	public Scene2dSteeringTest (SteeringBehaviorTest container, String name, InputProcessor inputProcessor) {
-		super(container, name, inputProcessor);
+		super(container, "Scene2d", name, inputProcessor);
 	}
 
 	protected void addMaxLinearAccelerationController (Table table, Limiter limiter) {

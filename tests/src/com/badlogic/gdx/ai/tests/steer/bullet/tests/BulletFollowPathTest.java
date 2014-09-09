@@ -56,7 +56,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 	Slider pathOffset;
 
 	public BulletFollowPathTest (SteeringBehaviorTest container, boolean openPath) {
-		super(container, "Bullet Follow " + (openPath ? "Open" : "Closed") + " Path");
+		super(container, "Follow " + (openPath ? "Open" : "Closed") + " Path");
 		this.openPath = openPath;
 	}
 
