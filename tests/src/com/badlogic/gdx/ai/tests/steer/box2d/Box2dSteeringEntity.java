@@ -48,6 +48,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 	private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
 	public Box2dSteeringEntity (TextureRegion region, Body body, float boundingRadius) {
+        System.out.println("BoundingRadius:" + boundingRadius);
 		this.region = region;
 		this.body = body;
 		this.boundingRadius = boundingRadius;
@@ -80,7 +81,10 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	@Override
 	public Vector2 getPosition () {
-		return body.getPosition();
+
+        Vector2 pos = body.getPosition();
+        pos.set(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y));
+        return pos;
 	}
 
 	@Override
@@ -146,15 +150,19 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			// Apply steering accelerations (if any)
 			boolean anyAccelerations = false;
 			if (!steeringOutput.linear.isZero()) {
-				body.applyForceToCenter(steeringOutput.linear.scl(Gdx.graphics.getDeltaTime()), false);
+                Vector2 force = steeringOutput.linear.scl(Gdx.graphics.getDeltaTime());
+//                System.out.println("FORCE:" + force);
+				body.applyForceToCenter(force, false);
 				anyAccelerations = true;
 			}
 
 			if (steeringOutput.angular != 0) {
-				System.out.println("applyTorque " + steeringOutput.angular + "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
+				//System.out.println("applyTorque " + steeringOutput.angular + "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
 				body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), false);
 				anyAccelerations = true;
 			}
+
+
 			if (anyAccelerations) {
 // body.activate();
 
@@ -174,13 +182,14 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 				// Cap the angular speed
 				float maxAngVelocity = getMaxAngularSpeed();
 				if (body.getAngularVelocity() > maxAngVelocity) {
-					System.out.println("body.getAngularVelocity() = "+body.getAngularVelocity());
+//					System.out.println("body.getAngularVelocity() = "+body.getAngularVelocity());
 					body.setAngularVelocity(maxAngVelocity);
 				}
 			}
-		}
-		
-		wrapAround(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        }
+
+		wrapAround(Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getWidth()), Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getHeight()));
 	}
 
 	// the display area is considered to wrap around from top to bottom
@@ -203,11 +212,14 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	public void draw(Batch batch) {
 		Vector2 pos = body.getPosition();
-		float w = region.getRegionWidth();
-		float h = region.getRegionHeight();
+        float w = boundingRadius * 2.0f;
+        float h = boundingRadius * 2.0f;
+		//float w = region.getRegionWidth();
+		//float h = region.getRegionHeight();
 		float ox = w / 2f;
 		float oy = h / 2f;
-		batch.draw(region, pos.x - ox, pos.y - oy,
+
+		batch.draw(region, Box2dSteeringTest.metersToPixels(pos.x) - ox, Box2dSteeringTest.metersToPixels(pos.y) - oy,
 			ox, oy, 
 			w, h,
 			1, 1, 

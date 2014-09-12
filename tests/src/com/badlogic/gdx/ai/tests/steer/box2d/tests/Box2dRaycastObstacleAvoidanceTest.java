@@ -74,6 +74,8 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	private Body wall2;
 	private Body wall3;
 
+
+
 	public Box2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
 		super(container, "Raycast Obstacle Avoidance");
 	}
@@ -94,17 +96,22 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		// it will be 100 meters wide and 2 meters high, centered
 		// around the origin
 		PolygonShape groundPoly = new PolygonShape();
-		groundPoly.setAsBox(150, 20);
+		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(150), Box2dSteeringTest.pixelsToMeters(20));
 
 		// next we create the body for the ground platform. It's
 		// simply a static body.
 		BodyDef groundBodyDef = new BodyDef();
-		groundBodyDef.position.set(200, 350);
+
+        groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(200), Box2dSteeringTest.pixelsToMeters(350));
+//        System.out.println("POSITION:" + groundBodyDef.position);
+  //      System.exit(0);
 		groundBodyDef.type = BodyType.StaticBody;
 		wall1 = world.createBody(groundBodyDef);
-		groundBodyDef.position.set(500, 100);
+
+        groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(500), Box2dSteeringTest.pixelsToMeters(100));
 		wall2 = world.createBody(groundBodyDef);
-		groundBodyDef.position.set(350, 200);
+
+		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(350), Box2dSteeringTest.pixelsToMeters(200));
 		wall3 = world.createBody(groundBodyDef);
 
 		// finally we add a fixture to the body using the polygon
@@ -115,18 +122,19 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		fixtureDef.shape = groundPoly;
 		fixtureDef.filter.groupIndex = 0;
 		wall1.createFixture(fixtureDef);
-		groundPoly.setAsBox(20, 80);
+		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(20), Box2dSteeringTest.pixelsToMeters(80));
 		wall2.createFixture(fixtureDef);
-		groundPoly.setAsBox(50, 30);
+		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(30));
 		wall3.createFixture(fixtureDef);
 		groundPoly.dispose();
 		
 		CircleShape circleChape = new CircleShape();
 		circleChape.setPosition(new Vector2());
-		circleChape.setRadius(6);
+        int radiusInPixels = 16;
+		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
 
 		BodyDef characterBodyDef = new BodyDef();
-		characterBodyDef.position.set(50, 50);
+		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
 //		characterBodyDef.angle = 90;
 		characterBodyDef.type = BodyType.DynamicBody;
 		Body characterBody = world.createBody(characterBodyDef);
@@ -136,13 +144,18 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		charFixtureDef.shape = circleChape;
 		charFixtureDef.filter.groupIndex = 0;
 		characterBody.createFixture(charFixtureDef);
+
 		circleChape.dispose();
 
-		character = new Box2dSteeringEntity(container.greenFish, characterBody, circleChape.getRadius());
-		character.setMaxLinearSpeed(500);
-		character.setMaxLinearAcceleration(5000);
-		character.setMaxAngularAcceleration(40000);
-		character.setMaxAngularSpeed(15000);
+		character = new Box2dSteeringEntity(container.greenFish, characterBody, radiusInPixels);
+		//character.setMaxLinearSpeed(500);
+		//character.setMaxLinearAcceleration(5000);
+		//character.setMaxAngularAcceleration(40000);
+		//character.setMaxAngularSpeed(15000);
+        character.setMaxLinearSpeed(1);
+        character.setMaxLinearAcceleration(5);
+        character.setMaxAngularAcceleration(5);
+        character.setMaxAngularSpeed(10);
 
 		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration(character, 100),
 			new ParallelSideRayConfiguration<Vector2>(character, 100, character.getBoundingRadius()),
@@ -284,7 +297,8 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		b.begin();
 		character.draw(b);
 		b.end();
-//		renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
+
+		renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
 	}
 
 	@Override
@@ -301,7 +315,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		float angle = body.getAngle();
 
 		// set the translation and rotation matrix
-		transform.setToTranslation(pos.x, pos.y, 0);
+		transform.setToTranslation(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y), 0);
 		transform.rotate(0, 0, 1, (float)Math.toDegrees(angle));
 
 		// render the box
