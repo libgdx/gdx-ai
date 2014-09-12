@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.tests;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
@@ -86,7 +87,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new SeekTest(this),
 			new WanderTest(this)
 		},
-		{ // Box2d coming soon :)
+		{ // Box2d
+			new Box2dRaycastObstacleAvoidanceTest(this)
 		},
 		{ // Bullet
 			new BulletFollowPathTest(this, false),

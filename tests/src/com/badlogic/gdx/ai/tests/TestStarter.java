@@ -29,8 +29,8 @@ public class TestStarter {
 		ApplicationListener test = new SteeringBehaviorTest();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.r = config.g = config.b = config.a = 8;
-		config.width = 960;
-		config.height = 600;
+		config.width = 640; //960;
+		config.height = 480; //600;
 		new LwjglApplication(test, config);
 	}
 }

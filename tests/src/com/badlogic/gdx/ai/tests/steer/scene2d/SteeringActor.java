@@ -194,7 +194,7 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 
 	// the display area is considered to wrap around from top to bottom
 	// and from left to right
-	public static void wrapAround (Vector2 pos, float maxX, float maxY) {
+	protected static void wrapAround (Vector2 pos, float maxX, float maxY) {
 		if (pos.x > maxX) pos.x = 0.0f;
 
 		if (pos.x < 0) pos.x = maxX;
