@@ -63,6 +63,14 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 		addMaxAngularSpeedController(table, limiter, 0, 20, 1);
 	}
 
+    public static float pixelsToMeters(int pixels) {
+        return (float) pixels * 0.02f;
+    }
+
+    public static int metersToPixels(float meters) {
+        return (int) (meters * 50.0f);
+    }
+
 //	protected void addAlignOrientationToLinearVelocityController (Table table, final SteeringActor character) {
 //		CheckBox alignOrient = new CheckBox("Align orient.to velocity", container.skin);
 //		alignOrient.setChecked(character.isIndependentFacing());
