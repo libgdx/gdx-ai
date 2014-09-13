@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dRaycastObstacleAvoidanceTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dSeekTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
@@ -54,7 +55,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /** Test class for steering behaviors.
  * 
@@ -88,7 +88,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new WanderTest(this)
 		},
 		{ // Box2d
-			new Box2dRaycastObstacleAvoidanceTest(this)
+			new Box2dRaycastObstacleAvoidanceTest(this),
+			new Box2dSeekTest(this)
 		},
 		{ // Bullet
 			new BulletFollowPathTest(this, false),
@@ -113,15 +114,9 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	public TextureRegion badlogicSmall;
 	public TextureRegion target;
 
-	private long previousFrameId;
-	private long lastConflictTime;
-
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
-
-		previousFrameId = Gdx.graphics.getFrameId();
-		lastConflictTime = TimeUtils.nanoTime();
 
 		fpsStringBuilder = new StringBuilder();
 
@@ -161,16 +156,6 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	@Override
 	public void render () {
-		if (Gdx.graphics.getFrameId() == previousFrameId) {
-			// Now that frameId is supported by libgdx this should never happen
-			long now = TimeUtils.nanoTime();
-			float elapsed = (now - lastConflictTime) / 1000000000f;
-			Gdx.app.log("SteeringBehaviorTest", "FrameId conflict after " + elapsed + " seconds.");
-			lastConflictTime = now;
-		} else {
-			previousFrameId = Gdx.graphics.getFrameId();
-		}
-
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		fpsStringBuilder.setLength(0);

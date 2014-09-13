@@ -44,38 +44,60 @@ public class TabbedPane extends Table {
 	int selectedIndex;
 	int tabTitleAlign = Align.left;
 
+	/** Creates a {@code TabbedPane} using the specified skin.
+	 * @param skin the skin */
 	public TabbedPane (Skin skin) {
 		super(skin);
 		initialize(skin.get(TabbedPaneStyle.class));
 	}
 
+	/** Creates a {@code TabbedPane} using the specified skin and alignment.
+	 * @param skin the skin
+	 * @param tabTitleAlign the alignment for tab titles. Must be one of {@link Align#left}, {@link Align#center} or
+	 *           {@link Align#right}. */
 	public TabbedPane (Skin skin, int tabTitleAlign) {
 		super(skin);
 		this.tabTitleAlign = tabTitleAlign;
 		initialize(skin.get(TabbedPaneStyle.class));
 	}
 
+	/** Creates a {@code TabbedPane} using the specified skin and style name.
+	 * @param skin the skin
+	 * @param styleName the style name */
 	public TabbedPane (Skin skin, String styleName) {
 		super(skin);
 		initialize(skin.get(styleName, TabbedPaneStyle.class));
 	}
 
+	/** Creates a {@code TabbedPane} using the specified skin, style name and alignment.
+	 * @param skin the skin
+	 * @param styleName the style name
+	 * @param tabTitleAlign the alignment for tab titles. Must be one of {@link Align#left}, {@link Align#center} or
+	 *           {@link Align#right}. */
 	public TabbedPane (Skin skin, String styleName, int tabTitleAlign) {
 		super(skin);
 		this.tabTitleAlign = tabTitleAlign;
 		initialize(skin.get(styleName, TabbedPaneStyle.class));
 	}
 
+	/** Creates a {@code TabbedPane} using the specified style.
+	 * @param styleName the style name
+	 * @param tabTitleAlign the alignment for tab titles. Must be one of {@link Align#left}, {@link Align#center} or
+	 *           {@link Align#right}. */
 	public TabbedPane (TabbedPaneStyle style) {
 		initialize(style);
 	}
 
+	/** Creates a {@code TabbedPane} using the specified style and alignment.
+	 * @param style the style
+	 * @param tabTitleAlign the alignment for tab titles. Must be one of {@link Align#left}, {@link Align#center} or
+	 *           {@link Align#right}. */
 	public TabbedPane (TabbedPaneStyle style, int tabTitleAlign) {
 		this.tabTitleAlign = tabTitleAlign;
 		initialize(style);
 	}
 
-	/** Creates a button without setting the style or size. At least a style must be set before using this button. */
+	/** Creates a {@code TabbedPane} without setting the style or size. At least a style must be set before using this tabbed pane. */
 	public TabbedPane () {
 		initialize();
 	}
@@ -114,7 +136,7 @@ public class TabbedPane extends Table {
 			rightCell.expandX().fillX().bottom();
 			break;
 		default:
-			throw new IllegalArgumentException("TabbedPan align must be one of left, center, right");
+			throw new IllegalArgumentException("TabbedPane align must be one of left, center, right");
 		}
 
 		// Create 2nd row

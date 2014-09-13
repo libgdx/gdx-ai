@@ -47,8 +47,13 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
+	public Box2dSteeringEntity (TextureRegion region, Body body) {
+		this(region, body, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
+	}
+
 	public Box2dSteeringEntity (TextureRegion region, Body body, float boundingRadius) {
-        System.out.println("BoundingRadius:" + boundingRadius);
+      System.out.println("BoundingRadius: " + boundingRadius);
+      System.out.println("region.width: " + region.getRegionWidth());
 		this.region = region;
 		this.body = body;
 		this.boundingRadius = boundingRadius;
@@ -81,7 +86,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	@Override
 	public Vector2 getPosition () {
-
         Vector2 pos = body.getPosition();
         pos.set(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y));
         return pos;
@@ -150,21 +154,21 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			// Apply steering accelerations (if any)
 			boolean anyAccelerations = false;
 			if (!steeringOutput.linear.isZero()) {
-                Vector2 force = steeringOutput.linear.scl(Gdx.graphics.getDeltaTime());
-//                System.out.println("FORCE:" + force);
+				Vector2 force = steeringOutput.linear.scl(Gdx.graphics.getDeltaTime());
+				// System.out.println("FORCE:" + force);
 				body.applyForceToCenter(force, false);
 				anyAccelerations = true;
 			}
 
 			if (steeringOutput.angular != 0) {
-				//System.out.println("applyTorque " + steeringOutput.angular + "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
+				// System.out.println("applyTorque " + steeringOutput.angular +
+				// "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
 				body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), false);
 				anyAccelerations = true;
 			}
 
-
 			if (anyAccelerations) {
-// body.activate();
+				// body.activate();
 
 				// TODO:
 				// Looks like truncating speeds here after applying forces doesn't work as expected.
@@ -182,14 +186,14 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 				// Cap the angular speed
 				float maxAngVelocity = getMaxAngularSpeed();
 				if (body.getAngularVelocity() > maxAngVelocity) {
-//					System.out.println("body.getAngularVelocity() = "+body.getAngularVelocity());
+					// System.out.println("body.getAngularVelocity() = "+body.getAngularVelocity());
 					body.setAngularVelocity(maxAngVelocity);
 				}
 			}
+		}
 
-        }
-
-		wrapAround(Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getWidth()), Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getHeight()));
+		wrapAround(Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getWidth()),
+			Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getHeight()));
 	}
 
 	// the display area is considered to wrap around from top to bottom
@@ -210,20 +214,21 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			body.setTransform(pos, body.getAngle());
 	}
 
-	public void draw(Batch batch) {
+	public void draw (Batch batch) {
 		Vector2 pos = body.getPosition();
-        float w = boundingRadius * 2.0f;
-        float h = boundingRadius * 2.0f;
-		//float w = region.getRegionWidth();
-		//float h = region.getRegionHeight();
+		float w = boundingRadius * 2.0f;
+		float h = boundingRadius * 2.0f;
+		// float w = region.getRegionWidth();
+		// float h = region.getRegionHeight();
 		float ox = w / 2f;
 		float oy = h / 2f;
 
-		batch.draw(region, Box2dSteeringTest.metersToPixels(pos.x) - ox, Box2dSteeringTest.metersToPixels(pos.y) - oy,
-			ox, oy, 
-			w, h,
-			1, 1, 
-			body.getAngle() * MathUtils.radiansToDegrees);
+		batch.draw(region, //
+			Box2dSteeringTest.metersToPixels(pos.x) - ox, Box2dSteeringTest.metersToPixels(pos.y) - oy, //
+			ox, oy, //
+			w, h, //
+			1, 1, //
+			body.getAngle() * MathUtils.radiansToDegrees); //
 	}
 
 	//

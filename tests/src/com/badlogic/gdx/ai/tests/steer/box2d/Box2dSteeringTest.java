@@ -20,8 +20,14 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /** Base class for box2d steering behavior tests.
@@ -69,6 +75,30 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 
     public static int metersToPixels(float meters) {
         return (int) (meters * 50.0f);
+    }
+    
+    public Box2dSteeringEntity createSteeringEntity(World world, TextureRegion region) {
+
+ 		CircleShape circleChape = new CircleShape();
+ 		circleChape.setPosition(new Vector2());
+ 		int radiusInPixels = (int)((region.getRegionWidth() + region.getRegionHeight()) / 4f);
+ 		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
+
+ 		BodyDef characterBodyDef = new BodyDef();
+ 		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
+ 		characterBodyDef.type = BodyType.DynamicBody;
+ 		Body characterBody = world.createBody(characterBodyDef);
+
+ 		FixtureDef charFixtureDef = new FixtureDef();
+ 		charFixtureDef.density = 1;
+ 		charFixtureDef.shape = circleChape;
+ 		charFixtureDef.filter.groupIndex = 0;
+ 		characterBody.createFixture(charFixtureDef);
+
+ 		circleChape.dispose();
+
+ 		return new Box2dSteeringEntity(container.greenFish, characterBody);
+
     }
 
 //	protected void addAlignOrientationToLinearVelocityController (Table table, final SteeringActor character) {

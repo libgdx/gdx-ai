@@ -44,7 +44,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -74,7 +73,8 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	private Body wall2;
 	private Body wall3;
 
-
+	private Vector2 tmp = new Vector2();
+	private Batch spriteBatch;
 
 	public Box2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
 		super(container, "Raycast Obstacle Avoidance");
@@ -85,6 +85,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
+		spriteBatch = new SpriteBatch();
 
 		// Instantiate a new World with no gravity
 		world = createWorld();
@@ -102,13 +103,11 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		// simply a static body.
 		BodyDef groundBodyDef = new BodyDef();
 
-        groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(200), Box2dSteeringTest.pixelsToMeters(350));
-//        System.out.println("POSITION:" + groundBodyDef.position);
-  //      System.exit(0);
+		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(200), Box2dSteeringTest.pixelsToMeters(350));
 		groundBodyDef.type = BodyType.StaticBody;
 		wall1 = world.createBody(groundBodyDef);
 
-        groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(500), Box2dSteeringTest.pixelsToMeters(100));
+		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(500), Box2dSteeringTest.pixelsToMeters(100));
 		wall2 = world.createBody(groundBodyDef);
 
 		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(350), Box2dSteeringTest.pixelsToMeters(200));
@@ -127,39 +126,19 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(30));
 		wall3.createFixture(fixtureDef);
 		groundPoly.dispose();
-		
-		CircleShape circleChape = new CircleShape();
-		circleChape.setPosition(new Vector2());
-        int radiusInPixels = 16;
-		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
 
-		BodyDef characterBodyDef = new BodyDef();
-		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
-//		characterBodyDef.angle = 90;
-		characterBodyDef.type = BodyType.DynamicBody;
-		Body characterBody = world.createBody(characterBodyDef);
-		
-		FixtureDef charFixtureDef = new FixtureDef();
-		charFixtureDef.density = 1;
-		charFixtureDef.shape = circleChape;
-		charFixtureDef.filter.groupIndex = 0;
-		characterBody.createFixture(charFixtureDef);
+		character = createSteeringEntity(world, container.greenFish);
+		character.setMaxLinearSpeed(1);
+		character.setMaxLinearAcceleration(40);
+		character.setMaxAngularAcceleration(50);
+		character.setMaxAngularSpeed(10);
 
-		circleChape.dispose();
-
-		character = new Box2dSteeringEntity(container.greenFish, characterBody, radiusInPixels);
-		//character.setMaxLinearSpeed(500);
-		//character.setMaxLinearAcceleration(5000);
-		//character.setMaxAngularAcceleration(40000);
-		//character.setMaxAngularSpeed(15000);
-        character.setMaxLinearSpeed(1);
-        character.setMaxLinearAcceleration(5);
-        character.setMaxAngularAcceleration(5);
-        character.setMaxAngularSpeed(10);
-
-		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration(character, 100),
+		@SuppressWarnings("unchecked")
+		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
+			new SingleRayConfiguration<Vector2>(character, 100),
 			new ParallelSideRayConfiguration<Vector2>(character, 100, character.getBoundingRadius()),
 			new CentralRayWithWhiskersConfiguration<Vector2>(character, 100, 40, 35 * MathUtils.degreesToRadians)};
+		rayConfigurations = localRayConfigurations;
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
 		raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(character, rayConfigurations[rayConfigurationIndex],
@@ -170,7 +149,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			.setFaceEnabled(false) //
 			// We don't need a limiter supporting angular components because Face is not used
 			// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-//			.setLimiter(new LinearAccelerationLimiter(1000)) //
+			.setLimiter(new LinearAccelerationLimiter(10)) //
 			.setWanderOffset(60) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(40) //
@@ -180,7 +159,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			.add(raycastObstacleAvoidanceSB) //
 			.add(wanderSB);
 
-		LookWhereYouAreGoing<Vector2> lookWhereYouAReGoingSB = new LookWhereYouAreGoing<Vector2>(character) {
+		LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(character) {
 
 			@Override
 			protected SteeringAcceleration<Vector2> calculateSteering (SteeringAcceleration<Vector2> steering) {
@@ -188,14 +167,13 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 				return steering;
 			}
 
-		}
-			.setTimeToTarget(0.1f) //
+		}.setTimeToTarget(0.1f) //
 			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.PI/20);
+			.setDecelerationRadius(MathUtils.PI / 20);
 
 		BlendedSteering<Vector2> xxx = new BlendedSteering<Vector2>(character) //
 			.add(prioritySteeringSB, 1) //
-			.add(lookWhereYouAReGoingSB, 1); 
+			.add(lookWhereYouAreGoingSB, 1);
 
 		character.setSteeringBehavior(xxx);
 
@@ -260,15 +238,11 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 500, 10);
+		addMaxSpeedController(detailTable, character, 0, 50, 1);
 
 		detailWindow = createDetailWindow(detailTable);
 	}
 
-	private Vector2 tmp = new Vector2();
-
-	private Batch b;
-	
 	@Override
 	public void render () {
 		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
@@ -291,20 +265,21 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			shapeRenderer.end();
 		}
 
+		// Update and draw the character
 		character.update();
-		if (b == null)
-			b = new SpriteBatch();
-		b.begin();
-		character.draw(b);
-		b.end();
+		spriteBatch.begin();
+		character.draw(spriteBatch);
+		spriteBatch.end();
 
-		renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
+		if (drawDebug)
+			renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
 	}
 
 	@Override
 	public void dispose () {
 		shapeRenderer.dispose();
 		world.dispose();
+		spriteBatch.dispose();
 	}
 
 	Matrix4 transform = new Matrix4();
