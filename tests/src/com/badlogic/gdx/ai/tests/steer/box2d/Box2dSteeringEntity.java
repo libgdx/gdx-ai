@@ -60,6 +60,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
       System.out.println("region.width: " + region.getRegionWidth());
 		this.region = region;
 		this.body = body;
+		this.independentFacing = independentFacing;
 		this.boundingRadius = boundingRadius;
 		this.tagged = false;
 		
@@ -171,7 +172,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 				if (steeringOutput.angular != 0) {
 					// System.out.println("applyTorque " + steeringOutput.angular +
 					// "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
-					body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), false);
+					body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), true);
 					anyAccelerations = true;
 				}
 			}

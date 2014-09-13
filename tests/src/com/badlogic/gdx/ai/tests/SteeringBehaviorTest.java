@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dCollisionAvoidanceTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dFaceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dSeekTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFollowPathTest;
@@ -90,6 +91,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		},
 		{ // Box2d
 			new Box2dCollisionAvoidanceTest(this),
+			new Box2dFaceTest(this),
 			new Box2dRaycastObstacleAvoidanceTest(this),
 			new Box2dSeekTest(this)
 		},
@@ -230,7 +232,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			pane.setScrollX(0);
 			pane.setScrollY(0);
 
-			tabbedPane.addTab(tabTitles[i], pane);
+			tabbedPane.addTab(" " + tabTitles[i] + " ", pane);
 		}
 		window.add(tabbedPane);
 		window.pack();

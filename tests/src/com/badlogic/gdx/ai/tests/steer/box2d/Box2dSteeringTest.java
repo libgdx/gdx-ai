@@ -84,6 +84,14 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 	}
 
 	public Box2dSteeringEntity createSteeringEntity (World world, TextureRegion region, boolean independentFacing) {
+		return createSteeringEntity(world, region, independentFacing, (int)(container.stageWidth / 2), (int)(container.stageHeight / 2));
+	}
+
+	public Box2dSteeringEntity createSteeringEntity (World world, TextureRegion region, int posX, int posY) {
+		return createSteeringEntity(world, region, false, posX, posY);
+	}
+
+	public Box2dSteeringEntity createSteeringEntity (World world, TextureRegion region, boolean independentFacing, int posX, int posY) {
 
 		CircleShape circleChape = new CircleShape();
 		circleChape.setPosition(new Vector2());
@@ -91,7 +99,7 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
 
 		BodyDef characterBodyDef = new BodyDef();
-		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
+		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(posX), Box2dSteeringTest.pixelsToMeters(posY));
 		characterBodyDef.type = BodyType.DynamicBody;
 		Body characterBody = world.createBody(characterBodyDef);
 

@@ -14,15 +14,20 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
+package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -32,18 +37,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 /** A class to test and experiment with the {@link Face} behavior.
  * 
  * @autor davebaol */
-public class Scene2dFaceTest extends Scene2dSteeringTest {
-	SteeringActor character;
+public class Box2dFaceTest extends Box2dSteeringTest {
+	Box2dSteeringEntity character;
 	SteeringActor target;
 
-	public Scene2dFaceTest (SteeringBehaviorTest container) {
+	private World world;
+	private Batch spriteBatch;
+
+	public Box2dFaceTest (SteeringBehaviorTest container) {
 		super(container, "Face");
 	}
 
 	@Override
 	public void create (Table table) {
-		character = new SteeringActor(container.badlogicSmall, true);
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
+		spriteBatch = new SpriteBatch();
+
+		// Instantiate a new World with no gravity
+		world = createWorld();
+
+		// Create character
+		character = createSteeringEntity(world, container.greenFish, true);
 		character.setMaxAngularAcceleration(100);
 		character.setMaxAngularSpeed(15);
 
@@ -58,7 +71,6 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 			.setDecelerationRadius(MathUtils.degreesToRadians * 180);
 		character.setSteeringBehavior(faceSB);
 
-		table.addActor(character);
 		table.addActor(target);
 
 		Table detailTable = new Table(container.skin);
@@ -123,10 +135,21 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 
 	@Override
 	public void render () {
+		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		world.step(deltaTime, 8, 3);
+
+		// Update and draw the character
+		character.update(deltaTime);
+		spriteBatch.begin();
+		character.draw(spriteBatch);
+		spriteBatch.end();
 	}
 
 	@Override
 	public void dispose () {
+		world.dispose();
+		spriteBatch.dispose();
 	}
 
 }

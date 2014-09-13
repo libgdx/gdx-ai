@@ -125,10 +125,8 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		groundPoly.dispose();
 
 		character = createSteeringEntity(world, container.greenFish);
-		character.setMaxLinearSpeed(1);
-		character.setMaxLinearAcceleration(40);
-		character.setMaxAngularAcceleration(50);
-		character.setMaxAngularSpeed(10);
+		character.setMaxLinearSpeed(2);
+		character.setMaxLinearAcceleration(100);
 
 		@SuppressWarnings("unchecked")
 		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
@@ -163,7 +161,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 1500, 1);
+		addMaxLinearAccelerationController(detailTable, character, 0, 2000, 1);
 
 		detailTable.row();
 		final Label labelDistFromBoundary = new Label("Distance from Boundary ["
@@ -219,7 +217,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 50, 1);
+		addMaxSpeedController(detailTable, character, 0, 15, .5f);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

@@ -56,8 +56,6 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		character = createSteeringEntity(world, container.greenFish);
 		character.setMaxLinearSpeed(4);
 		character.setMaxLinearAcceleration(200);
-		character.setMaxAngularAcceleration(500);
-		character.setMaxAngularSpeed(100);
 
 		// Create target
 		target = new SteeringActor(container.target);

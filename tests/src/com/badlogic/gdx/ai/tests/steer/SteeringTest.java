@@ -71,6 +71,8 @@ public abstract class SteeringTest {
 		window.row();
 		window.add(table);
 		window.pack();
+		window.setX(container.stage.getWidth() - window.getWidth() + 1);
+		window.setY(container.stage.getHeight() - window.getHeight() + 1);
 		window.layout();
 		window.collapse();
 		return window;
