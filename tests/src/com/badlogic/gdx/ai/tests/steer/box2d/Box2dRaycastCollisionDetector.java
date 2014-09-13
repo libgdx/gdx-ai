@@ -32,24 +32,35 @@ public class Box2dRaycastCollisionDetector implements RaycastCollisionDetector<V
 	World world;
 	B2SteerRaycastCallback callback;
 	Vector2 inputRayEndPoint;
+    Vector2 inputRayOrigin;
+    Vector2 inputRayDirection;
 
 	public Box2dRaycastCollisionDetector (World world) {
 		this(world, new B2SteerRaycastCallback());
 	}
 
 	public Box2dRaycastCollisionDetector (World world, B2SteerRaycastCallback callback) {
-		this.world = world;
+
+        this.world = world;
 		this.callback = callback;
-		this.inputRayEndPoint = new Vector2();
+		inputRayEndPoint = new Vector2();
+        inputRayOrigin = new Vector2();
+        inputRayDirection = new Vector2();
+
+
 	}
 
 	@Override
 	public boolean findCollision (Collision<Vector2> outputCollision, Ray<Vector2> inputRay) {
 		callback.collided = false;
 		if (!inputRay.direction.isZero()) {
-			inputRayEndPoint.set(inputRay.origin).add(inputRay.direction);
 			callback.outputCollision = outputCollision;
-			world.rayCast(callback, inputRay.origin, inputRayEndPoint);
+
+            inputRayOrigin.set(Box2dSteeringTest.pixelsToMeters((int) inputRay.origin.x), Box2dSteeringTest.pixelsToMeters((int) inputRay.origin.y));
+            inputRayDirection.set(Box2dSteeringTest.pixelsToMeters((int) inputRay.direction.x), Box2dSteeringTest.pixelsToMeters((int) inputRay.direction.y));
+            inputRayEndPoint.set(inputRayOrigin).add(inputRayDirection);
+            world.rayCast(callback, inputRayOrigin, inputRayEndPoint);
+
 		}
 		return callback.collided;
 	}
@@ -63,7 +74,10 @@ public class Box2dRaycastCollisionDetector implements RaycastCollisionDetector<V
 
 		@Override
 		public float reportRayFixture (Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-			outputCollision.set(point, normal);
+            outputCollision.point.x = Box2dSteeringTest.metersToPixels(point.x);
+            outputCollision.point.y = Box2dSteeringTest.metersToPixels(point.y);
+            outputCollision.normal.x = normal.x;
+            outputCollision.normal.y = normal.y;
 			collided = true;
 			return fraction;
 		}
