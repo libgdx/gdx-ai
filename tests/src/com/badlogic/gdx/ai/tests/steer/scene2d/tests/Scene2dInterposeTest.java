@@ -37,13 +37,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 /** A class to test and experiment with the {@link Interpose} behavior.
  * 
  * @autor davebaol */
-public class InterposeTest extends Scene2dSteeringTest {
+public class Scene2dInterposeTest extends Scene2dSteeringTest {
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
 	Interpose<Vector2> interposeSB;
 
-	public InterposeTest (SteeringBehaviorTest container) {
+	public Scene2dInterposeTest (SteeringBehaviorTest container) {
 		super(container, "Interpose");
 	}
 

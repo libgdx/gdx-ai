@@ -21,14 +21,16 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 
 /** Base class for box2d steering behavior tests.
  * 
@@ -69,63 +71,69 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 		addMaxAngularSpeedController(table, limiter, 0, 20, 1);
 	}
 
-    public static float pixelsToMeters(int pixels) {
-        return (float) pixels * 0.02f;
-    }
+	public static float pixelsToMeters (int pixels) {
+		return (float)pixels * 0.02f;
+	}
 
-    public static int metersToPixels(float meters) {
-        return (int) (meters * 50.0f);
-    }
-    
-    public Box2dSteeringEntity createSteeringEntity(World world, TextureRegion region) {
+	public static int metersToPixels (float meters) {
+		return (int)(meters * 50.0f);
+	}
 
- 		CircleShape circleChape = new CircleShape();
- 		circleChape.setPosition(new Vector2());
- 		int radiusInPixels = (int)((region.getRegionWidth() + region.getRegionHeight()) / 4f);
- 		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
+	public Box2dSteeringEntity createSteeringEntity (World world, TextureRegion region) {
+		return createSteeringEntity(world, region, false);
+	}
 
- 		BodyDef characterBodyDef = new BodyDef();
- 		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
- 		characterBodyDef.type = BodyType.DynamicBody;
- 		Body characterBody = world.createBody(characterBodyDef);
+	public Box2dSteeringEntity createSteeringEntity (World world, TextureRegion region, boolean independentFacing) {
 
- 		FixtureDef charFixtureDef = new FixtureDef();
- 		charFixtureDef.density = 1;
- 		charFixtureDef.shape = circleChape;
- 		charFixtureDef.filter.groupIndex = 0;
- 		characterBody.createFixture(charFixtureDef);
+		CircleShape circleChape = new CircleShape();
+		circleChape.setPosition(new Vector2());
+		int radiusInPixels = (int)((region.getRegionWidth() + region.getRegionHeight()) / 4f);
+		circleChape.setRadius(Box2dSteeringTest.pixelsToMeters(radiusInPixels));
 
- 		circleChape.dispose();
+		BodyDef characterBodyDef = new BodyDef();
+		characterBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(50));
+		characterBodyDef.type = BodyType.DynamicBody;
+		Body characterBody = world.createBody(characterBodyDef);
 
- 		return new Box2dSteeringEntity(container.greenFish, characterBody);
+		FixtureDef charFixtureDef = new FixtureDef();
+		charFixtureDef.density = 1;
+		charFixtureDef.shape = circleChape;
+		charFixtureDef.filter.groupIndex = 0;
+		characterBody.createFixture(charFixtureDef);
 
-    }
+		circleChape.dispose();
 
-//	protected void addAlignOrientationToLinearVelocityController (Table table, final SteeringActor character) {
-//		CheckBox alignOrient = new CheckBox("Align orient.to velocity", container.skin);
-//		alignOrient.setChecked(character.isIndependentFacing());
-//		alignOrient.addListener(new ClickListener() {
-//			@Override
-//			public void clicked (InputEvent event, float x, float y) {
-//				CheckBox checkBox = (CheckBox)event.getListenerActor();
-//				character.setIndependentFacing(checkBox.isChecked());
-//			}
-//		});
-//		table.add(alignOrient);
-//	}
-//
-//	protected void setRandomNonOverlappingPosition (SteeringActor character, Array<SteeringActor> others,
-//		float minDistanceFromBoundary) {
-//		SET_NEW_POS:
-//		while (true) {
-//			character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
-//			character.getPosition().set(character.getCenterX(), character.getCenterY());
-//			for (int i = 0; i < others.size; i++) {
-//				SteeringActor other = (SteeringActor)others.get(i);
-//				if (character.getPosition().dst(other.getPosition()) <= character.getBoundingRadius() + other.getBoundingRadius()
-//					+ minDistanceFromBoundary) continue SET_NEW_POS;
-//			}
-//			return;
-//		}
-//	}
+		return new Box2dSteeringEntity(container.greenFish, characterBody, independentFacing);
+
+	}
+
+// protected void addAlignOrientationToLinearVelocityController (Table table, final SteeringActor character) {
+// CheckBox alignOrient = new CheckBox("Align orient.to velocity", container.skin);
+// alignOrient.setChecked(character.isIndependentFacing());
+// alignOrient.addListener(new ClickListener() {
+// @Override
+// public void clicked (InputEvent event, float x, float y) {
+// CheckBox checkBox = (CheckBox)event.getListenerActor();
+// character.setIndependentFacing(checkBox.isChecked());
+// }
+// });
+// table.add(alignOrient);
+// }
+
+	protected void setRandomNonOverlappingPosition (Box2dSteeringEntity character, Array<Box2dSteeringEntity> others,
+		float minDistanceFromBoundary) {
+		SET_NEW_POS:
+		while (true) {
+			int x = MathUtils.random((int)container.stageWidth);
+			int y = MathUtils.random((int)container.stageHeight);
+			float angle = MathUtils.random(-MathUtils.PI, MathUtils.PI);
+			character.body.setTransform(pixelsToMeters(x), pixelsToMeters(y), angle);
+			for (int i = 0; i < others.size; i++) {
+				Box2dSteeringEntity other = (Box2dSteeringEntity)others.get(i);
+				if (character.getPosition().dst(other.getPosition()) <= character.getBoundingRadius() + other.getBoundingRadius()
+					+ minDistanceFromBoundary) continue SET_NEW_POS;
+			}
+			return;
+		}
+	}
 }

@@ -19,25 +19,26 @@ package com.badlogic.gdx.ai.tests;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dCollisionAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dSeekTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletSeekTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.ArriveTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.CollisionAvoidanceTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.FaceTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.FlockingTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.FollowFlowFieldTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.FollowPathTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.HideTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.InterposeTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.LookWhereYouAreGoingTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.PursueTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.RaycastObstacleAvoidanceTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.SeekTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.tests.WanderTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dArriveTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dCollisionAvoidanceTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFaceTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFlockingTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFollowFlowFieldTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFollowPathTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dHideTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dInterposeTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dLookWhereYouAreGoingTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dPursueTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dRaycastObstacleAvoidanceTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dSeekTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dWanderTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
@@ -72,22 +73,23 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	// Keep it sorted!
 	SteeringTest[][] behaviors = {
 		{ // Scene2d
-			new ArriveTest(this),
-			new CollisionAvoidanceTest(this),
-			new FaceTest(this),
-			new FlockingTest(this),
-			new FollowFlowFieldTest(this),
-			new FollowPathTest(this, false),
-			new FollowPathTest(this, true),
-			new HideTest(this),
-			new InterposeTest(this),
-			new LookWhereYouAreGoingTest(this),
-			new PursueTest(this),
-			new RaycastObstacleAvoidanceTest(this),
-			new SeekTest(this),
-			new WanderTest(this)
+			new Scene2dArriveTest(this),
+			new Scene2dCollisionAvoidanceTest(this),
+			new Scene2dFaceTest(this),
+			new Scene2dFlockingTest(this),
+			new Scene2dFollowFlowFieldTest(this),
+			new Scene2dFollowPathTest(this, false),
+			new Scene2dFollowPathTest(this, true),
+			new Scene2dHideTest(this),
+			new Scene2dInterposeTest(this),
+			new Scene2dLookWhereYouAreGoingTest(this),
+			new Scene2dPursueTest(this),
+			new Scene2dRaycastObstacleAvoidanceTest(this),
+			new Scene2dSeekTest(this),
+			new Scene2dWanderTest(this)
 		},
 		{ // Box2d
+			new Box2dCollisionAvoidanceTest(this),
 			new Box2dRaycastObstacleAvoidanceTest(this),
 			new Box2dSeekTest(this)
 		},

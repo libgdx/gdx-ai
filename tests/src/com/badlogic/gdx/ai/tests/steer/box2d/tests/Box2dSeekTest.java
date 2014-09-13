@@ -39,7 +39,6 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 	SteeringActor target;
 
 	private World world;
-
 	private Batch spriteBatch;
 
 	public Box2dSeekTest (SteeringBehaviorTest container) {
@@ -79,17 +78,19 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 40, 1);
+		addMaxSpeedController(detailTable, character, 0, 30, 1);
 
 		detailWindow = createDetailWindow(detailTable);
 	}
 
 	@Override
 	public void render () {
-		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
+		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		world.step(deltaTime, 8, 3);
 
 		// Update and draw the character
-		character.update();
+		character.update(deltaTime);
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();

@@ -48,16 +48,22 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 	private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
 	public Box2dSteeringEntity (TextureRegion region, Body body) {
-		this(region, body, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
+		this(region, body, false, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
 	}
 
-	public Box2dSteeringEntity (TextureRegion region, Body body, float boundingRadius) {
+	public Box2dSteeringEntity (TextureRegion region, Body body, boolean independentFacing) {
+		this(region, body, independentFacing, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
+	}
+
+	public Box2dSteeringEntity (TextureRegion region, Body body, boolean independentFacing, float boundingRadius) {
       System.out.println("BoundingRadius: " + boundingRadius);
       System.out.println("region.width: " + region.getRegionWidth());
 		this.region = region;
 		this.body = body;
 		this.boundingRadius = boundingRadius;
 		this.tagged = false;
+		
+		body.setUserData(this);
 	}
 
 	public TextureRegion getRegion () {
@@ -146,7 +152,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 		this.steeringBehavior = steeringBehavior;
 	}
 
-	public void update () {
+	public void update (float deltaTime) {
 		if (steeringBehavior != null) {
 			// Calculate steering acceleration
 			steeringBehavior.steer(steeringOutput);
@@ -154,17 +160,29 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			// Apply steering accelerations (if any)
 			boolean anyAccelerations = false;
 			if (!steeringOutput.linear.isZero()) {
-				Vector2 force = steeringOutput.linear.scl(Gdx.graphics.getDeltaTime());
+				Vector2 force = steeringOutput.linear.scl(deltaTime);
 				// System.out.println("FORCE:" + force);
 				body.applyForceToCenter(force, false);
 				anyAccelerations = true;
 			}
 
-			if (steeringOutput.angular != 0) {
-				// System.out.println("applyTorque " + steeringOutput.angular +
-				// "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
-				body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), false);
-				anyAccelerations = true;
+			// Update orientation and angular velocity
+			if (isIndependentFacing()) {
+				if (steeringOutput.angular != 0) {
+					// System.out.println("applyTorque " + steeringOutput.angular +
+					// "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
+					body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), false);
+					anyAccelerations = true;
+				}
+			}
+			else {
+				// If we haven't got any velocity, then we can do nothing.
+				Vector2 linVel = getLinearVelocity();
+				if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+					float newOrientation = vectorToAngle(linVel);
+					body.setAngularVelocity((newOrientation - getAngularVelocity()) * deltaTime); // this is superfluous if independentFacing is always true
+					body.setTransform(body.getPosition(), newOrientation);
+				}
 			}
 
 			if (anyAccelerations) {

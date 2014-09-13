@@ -28,12 +28,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 /** A class to test and experiment with the {@link Seek} behavior.
  * 
  * @autor davebaol */
-public class SeekTest extends Scene2dSteeringTest {
+public class Scene2dSeekTest extends Scene2dSteeringTest {
 
 	SteeringActor character;
 	SteeringActor target;
 
-	public SeekTest (SteeringBehaviorTest container) {
+	public Scene2dSeekTest (SteeringBehaviorTest container) {
 		super(container, "Seek");
 	}
 

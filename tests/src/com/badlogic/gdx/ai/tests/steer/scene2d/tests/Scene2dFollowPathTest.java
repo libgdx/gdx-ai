@@ -40,7 +40,7 @@ import com.badlogic.gdx.utils.Array;
 /** A class to test and experiment with the {@link FollowPath} behavior.
  * 
  * @autor davebaol */
-public class FollowPathTest extends Scene2dSteeringTest {
+public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 	ShapeRenderer shapeRenderer;
 	boolean drawDebug;
 
@@ -53,7 +53,7 @@ public class FollowPathTest extends Scene2dSteeringTest {
 	final boolean openPath;
 	Slider pathOffset;
 
-	public FollowPathTest (SteeringBehaviorTest container, boolean openPath) {
+	public Scene2dFollowPathTest (SteeringBehaviorTest container, boolean openPath) {
 		super(container, "Follow " + (openPath ? "Open" : "Closed") + " Path");
 		this.openPath = openPath;
 	}

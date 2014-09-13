@@ -45,7 +45,7 @@ import com.badlogic.gdx.utils.Array;
  * {@link Alignment}.
  * 
  * @autor davebaol */
-public class FlockingTest extends Scene2dSteeringTest {
+public class Scene2dFlockingTest extends Scene2dSteeringTest {
 	Array<SteeringActor> characters;
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
@@ -55,7 +55,7 @@ public class FlockingTest extends Scene2dSteeringTest {
 	
 	float separationDecayCoefficient;
 
-	public FlockingTest (SteeringBehaviorTest container) {
+	public Scene2dFlockingTest (SteeringBehaviorTest container) {
 		super(container, "Flocking");
 	}
 

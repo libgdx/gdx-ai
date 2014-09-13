@@ -14,21 +14,25 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
+package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
-import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRadiusProximity;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -42,14 +46,17 @@ import com.badlogic.gdx.utils.Array;
 /** A class to test and experiment with the {@link CollisionAvoidance} behavior.
  * 
  * @autor davebaol */
-public class CollisionAvoidanceTest extends Scene2dSteeringTest {
-	Array<SteeringActor> characters;
-	RadiusProximity<Vector2> char0Proximity;
-	Array<RadiusProximity<Vector2>> proximities;
+public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
+	Array<Box2dSteeringEntity> characters;
+	Box2dRadiusProximity char0Proximity;
+	Array<Box2dRadiusProximity> proximities;
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
-	public CollisionAvoidanceTest (SteeringBehaviorTest container) {
+	private World world;
+	private Batch spriteBatch;
+
+	public Box2dCollisionAvoidanceTest (SteeringBehaviorTest container) {
 		super(container, "Collision Avoidance");
 	}
 
@@ -59,15 +66,21 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 
 		shapeRenderer = new ShapeRenderer();
 
-		characters = new Array<SteeringActor>();
-		proximities = new Array<RadiusProximity<Vector2>>();
+		spriteBatch = new SpriteBatch();
+
+		// Instantiate a new World with no gravity
+		world = createWorld();
+
+
+		characters = new Array<Box2dSteeringEntity>();
+		proximities = new Array<Box2dRadiusProximity>();
 
 		for (int i = 0; i < 60; i++) {
-			final SteeringActor character = new SteeringActor(container.greenFish, false);
-			character.setMaxLinearSpeed(50);
-			character.setMaxLinearAcceleration(100);
+			final Box2dSteeringEntity character = createSteeringEntity(world, container.greenFish, false);
+			character.setMaxLinearSpeed(1.5f);
+			character.setMaxLinearAcceleration(40);
 
-			RadiusProximity<Vector2> proximity = new RadiusProximity<Vector2>(character, characters,
+			Box2dRadiusProximity proximity = new Box2dRadiusProximity(character, world,
 				character.getBoundingRadius() * 4);
 			proximities.add(proximity);
 			if (i == 0) char0Proximity = proximity;
@@ -92,8 +105,6 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 
 			setRandomNonOverlappingPosition(character, characters, 5);
 
-			table.addActor(character);
-
 			characters.add(character);
 		}
 
@@ -106,7 +117,7 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 			container.skin);
 		detailTable.add(labelMaxLinAcc);
 		detailTable.row();
-		Slider maxLinAcc = new Slider(0, 1500, 1, false, container.skin);
+		Slider maxLinAcc = new Slider(0, 300, 1, false, container.skin);
 		maxLinAcc.setValue(characters.get(0).getMaxLinearAcceleration());
 		maxLinAcc.addListener(new ChangeListener() {
 			@Override
@@ -120,17 +131,17 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 		detailTable.add(maxLinAcc);
 
 		detailTable.row();
-		final Label labelProximityRadius = new Label("Proximity Radius [" + proximities.get(0).getRadius() + "]", container.skin);
+		final Label labelProximityRadius = new Label("Proximity Radius [" + proximities.get(0).getDetectionRadius() + "]", container.skin);
 		detailTable.add(labelProximityRadius);
 		detailTable.row();
-		Slider proximityRadius = new Slider(0, 500, 1, false, container.skin);
-		proximityRadius.setValue(proximities.get(0).getRadius());
+		Slider proximityRadius = new Slider(0, 350, 1, false, container.skin);
+		proximityRadius.setValue(proximities.get(0).getDetectionRadius());
 		proximityRadius.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				Slider slider = (Slider)actor;
 				for (int i = 0; i < proximities.size; i++)
-					proximities.get(i).setRadius(slider.getValue());
+					proximities.get(i).setDetectionRadius(slider.getValue());
 				labelProximityRadius.setText("Proximity Radius [" + slider.getValue() + "]");
 			}
 		});
@@ -143,7 +154,7 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 		final Label labelMaxLinSpeed = new Label("Max.Linear Speed.[" + characters.get(0).getMaxLinearSpeed() + "]", container.skin);
 		detailTable.add(labelMaxLinSpeed);
 		detailTable.row();
-		Slider maxLinSpeed = new Slider(0, 300, 10, false, container.skin);
+		Slider maxLinSpeed = new Slider(0, 20, .5f, false, container.skin);
 		maxLinSpeed.setValue(characters.get(0).getMaxLinearSpeed());
 		maxLinSpeed.addListener(new ChangeListener() {
 			@Override
@@ -173,11 +184,24 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 
 	@Override
 	public void render () {
+		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		world.step(deltaTime, 8, 3);
+
+		// Update and draw the character
+		spriteBatch.begin();
+		for (int i = 0; i < characters.size; i++) {
+			Box2dSteeringEntity character = characters.get(i);
+			character.update(deltaTime);
+			character.draw(spriteBatch);
+		}
+		spriteBatch.end();
+
 		if (drawDebug) {
 			Steerable<Vector2> steerable = characters.get(0);
 			shapeRenderer.begin(ShapeType.Line);
 			shapeRenderer.setColor(0, 1, 0, 1);
-			shapeRenderer.circle(steerable.getPosition().x, steerable.getPosition().y, char0Proximity.getRadius());
+			shapeRenderer.circle(steerable.getPosition().x, steerable.getPosition().y, char0Proximity.getDetectionRadius());
 			shapeRenderer.end();
 		}
 	}
@@ -185,6 +209,8 @@ public class CollisionAvoidanceTest extends Scene2dSteeringTest {
 	@Override
 	public void dispose () {
 		shapeRenderer.dispose();
+		world.dispose();
+		spriteBatch.dispose();
 	}
 
 }

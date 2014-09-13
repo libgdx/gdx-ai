@@ -55,7 +55,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 /** A class to test and experiment with the {@link RaycastObstacleAvoidance} behavior.
  * 
  * @autor davebaol */
-public class RaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
+public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	int rayConfigurationIndex;
 	RayConfigurationBase<Vector2>[] rayConfigurations;
@@ -68,7 +68,7 @@ public class RaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	private Body wall2;
 	private Body wall3;
 
-	public RaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
+	public Scene2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
 		super(container, "Raycast Obstacle Avoidance");
 	}
 
@@ -121,9 +121,12 @@ public class RaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		character.setMaxLinearSpeed(50);
 		character.setMaxLinearAcceleration(100);
 
-		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration(character, 100),
+		@SuppressWarnings("unchecked")
+		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
+			new SingleRayConfiguration<Vector2>(character, 100),
 			new ParallelSideRayConfiguration<Vector2>(character, 100, character.getBoundingRadius()),
 			new CentralRayWithWhiskersConfiguration<Vector2>(character, 100, 40, 35 * MathUtils.degreesToRadians)};
+		rayConfigurations = localRayConfigurations;
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
 		raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(character, rayConfigurations[rayConfigurationIndex],

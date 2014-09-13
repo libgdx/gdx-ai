@@ -42,7 +42,7 @@ import com.badlogic.gdx.utils.Array;
 /** A class to test and experiment with the {@link Hide} behavior.
  * 
  * @autor davebaol */
-public class HideTest extends Scene2dSteeringTest {
+public class Scene2dHideTest extends Scene2dSteeringTest {
 
 	private static final float DISTANCE_FROM_BOUNDARY = 35;
 	private static final float THREAT_RADIUS = 200;
@@ -56,7 +56,7 @@ public class HideTest extends Scene2dSteeringTest {
 	Wander<Vector2> wanderSB;
 	boolean hideMode;
 
-	public HideTest (SteeringBehaviorTest container) {
+	public Scene2dHideTest (SteeringBehaviorTest container) {
 		super(container, "Hide");
 	}
 
@@ -84,9 +84,9 @@ public class HideTest extends Scene2dSteeringTest {
 			@Override
 			public void act (float delta) {
 				// Make wander and hide mutually exclusive based on distance from target
-				HideTest.this.hideMode = (target.getPosition().dst2(getPosition()) < THREAT_RADIUS * THREAT_RADIUS);
-				HideTest.this.hideSB.setEnabled(hideMode);
-				HideTest.this.wanderSB.setEnabled(!hideMode);
+				Scene2dHideTest.this.hideMode = (target.getPosition().dst2(getPosition()) < THREAT_RADIUS * THREAT_RADIUS);
+				Scene2dHideTest.this.hideSB.setEnabled(hideMode);
+				Scene2dHideTest.this.wanderSB.setEnabled(!hideMode);
 				super.act(delta);
 			}
 		};

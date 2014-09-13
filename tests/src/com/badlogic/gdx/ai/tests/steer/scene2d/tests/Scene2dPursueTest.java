@@ -32,11 +32,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 /** A class to test and experiment with the {@link Pursue} behavior.
  * 
  * @autor davebaol */
-public class PursueTest extends Scene2dSteeringTest {
+public class Scene2dPursueTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor prey;
 
-	public PursueTest (SteeringBehaviorTest container) {
+	public Scene2dPursueTest (SteeringBehaviorTest container) {
 		super(container, "Pursue");
 	}
 

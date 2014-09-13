@@ -16,7 +16,10 @@
 
 package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
-import com.badlogic.gdx.ai.steer.behaviors.Face;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
+import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
+import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
@@ -29,34 +32,47 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-/** A class to test and experiment with the {@link Face} behavior.
+/** A class to test and experiment with the {@link LookWhereYouAreGoing} behavior.
  * 
  * @autor davebaol */
-public class FaceTest extends Scene2dSteeringTest {
+public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
+
 	SteeringActor character;
 	SteeringActor target;
 
-	public FaceTest (SteeringBehaviorTest container) {
-		super(container, "Face");
+	public Scene2dLookWhereYouAreGoingTest (SteeringBehaviorTest container) {
+		super(container, "Look Where You're Going");
 	}
 
 	@Override
 	public void create (Table table) {
 		character = new SteeringActor(container.badlogicSmall, true);
 		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
-		character.setMaxAngularAcceleration(100);
-		character.setMaxAngularSpeed(5);
+		character.setMaxLinearAcceleration(100);
+		character.setMaxLinearSpeed(100);
+		character.setMaxAngularAcceleration(40);
+		character.setMaxAngularSpeed(15);
 
 		target = new SteeringActor(container.target);
 		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
 
 		inputProcessor = new Scene2dTargetInputProcessor(target);
 
-		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
+		final LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(character) //
 			.setTimeToTarget(0.1f) //
 			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.degreesToRadians * 7);
-		character.setSteeringBehavior(faceSB);
+			.setDecelerationRadius(MathUtils.PI);
+
+		final Arrive<Vector2> arriveSB = new Arrive<Vector2>(character, target) //
+			.setTimeToTarget(0.1f) //
+			.setArrivalTolerance(0.001f) //
+			.setDecelerationRadius(80);
+
+		BlendedSteering<Vector2> blendedSteering = new BlendedSteering<Vector2>(character) //
+			.setLimiter(NullLimiter.NEUTRAL_LIMITER) //
+			.add(arriveSB, 1f) //
+			.add(lookWhereYouAreGoingSB, 1f);
+		character.setSteeringBehavior(blendedSteering);
 
 		table.addActor(character);
 		table.addActor(target);
@@ -70,50 +86,51 @@ public class FaceTest extends Scene2dSteeringTest {
 		addMaxAngularSpeedController(detailTable, character, 0, 20, 1);
 
 		detailTable.row();
-		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + faceSB.getDecelerationRadius() + "]",
-			container.skin);
+		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + lookWhereYouAreGoingSB.getDecelerationRadius()
+			+ "]", container.skin);
 		detailTable.add(labelDecelerationRadius);
 		detailTable.row();
 		Slider decelerationRadius = new Slider(0, MathUtils.PI2, MathUtils.degreesToRadians, false, container.skin);
-		decelerationRadius.setValue(faceSB.getDecelerationRadius());
+		decelerationRadius.setValue(lookWhereYouAreGoingSB.getDecelerationRadius());
 		decelerationRadius.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				System.out.println("Deceleration radius changed!!!");
 				Slider slider = (Slider)actor;
-				faceSB.setDecelerationRadius(slider.getValue());
+				lookWhereYouAreGoingSB.setDecelerationRadius(slider.getValue());
 				labelDecelerationRadius.setText("Deceleration Radius [" + slider.getValue() + "]");
 			}
 		});
 		detailTable.add(decelerationRadius);
 
 		detailTable.row();
-		final Label labelAlignTolerance = new Label("Align tolerance [" + faceSB.getAlignTolerance() + "]", container.skin);
+		final Label labelAlignTolerance = new Label("Align tolerance [" + lookWhereYouAreGoingSB.getAlignTolerance() + "]",
+			container.skin);
 		detailTable.add(labelAlignTolerance);
 		detailTable.row();
 		Slider alignTolerance = new Slider(0, 1, 0.0001f, false, container.skin);
-		alignTolerance.setValue(faceSB.getAlignTolerance());
+		alignTolerance.setValue(lookWhereYouAreGoingSB.getAlignTolerance());
 		alignTolerance.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				Slider slider = (Slider)actor;
-				faceSB.setAlignTolerance(slider.getValue());
+				lookWhereYouAreGoingSB.setAlignTolerance(slider.getValue());
 				labelAlignTolerance.setText("Align tolerance [" + slider.getValue() + "]");
 			}
 		});
 		detailTable.add(alignTolerance);
 
 		detailTable.row();
-		final Label labelTimeToTarget = new Label("Time to Target [" + faceSB.getTimeToTarget() + " sec.]", container.skin);
+		final Label labelTimeToTarget = new Label("Time to Target [" + lookWhereYouAreGoingSB.getTimeToTarget() + " sec.]",
+			container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
 		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
-		timeToTarget.setValue(faceSB.getTimeToTarget());
+		timeToTarget.setValue(lookWhereYouAreGoingSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				Slider slider = (Slider)actor;
-				faceSB.setTimeToTarget(slider.getValue());
+				lookWhereYouAreGoingSB.setTimeToTarget(slider.getValue());
 				labelTimeToTarget.setText("Time to Target [" + slider.getValue() + " sec.]");
 			}
 		});

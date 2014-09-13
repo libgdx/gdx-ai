@@ -36,14 +36,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 /** A class to test and experiment with the {@link Wander} behavior.
  * 
  * @autor davebaol */
-public class WanderTest extends Scene2dSteeringTest {
+public class Scene2dWanderTest extends Scene2dSteeringTest {
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
 	SteeringActor character;
 	Wander<Vector2> wanderSB;
 
-	public WanderTest (SteeringBehaviorTest container) {
+	public Scene2dWanderTest (SteeringBehaviorTest container) {
 		super(container, "Wander");
 	}
 

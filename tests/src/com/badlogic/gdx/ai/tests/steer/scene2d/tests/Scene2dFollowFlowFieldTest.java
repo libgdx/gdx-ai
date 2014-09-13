@@ -38,7 +38,7 @@ import com.badlogic.gdx.utils.Array;
 /** A class to test and experiment with the {@link FollowFlowField} behavior.
  * 
  * @autor davebaol */
-public class FollowFlowFieldTest extends Scene2dSteeringTest {
+public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
@@ -46,7 +46,7 @@ public class FollowFlowFieldTest extends Scene2dSteeringTest {
 
 	RandomFlowField2DWithRepulsors flowField;
 
-	public FollowFlowFieldTest (SteeringBehaviorTest container) {
+	public Scene2dFollowFlowFieldTest (SteeringBehaviorTest container) {
 		super(container, "Follow Flow Field");
 	}
 

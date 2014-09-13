@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
@@ -29,91 +29,91 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-/** A class to test and experiment with the {@link Arrive} behavior.
+/** A class to test and experiment with the {@link Face} behavior.
  * 
  * @autor davebaol */
-public class ArriveTest extends Scene2dSteeringTest {
+public class Scene2dFaceTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor target;
 
-	public ArriveTest (SteeringBehaviorTest container) {
-		super(container, "Arrive");
+	public Scene2dFaceTest (SteeringBehaviorTest container) {
+		super(container, "Face");
 	}
 
 	@Override
 	public void create (Table table) {
-		character = new SteeringActor(container.badlogicSmall, false);
+		character = new SteeringActor(container.badlogicSmall, true);
+		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
+		character.setMaxAngularAcceleration(100);
+		character.setMaxAngularSpeed(5);
+
 		target = new SteeringActor(container.target);
+		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+
 		inputProcessor = new Scene2dTargetInputProcessor(target);
 
-		// Set character's limiter
-		character.setMaxLinearSpeed(100);
-		character.setMaxLinearAcceleration(300);
-
-		final Arrive<Vector2> arriveSB = new Arrive<Vector2>(character, target) //
+		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
 			.setTimeToTarget(0.1f) //
-			.setArrivalTolerance(0.001f) //
-			.setDecelerationRadius(80);
-		character.setSteeringBehavior(arriveSB);
+			.setAlignTolerance(0.001f) //
+			.setDecelerationRadius(MathUtils.degreesToRadians * 7);
+		character.setSteeringBehavior(faceSB);
 
 		table.addActor(character);
 		table.addActor(target);
 
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
-
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 2000, 20);
+		addMaxAngularAccelerationController(detailTable, character, 0, 50, 1);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 300, 10);
+		addMaxAngularSpeedController(detailTable, character, 0, 20, 1);
 
 		detailTable.row();
-		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + arriveSB.getDecelerationRadius() + "]",
+		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + faceSB.getDecelerationRadius() + "]",
 			container.skin);
 		detailTable.add(labelDecelerationRadius);
 		detailTable.row();
-		Slider decelerationRadius = new Slider(0, 150, 1, false, container.skin);
-		decelerationRadius.setValue(arriveSB.getDecelerationRadius());
+		Slider decelerationRadius = new Slider(0, MathUtils.PI2, MathUtils.degreesToRadians, false, container.skin);
+		decelerationRadius.setValue(faceSB.getDecelerationRadius());
 		decelerationRadius.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
+				System.out.println("Deceleration radius changed!!!");
 				Slider slider = (Slider)actor;
-				arriveSB.setDecelerationRadius(slider.getValue());
+				faceSB.setDecelerationRadius(slider.getValue());
 				labelDecelerationRadius.setText("Deceleration Radius [" + slider.getValue() + "]");
 			}
 		});
 		detailTable.add(decelerationRadius);
 
 		detailTable.row();
-		final Label labelArrivalTolerance = new Label("Arrival tolerance [" + arriveSB.getArrivalTolerance() + "]", container.skin);
-		detailTable.add(labelArrivalTolerance);
+		final Label labelAlignTolerance = new Label("Align tolerance [" + faceSB.getAlignTolerance() + "]", container.skin);
+		detailTable.add(labelAlignTolerance);
 		detailTable.row();
-		Slider arrivalTolerance = new Slider(0, 1, 0.0001f, false, container.skin);
-		arrivalTolerance.setValue(arriveSB.getArrivalTolerance());
-		arrivalTolerance.addListener(new ChangeListener() {
+		Slider alignTolerance = new Slider(0, 1, 0.0001f, false, container.skin);
+		alignTolerance.setValue(faceSB.getAlignTolerance());
+		alignTolerance.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				Slider slider = (Slider)actor;
-				arriveSB.setArrivalTolerance(slider.getValue());
-				labelArrivalTolerance.setText("Arrival tolerance [" + slider.getValue() + "]");
+				faceSB.setAlignTolerance(slider.getValue());
+				labelAlignTolerance.setText("Align tolerance [" + slider.getValue() + "]");
 			}
 		});
-		detailTable.add(arrivalTolerance);
+		detailTable.add(alignTolerance);
 
 		detailTable.row();
-		final Label labelTimeToTarget = new Label("Time to Target [" + arriveSB.getTimeToTarget() + " sec.]", container.skin);
+		final Label labelTimeToTarget = new Label("Time to Target [" + faceSB.getTimeToTarget() + " sec.]", container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
 		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
-		timeToTarget.setValue(arriveSB.getTimeToTarget());
+		timeToTarget.setValue(faceSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				Slider slider = (Slider)actor;
-				arriveSB.setTimeToTarget(slider.getValue());
+				faceSB.setTimeToTarget(slider.getValue());
 				labelTimeToTarget.setText("Time to Target [" + slider.getValue() + " sec.]");
 			}
 		});

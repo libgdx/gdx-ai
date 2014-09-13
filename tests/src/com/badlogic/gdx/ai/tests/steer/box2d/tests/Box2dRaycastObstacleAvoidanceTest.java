@@ -17,9 +17,6 @@
 package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
-import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
@@ -159,23 +156,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			.add(raycastObstacleAvoidanceSB) //
 			.add(wanderSB);
 
-		LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(character) {
-
-			@Override
-			protected SteeringAcceleration<Vector2> calculateSteering (SteeringAcceleration<Vector2> steering) {
-				super.calculateSteering(steering);
-				return steering;
-			}
-
-		}.setTimeToTarget(0.1f) //
-			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.PI / 20);
-
-		BlendedSteering<Vector2> xxx = new BlendedSteering<Vector2>(character) //
-			.add(prioritySteeringSB, 1) //
-			.add(lookWhereYouAreGoingSB, 1);
-
-		character.setSteeringBehavior(xxx);
+		character.setSteeringBehavior(prioritySteeringSB);
 
 		inputProcessor = null;
 
@@ -245,7 +226,9 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 
 	@Override
 	public void render () {
-		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
+		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		world.step(deltaTime, 8, 3);
 
 		// next we render the ground body
 		renderBox(wall1, 150, 20);
@@ -266,13 +249,12 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		}
 
 		// Update and draw the character
-		character.update();
+		character.update(deltaTime);
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();
 
-		if (drawDebug)
-			renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
+		if (drawDebug) renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
 	}
 
 	@Override
