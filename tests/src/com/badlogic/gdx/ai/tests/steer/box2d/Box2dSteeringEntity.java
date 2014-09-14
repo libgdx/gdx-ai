@@ -93,9 +93,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	@Override
 	public Vector2 getPosition () {
-        Vector2 pos = body.getPosition();
-        pos.set(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y));
-        return pos;
+        return body.getPosition();
 	}
 
 	@Override
@@ -163,7 +161,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			if (!steeringOutput.linear.isZero()) {
 				Vector2 force = steeringOutput.linear.scl(deltaTime);
 				// System.out.println("FORCE:" + force);
-				body.applyForceToCenter(force, false);
+				body.applyForceToCenter(force, true);
 				anyAccelerations = true;
 			}
 

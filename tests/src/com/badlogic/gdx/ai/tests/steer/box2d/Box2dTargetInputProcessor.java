@@ -14,19 +14,21 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.scene2d;
+package com.badlogic.gdx.ai.tests.steer.box2d;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.math.Vector2;
 
 /** An {@link InputProcessor} that allows you to manually move a {@link SteeringActor}.
  * 
  * @autor davebaol */
-public class Scene2dTargetInputProcessor extends InputAdapter {
-	protected SteeringActor target;
+public class Box2dTargetInputProcessor extends InputAdapter {
+	protected Box2dSteeringEntity target;
 
-	public Scene2dTargetInputProcessor (SteeringActor target) {
+	public Box2dTargetInputProcessor (Box2dSteeringEntity target) {
 		this.target = target;
 	}
 
@@ -44,8 +46,9 @@ public class Scene2dTargetInputProcessor extends InputAdapter {
 	
 	protected void setTargetPosition(int screenX, int screenY) {
 		Vector2 pos = target.getPosition();
-		target.getStage().screenToStageCoordinates(pos.set(screenX, screenY));
-		target.getParent().stageToLocalCoordinates(pos);
-		target.setCenterPosition(pos.x, pos.y);
+		screenY = Gdx.graphics.getHeight() - screenY;
+		pos.x = Box2dSteeringTest.pixelsToMeters(screenX);
+		pos.y = Box2dSteeringTest.pixelsToMeters(screenY);
+		target.getBody().setTransform(pos, target.body.getAngle());
 	}
 }

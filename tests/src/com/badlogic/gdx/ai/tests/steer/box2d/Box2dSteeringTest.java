@@ -27,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -111,8 +112,14 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 
 		circleChape.dispose();
 
-		return new Box2dSteeringEntity(container.greenFish, characterBody, independentFacing);
+		return new Box2dSteeringEntity(region, characterBody, independentFacing);
+	}
 
+	public void markAsSensor (Box2dSteeringEntity character) {
+		Array<Fixture> fixtures = character.getBody().getFixtureList();
+		for (int i = 0; i < fixtures.size; i++) {
+			fixtures.get(i).setSensor(true);
+		}
 	}
 
 // protected void addAlignOrientationToLinearVelocityController (Table table, final SteeringActor character) {

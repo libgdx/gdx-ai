@@ -97,7 +97,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		groundBodyDef.position.set(200, 350);
 		groundBodyDef.type = BodyType.StaticBody;
 		wall1 = world.createBody(groundBodyDef);
-		groundBodyDef.position.set(500, 100);
+		groundBodyDef.position.set(600, 200);
 		wall2 = world.createBody(groundBodyDef);
 		groundBodyDef.position.set(350, 200);
 		wall3 = world.createBody(groundBodyDef);

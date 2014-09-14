@@ -21,11 +21,9 @@ import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
-import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dTargetInputProcessor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,7 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 public class Box2dSeekTest extends Box2dSteeringTest {
 
 	Box2dSteeringEntity character;
-	SteeringActor target;
+	Box2dSteeringEntity target;
 
 	private World world;
 	private Batch spriteBatch;
@@ -58,10 +56,9 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		character.setMaxLinearAcceleration(200);
 
 		// Create target
-		target = new SteeringActor(container.target);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
-		inputProcessor = new Scene2dTargetInputProcessor(target);
-		table.addActor(target);
+		target = createSteeringEntity(world, container.target);
+		markAsSensor(target);
+		inputProcessor = new Box2dTargetInputProcessor(target);
 
 		// Create character's steering behavior
 		final Seek<Vector2> seekSB = new Seek<Vector2>(character, target);
@@ -91,6 +88,7 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		character.update(deltaTime);
 		spriteBatch.begin();
 		character.draw(spriteBatch);
+		target.draw(spriteBatch);
 		spriteBatch.end();
 
 //		if (drawDebug)

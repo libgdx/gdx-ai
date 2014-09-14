@@ -21,8 +21,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
+import com.badlogic.gdx.ai.tests.steer.box2d.Box2dTargetInputProcessor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -39,7 +38,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
  * @autor davebaol */
 public class Box2dFaceTest extends Box2dSteeringTest {
 	Box2dSteeringEntity character;
-	SteeringActor target;
+	Box2dSteeringEntity target;
 
 	private World world;
 	private Batch spriteBatch;
@@ -60,18 +59,16 @@ public class Box2dFaceTest extends Box2dSteeringTest {
 		character.setMaxAngularAcceleration(100);
 		character.setMaxAngularSpeed(15);
 
-		target = new SteeringActor(container.target);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
-
-		inputProcessor = new Scene2dTargetInputProcessor(target);
+		// Create target
+		target = createSteeringEntity(world, container.target);
+		markAsSensor(target);
+		inputProcessor = new Box2dTargetInputProcessor(target);
 
 		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
 			.setTimeToTarget(0.1f) //
 			.setAlignTolerance(0.001f) //
 			.setDecelerationRadius(MathUtils.degreesToRadians * 180);
 		character.setSteeringBehavior(faceSB);
-
-		table.addActor(target);
 
 		Table detailTable = new Table(container.skin);
 
@@ -143,6 +140,7 @@ public class Box2dFaceTest extends Box2dSteeringTest {
 		character.update(deltaTime);
 		spriteBatch.begin();
 		character.draw(spriteBatch);
+		target.draw(spriteBatch);
 		spriteBatch.end();
 	}
 

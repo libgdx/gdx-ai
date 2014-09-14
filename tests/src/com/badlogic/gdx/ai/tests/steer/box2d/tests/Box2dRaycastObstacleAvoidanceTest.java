@@ -71,6 +71,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	private Body wall3;
 
 	private Vector2 tmp = new Vector2();
+	private Vector2 tmp2 = new Vector2();
 	private Batch spriteBatch;
 
 	public Box2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
@@ -130,9 +131,9 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 
 		@SuppressWarnings("unchecked")
 		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
-			new SingleRayConfiguration<Vector2>(character, 100),
-			new ParallelSideRayConfiguration<Vector2>(character, 100, character.getBoundingRadius()),
-			new CentralRayWithWhiskersConfiguration<Vector2>(character, 100, 40, 35 * MathUtils.degreesToRadians)};
+			new SingleRayConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100)),
+			new ParallelSideRayConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100), character.getBoundingRadius()),
+			new CentralRayWithWhiskersConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100), Box2dSteeringTest.pixelsToMeters(40), 35 * MathUtils.degreesToRadians)};
 		rayConfigurations = localRayConfigurations;
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
@@ -241,7 +242,14 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			shapeRenderer.setTransformMatrix(transform);
 			for (int i = 0; i < rays.length; i++) {
 				Ray<Vector2> ray = rays[i];
-				shapeRenderer.line(ray.origin, tmp.set(ray.origin).add(ray.direction));
+				tmp.set(ray.origin);
+				tmp.x = Box2dSteeringTest.metersToPixels(tmp.x);
+				tmp.y = Box2dSteeringTest.metersToPixels(tmp.y);
+				tmp2.set(ray.origin).add(ray.direction);
+				tmp2.x = Box2dSteeringTest.metersToPixels(tmp2.x);
+				tmp2.y = Box2dSteeringTest.metersToPixels(tmp2.y);
+				shapeRenderer.line(tmp, tmp2);
+//				shapeRenderer.line(ray.origin, tmp.set(ray.origin).add(ray.direction));
 			}
 			shapeRenderer.end();
 		}
