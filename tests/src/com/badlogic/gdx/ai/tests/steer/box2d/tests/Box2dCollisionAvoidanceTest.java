@@ -71,7 +71,6 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 		// Instantiate a new World with no gravity
 		world = createWorld();
 
-
 		characters = new Array<Box2dSteeringEntity>();
 		proximities = new Array<Box2dRadiusProximity>();
 
@@ -103,7 +102,7 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 
 			character.setSteeringBehavior(prioritySteeringSB);
 
-			setRandomNonOverlappingPosition(character, characters, 5);
+			setRandomNonOverlappingPosition(character, characters, Box2dSteeringTest.pixelsToMeters(5));
 
 			characters.add(character);
 		}
@@ -134,7 +133,7 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 		final Label labelProximityRadius = new Label("Proximity Radius [" + proximities.get(0).getDetectionRadius() + "]", container.skin);
 		detailTable.add(labelProximityRadius);
 		detailTable.row();
-		Slider proximityRadius = new Slider(0, 350, 1, false, container.skin);
+		Slider proximityRadius = new Slider(0, 10, .1f, false, container.skin);
 		proximityRadius.setValue(proximities.get(0).getDetectionRadius());
 		proximityRadius.addListener(new ChangeListener() {
 			@Override
@@ -201,7 +200,10 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 			Steerable<Vector2> steerable = characters.get(0);
 			shapeRenderer.begin(ShapeType.Line);
 			shapeRenderer.setColor(0, 1, 0, 1);
-			shapeRenderer.circle(steerable.getPosition().x, steerable.getPosition().y, char0Proximity.getDetectionRadius());
+			int centerX = Box2dSteeringTest.metersToPixels(steerable.getPosition().x);
+			int centerY = Box2dSteeringTest.metersToPixels(steerable.getPosition().y);
+			int radius = Box2dSteeringTest.metersToPixels(char0Proximity.getDetectionRadius());
+			shapeRenderer.circle(centerX, centerY, radius);
 			shapeRenderer.end();
 		}
 	}

@@ -32,6 +32,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /** Base class for box2d steering behavior tests.
  * 
@@ -112,7 +113,7 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 
 		circleChape.dispose();
 
-		return new Box2dSteeringEntity(region, characterBody, independentFacing);
+		return new Box2dSteeringEntity(region, characterBody, independentFacing, Box2dSteeringTest.pixelsToMeters(radiusInPixels));
 	}
 
 	public void markAsSensor (Box2dSteeringEntity character) {
@@ -137,8 +138,9 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 
 	protected void setRandomNonOverlappingPosition (Box2dSteeringEntity character, Array<Box2dSteeringEntity> others,
 		float minDistanceFromBoundary) {
+		int maxTries = Math.max(100, others.size * others.size); 
 		SET_NEW_POS:
-		while (true) {
+		while (--maxTries >= 0) {
 			int x = MathUtils.random((int)container.stageWidth);
 			int y = MathUtils.random((int)container.stageHeight);
 			float angle = MathUtils.random(-MathUtils.PI, MathUtils.PI);
@@ -150,5 +152,6 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 			}
 			return;
 		}
+		throw new GdxRuntimeException("Probable infinite loop detected");
 	}
 }

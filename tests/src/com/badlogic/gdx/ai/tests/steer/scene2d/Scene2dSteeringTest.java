@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /** Base class for scene2d steering behavior tests.
  * 
@@ -71,8 +72,9 @@ public abstract class Scene2dSteeringTest extends SteeringTest {
 
 	protected void setRandomNonOverlappingPosition (SteeringActor character, Array<SteeringActor> others,
 		float minDistanceFromBoundary) {
+		int maxTries = Math.max(100, others.size * others.size); 
 		SET_NEW_POS:
-		while (true) {
+		while (--maxTries >= 0) {
 			character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
 			character.getPosition().set(character.getCenterX(), character.getCenterY());
 			for (int i = 0; i < others.size; i++) {
@@ -82,5 +84,6 @@ public abstract class Scene2dSteeringTest extends SteeringTest {
 			}
 			return;
 		}
+		throw new GdxRuntimeException("Probable infinite loop detected");
 	}
 }

@@ -47,14 +47,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
-	public Box2dSteeringEntity (TextureRegion region, Body body) {
-		this(region, body, false, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
-	}
-
-	public Box2dSteeringEntity (TextureRegion region, Body body, boolean independentFacing) {
-		this(region, body, independentFacing, (region.getRegionWidth() + region.getRegionHeight()) / 4f);
-	}
-
 	public Box2dSteeringEntity (TextureRegion region, Body body, boolean independentFacing, float boundingRadius) {
       System.out.println("BoundingRadius: " + boundingRadius);
       System.out.println("region.width: " + region.getRegionWidth());
@@ -233,10 +225,8 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 
 	public void draw (Batch batch) {
 		Vector2 pos = body.getPosition();
-		float w = boundingRadius * 2.0f;
-		float h = boundingRadius * 2.0f;
-		// float w = region.getRegionWidth();
-		// float h = region.getRegionHeight();
+		float w = region.getRegionWidth();
+		float h = region.getRegionHeight();
 		float ox = w / 2f;
 		float oy = h / 2f;
 
