@@ -90,9 +90,6 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		character.draw(spriteBatch);
 		target.draw(spriteBatch);
 		spriteBatch.end();
-
-//		if (drawDebug)
-//			renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
 	}
 
 	@Override

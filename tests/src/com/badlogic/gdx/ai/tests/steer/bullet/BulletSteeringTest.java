@@ -61,8 +61,8 @@ public abstract class BulletSteeringTest extends SteeringTest {
 	protected Viewport viewport;
 	protected CameraInputController cameraController;
 
-// Set this to the path of the lib to use it on desktop instead of default lib.
-	private final static String customDesktopLib = null;// "C:\\Xoppa\\code\\libgdx\\extensions\\gdx-bullet\\jni\\vs\\gdxBullet\\Debug\\gdxBullet.dll";
+	// Set this to the path of the lib to use it on desktop instead of default lib.
+	private final static String customDesktopLib = null; // "C:\\Xoppa\\code\\libgdx\\extensions\\gdx-bullet\\jni\\vs\\gdxBullet\\Debug\\gdxBullet.dll";
 
 	private static boolean initialized = false;
 
@@ -88,8 +88,7 @@ public abstract class BulletSteeringTest extends SteeringTest {
 	public ModelBuilder modelBuilder = new ModelBuilder();
 	public ModelBatch modelBatch;
 	public Array<Disposable> disposables = new Array<Disposable>();
- private int debugMode = DebugDrawModes.DBG_NoDebug;
-//	private int debugMode = DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE;
+	private int debugMode = DebugDrawModes.DBG_NoDebug; // DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE;
 
 	protected final static Vector3 tmpV1 = new Vector3(), tmpV2 = new Vector3();
 
@@ -160,8 +159,8 @@ public abstract class BulletSteeringTest extends SteeringTest {
 			ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)), Usage.Position | Usage.Normal);
 		disposables.add(wallModel);
 
-		// Create a visual representation of the character (note that we don't use the physics part of BulletEntity, we'll do that
-// manually)
+		// Create a visual representation of the character.
+		// Note that we don't use the physics part of BulletEntity, we'll do that manually
 		final Texture texture = new Texture(Gdx.files.internal("data/badlogic.jpg"));
 		disposables.add(texture);
 		final Material material = new Material(TextureAttribute.createDiffuse(texture), ColorAttribute.createSpecular(1, 1, 1, 1),

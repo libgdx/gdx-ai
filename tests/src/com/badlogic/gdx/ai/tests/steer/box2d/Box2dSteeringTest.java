@@ -21,7 +21,10 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTest;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -153,5 +156,24 @@ public abstract class Box2dSteeringTest extends SteeringTest {
 			return;
 		}
 		throw new GdxRuntimeException("Probable infinite loop detected");
+	}
+
+	protected Matrix4 transform = new Matrix4();
+
+	protected void renderBox (ShapeRenderer shapeRenderer, Body body, float halfWidth, float halfHeight) {
+		// get the bodies center and angle in world coordinates
+		Vector2 pos = body.getWorldCenter();
+		float angle = body.getAngle();
+
+		// set the translation and rotation matrix
+		transform.setToTranslation(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y), 0);
+		transform.rotate(0, 0, 1, angle * MathUtils.radiansToDegrees);
+
+		// render the box
+		shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setTransformMatrix(transform);
+		shapeRenderer.setColor(1, 1, 1, 1);
+		shapeRenderer.rect(-halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2);
+		shapeRenderer.end();
 	}
 }

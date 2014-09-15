@@ -36,7 +36,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -230,9 +229,9 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		world.step(deltaTime, 8, 3);
 
 		// next we render the ground body
-		renderBox(wall1, 150, 20);
-		renderBox(wall2, 20, 80);
-		renderBox(wall3, 50, 30);
+		renderBox(shapeRenderer, wall1, 150, 20);
+		renderBox(shapeRenderer, wall2, 20, 80);
+		renderBox(shapeRenderer, wall3, 50, 30);
 
 		if (drawDebug) {
 			Ray<Vector2>[] rays = rayConfigurations[rayConfigurationIndex].getRays();
@@ -249,7 +248,6 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 				tmp2.x = Box2dSteeringTest.metersToPixels(tmp2.x);
 				tmp2.y = Box2dSteeringTest.metersToPixels(tmp2.y);
 				shapeRenderer.line(tmp, tmp2);
-//				shapeRenderer.line(ray.origin, tmp.set(ray.origin).add(ray.direction));
 			}
 			shapeRenderer.end();
 		}
@@ -259,8 +257,6 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();
-
-		if (drawDebug) renderBox(character.getBody(), character.getBoundingRadius(), character.getBoundingRadius());
 	}
 
 	@Override
@@ -268,25 +264,6 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		shapeRenderer.dispose();
 		world.dispose();
 		spriteBatch.dispose();
-	}
-
-	Matrix4 transform = new Matrix4();
-
-	private void renderBox (Body body, float halfWidth, float halfHeight) {
-		// get the bodies center and angle in world coordinates
-		Vector2 pos = body.getWorldCenter();
-		float angle = body.getAngle();
-
-		// set the translation and rotation matrix
-		transform.setToTranslation(Box2dSteeringTest.metersToPixels(pos.x), Box2dSteeringTest.metersToPixels(pos.y), 0);
-		transform.rotate(0, 0, 1, (float)Math.toDegrees(angle));
-
-		// render the box
-		shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setTransformMatrix(transform);
-		shapeRenderer.setColor(1, 1, 1, 1);
-		shapeRenderer.rect(-halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2);
-		shapeRenderer.end();
 	}
 
 }
