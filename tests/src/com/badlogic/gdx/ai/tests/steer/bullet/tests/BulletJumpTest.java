@@ -21,12 +21,16 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.Jump;
-import com.badlogic.gdx.ai.steer.behaviors.Jump.AxisHandler;
+import com.badlogic.gdx.ai.steer.behaviors.Jump.GravityComponentHandler;
 import com.badlogic.gdx.ai.steer.behaviors.Jump.JumpCallback;
 import com.badlogic.gdx.ai.steer.behaviors.Jump.JumpDescriptor;
 import com.badlogic.gdx.ai.steer.limiters.LinearLimiter;
 import com.badlogic.gdx.ai.steer.paths.LinePath;
 import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
@@ -42,25 +46,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.utils.Array;
 
 /** A class to test and experiment with the {@link Jump} behavior.
  * @author davebaol */
 public class BulletJumpTest extends BulletSteeringTest {
 	
-	static final AxisHandler<Vector3> axisHandler = new AxisHandler<Vector3>() {
+	static final GravityComponentHandler<Vector3> GRAVITY_COMPONENT_HANDLER = new GravityComponentHandler<Vector3>() {
 
 		@Override
-		public float getVerticalComponent (Vector3 vector) {
+		public float getComponent (Vector3 vector) {
 			return vector.y;
 		}
 
 		@Override
-		public void setVerticalComponent (Vector3 vector, float value) {
+		public void setComponent (Vector3 vector, float value) {
 			vector.y = value;
 		}
 	};
@@ -207,7 +207,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 			}
 
 		};
-		jumpSB = new Jump<Vector3>(character, jumpDescriptor, world.gravity, axisHandler, jumpCallback) //
+		jumpSB = new Jump<Vector3>(character, jumpDescriptor, world.gravity, GRAVITY_COMPONENT_HANDLER, jumpCallback) //
 			.setMaxVerticalVelocity(9) //
 			.setTakeoffPositionTolerance(.3f) //
 			.setTakeoffVelocityTolerance(2f) //

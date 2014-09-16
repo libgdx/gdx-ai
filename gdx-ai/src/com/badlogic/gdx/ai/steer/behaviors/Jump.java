@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.math.Vector;
 
@@ -40,10 +41,10 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	protected JumpDescriptor<T> jumpDescriptor;
 
 	/** The gravity vector to use. Notice that this behavior only supports gravity along a single axis, which must be the one
-	 * returned by the {@link AxisHandler#getVerticalComponent(Vector)} method. */
+	 * returned by the {@link GravityComponentHandler#getComponent(Vector)} method. */
 	protected T gravity;
 
-	protected AxisHandler<T> axisHandler;
+	protected GravityComponentHandler<T> gravityComponentHandler;
 
 	protected JumpCallback callback;
 
@@ -67,10 +68,11 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	 * @param gravity the gravity vector
 	 * @param axisHandler the handler giving access to the vertical axis
 	 * @param callback the callback that gets informed about jump achievability and when to jump */
-	public Jump (Steerable<T> owner, JumpDescriptor<T> jumpDescriptor, T gravity, AxisHandler<T> axisHandler, JumpCallback callback) {
+	public Jump (Steerable<T> owner, JumpDescriptor<T> jumpDescriptor, T gravity,
+		GravityComponentHandler<T> gravityComponentHandler, JumpCallback callback) {
 		super(owner);
 		this.gravity = gravity;
-		this.axisHandler = axisHandler;
+		this.gravityComponentHandler = gravityComponentHandler;
 		setJumpDescriptor(jumpDescriptor);
 		this.callback = callback;
 
@@ -130,22 +132,22 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	 * @param maxLinearSpeed the maximum linear speed that can be used to achieve the jump
 	 * @return the time of flight or -1 if the jump is not achievable using the given max linear speed. */
 	public float calculateAirborneTimeAndVelocity (T outVelocity, JumpDescriptor<T> jumpDescriptor, float maxLinearSpeed) {
-		float gravityValue = axisHandler.getVerticalComponent(gravity);
+		float g = gravityComponentHandler.getComponent(gravity);
 
 		// Calculate the first jump time, see time of flight at http://hyperphysics.phy-astr.gsu.edu/hbase/traj.html
 		// Notice that the equation has 2 solutions. We'd ideally like to achieve the jump in the fastest time
 		// possible, so we want to use the smaller of the two values. However, this time value might give us
 		// an impossible launch velocity (required speed greater than the max), so we need to check and
 		// use the higher value if necessary.
-		float sqrtTerm = (float)Math.sqrt(2f * gravityValue * axisHandler.getVerticalComponent(jumpDescriptor.delta)
+		float sqrtTerm = (float)Math.sqrt(2f * g * gravityComponentHandler.getComponent(jumpDescriptor.delta)
 			+ maxVerticalVelocity * maxVerticalVelocity);
-		float time = (-maxVerticalVelocity + sqrtTerm) / gravityValue;
+		float time = (-maxVerticalVelocity + sqrtTerm) / g;
 		if (DEBUG_ENABLED) Gdx.app.log("Jump", "1st jump time = " + time);
 
 		// Check if we can use it
 		if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 			// Otherwise try the other time
-			time = (-maxVerticalVelocity - sqrtTerm) / gravityValue;
+			time = (-maxVerticalVelocity - sqrtTerm) / g;
 			if (DEBUG_ENABLED) Gdx.app.log("Jump", "2nd jump time = " + time);
 			if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 				return -1f; // Unachievable jump
@@ -158,13 +160,13 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		float maxLinearSpeed) {
 		// Calculate the planar velocity
 		planarVelocity.set(jumpDescriptor.delta).scl(1f / time);
-		axisHandler.setVerticalComponent(planarVelocity, 0f);
+		gravityComponentHandler.setComponent(planarVelocity, 0f);
 
 		// Check the planar linear speed
 		if (planarVelocity.len2() < maxLinearSpeed * maxLinearSpeed) {
 			// We have a valid solution, so store it by merging vertical and non-vertical axes
-			float verticalValue = axisHandler.getVerticalComponent(outVelocity);
-			axisHandler.setVerticalComponent(outVelocity.set(planarVelocity), verticalValue);
+			float verticalValue = gravityComponentHandler.getComponent(outVelocity);
+			gravityComponentHandler.setComponent(outVelocity.set(planarVelocity), verticalValue);
 			if (DEBUG_ENABLED)
 				Gdx.app.log("Jump", "targetLinearVelocity = " + outVelocity + "; targetLinearSpeed = " + outVelocity.len());
 			return true;
@@ -293,7 +295,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	// Nested classes and interfaces
 	//
 
-	private static class JumpTarget<T extends Vector<T>> implements Steerable<T> {
+	private static class JumpTarget<T extends Vector<T>> extends SteerableAdapter<T> {
 
 		T position;
 		T linearVelocity;
@@ -311,83 +313,6 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		@Override
 		public T getLinearVelocity () {
 			return linearVelocity;
-		}
-
-		// Methods below are never used
-
-		@Override
-		public float getOrientation () {
-			return 0;
-		}
-
-		@Override
-		public float getAngularVelocity () {
-			return 0;
-		}
-
-		@Override
-		public float getBoundingRadius () {
-			return 0;
-		}
-
-		@Override
-		public boolean isTagged () {
-			return false;
-		}
-
-		@Override
-		public void setTagged (boolean tagged) {
-		}
-
-		@Override
-		public T newVector () {
-			return null;
-		}
-
-		@Override
-		public float vectorToAngle (T vector) {
-			return 0;
-		}
-
-		@Override
-		public T angleToVector (T outVector, float angle) {
-			return null;
-		}
-
-		@Override
-		public float getMaxLinearSpeed () {
-			return 0;
-		}
-
-		@Override
-		public void setMaxLinearSpeed (float maxLinearSpeed) {
-		}
-
-		@Override
-		public float getMaxLinearAcceleration () {
-			return 0;
-		}
-
-		@Override
-		public void setMaxLinearAcceleration (float maxLinearAcceleration) {
-		}
-
-		@Override
-		public float getMaxAngularSpeed () {
-			return 0;
-		}
-
-		@Override
-		public void setMaxAngularSpeed (float maxAngularSpeed) {
-		}
-
-		@Override
-		public float getMaxAngularAcceleration () {
-			return 0;
-		}
-
-		@Override
-		public void setMaxAngularAcceleration (float maxAngularAcceleration) {
 		}
 	}
 
@@ -426,43 +351,42 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		}
 	}
 
-	/** An {@code AxisHandler} distinguishes between the vertical axis and the other ones.
+	/** A {@code GravityComponentHandler} is aware of the axis along which the gravity acts.
 	 * 
 	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
 	 * @autor davebaol */
-	public interface AxisHandler<T extends Vector<T>> {
+	public interface GravityComponentHandler<T extends Vector<T>> {
 
-		/** Returns the vertical component of the given vector, where "vertical" stands for the axis where gravity operates.
+		/** Returns the component of the given vector along which the gravity operates.
 		 * <p>
 		 * Assuming a 3D coordinate system where the gravity is acting along the y-axis, this method will be implemented as follows:
 		 * 
 		 * <pre>
-		 * public float getVerticalComponent (Vector3 vector) {
+		 * public float getComponent (Vector3 vector) {
 		 * 	return vector.y;
 		 * }
 		 * </pre>
 		 * 
 		 * Of course, the equivalent 2D implementation will use Vector2 instead of Vector3.
 		 * @param vector the vector
-		 * @return the gravity component. */
-		public float getVerticalComponent (T vector);
+		 * @return the value of the component affected by gravity. */
+		public float getComponent (T vector);
 
-		/** Sets the vertical component of the given vector to the specified value, where "vertical" stands for the axis where
-		 * gravity operates.
+		/** Sets the component of the given vector along which the gravity operates.
 		 * <p>
 		 * Assuming a 3D coordinate system where the gravity is acting along the y-axis, this method will be implemented as follows:
 		 * 
 		 * <pre>
-		 * public void setVerticalComponent (Vector3 vector, float value) {
+		 * public void setComponent (Vector3 vector, float value) {
 		 * 	vector.y = value;
 		 * }
 		 * </pre>
 		 * 
 		 * Of course, the equivalent 2D implementation will use Vector2 instead of Vector3.
 		 * @param vector the vector
-		 * @param value the value of the vertical component */
-		public void setVerticalComponent (T vector, float value);
+		 * @param value the value of the component affected by gravity */
+		public void setComponent (T vector, float value);
 	}
 
 	/** The {@code JumpCallback} allows you to know whether a jump is achievable and when to jump.

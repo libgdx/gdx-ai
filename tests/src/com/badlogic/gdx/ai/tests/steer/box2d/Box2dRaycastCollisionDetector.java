@@ -30,14 +30,14 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Box2dRaycastCollisionDetector implements RaycastCollisionDetector<Vector2> {
 
 	World world;
-	B2SteerRaycastCallback callback;
+	Box2dRaycastCallback callback;
 	Vector2 inputRayEndPoint;
 
 	public Box2dRaycastCollisionDetector (World world) {
-		this(world, new B2SteerRaycastCallback());
+		this(world, new Box2dRaycastCallback());
 	}
 
-	public Box2dRaycastCollisionDetector (World world, B2SteerRaycastCallback callback) {
+	public Box2dRaycastCollisionDetector (World world, Box2dRaycastCallback callback) {
 		this.world = world;
 		this.callback = callback;
 		this.inputRayEndPoint = new Vector2();
@@ -54,11 +54,11 @@ public class Box2dRaycastCollisionDetector implements RaycastCollisionDetector<V
 		return callback.collided;
 	}
 
-	public static class B2SteerRaycastCallback implements RayCastCallback {
+	public static class Box2dRaycastCallback implements RayCastCallback {
 		public Collision<Vector2> outputCollision;
 		public boolean collided;
 
-		public B2SteerRaycastCallback () {
+		public Box2dRaycastCallback () {
 		}
 
 		@Override
