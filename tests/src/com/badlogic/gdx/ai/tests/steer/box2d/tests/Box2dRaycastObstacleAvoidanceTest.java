@@ -183,7 +183,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 15, .5f);
+		addMaxLinearSpeedController(detailTable, character, 0, 15, .5f);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

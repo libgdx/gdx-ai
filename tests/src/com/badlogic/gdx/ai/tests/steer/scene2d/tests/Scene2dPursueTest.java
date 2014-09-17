@@ -96,7 +96,7 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 300, 10);
+		addMaxLinearSpeedController(detailTable, character, 0, 300, 10);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

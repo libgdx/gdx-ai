@@ -83,7 +83,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 		addMaxLinearAccelerationController(detailTable, character, 0, 10000, 20);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailTable.row();
 		final Label labelPredictionTime = new Label("Prediction Time [" + followFlowFieldSB.getPredictionTime() + " sec.]", container.skin);

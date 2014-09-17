@@ -181,7 +181,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 80, 160, 1);
+		addMaxLinearSpeedController(detailTable, character, 80, 160, 1);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

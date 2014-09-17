@@ -306,6 +306,15 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
+		addMaxLinearAccelerationController(detailTable, character);
+
+		detailTable.row();
+		addMaxLinearSpeedController(detailTable, character);
+
+		detailTable.row();
+		addSeparator(detailTable);
+
+		detailTable.row();
 		Button buttonRestart = new TextButton("Restart", container.skin);
 		buttonRestart.addListener(new ChangeListener() {
 			@Override

@@ -123,7 +123,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 		detailTable.add(pathOffset);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailTable.row();
 		addMaxLinearAccelerationController(detailTable, character, 0, 20000, 100);

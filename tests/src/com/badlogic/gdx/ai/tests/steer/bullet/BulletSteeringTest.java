@@ -238,8 +238,8 @@ public abstract class BulletSteeringTest extends SteeringTest {
 		light = null;
 	}
 	
-	protected void addMaxSpeedController (Table table, final Limiter limiter) {
-		addMaxSpeedController(table, limiter, 0, 50, 0.1f);
+	protected void addMaxLinearSpeedController (Table table, final Limiter limiter) {
+		addMaxLinearSpeedController(table, limiter, 0, 50, 0.1f);
 	}
 	
 	protected void addMaxLinearAccelerationController (Table table, final Limiter limiter) {

@@ -75,7 +75,7 @@ public class Box2dArriveTest extends Box2dSteeringTest {
 		addMaxLinearAccelerationController(detailTable, character, 0, 1000, 10);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 25, 1);
+		addMaxLinearSpeedController(detailTable, character, 0, 25, 1);
 
 		detailTable.row();
 		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + arriveSB.getDecelerationRadius() + "]",

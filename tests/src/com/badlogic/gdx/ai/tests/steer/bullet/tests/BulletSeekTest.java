@@ -73,7 +73,7 @@ public class BulletSeekTest extends BulletSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

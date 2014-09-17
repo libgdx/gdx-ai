@@ -136,7 +136,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 		addMaxAngularAccelerationController(detailTable, character, 0, 2000, 20);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 300, 10);
+		addMaxLinearSpeedController(detailTable, character, 0, 300, 10);
 
 		detailTable.row();
 		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + hideSB.getDecelerationRadius() + "]",

@@ -68,7 +68,7 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 		addMaxLinearAccelerationController(detailTable, character, 0, 2000, 20);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 300, 10);
+		addMaxLinearSpeedController(detailTable, character, 0, 300, 10);
 
 		detailTable.row();
 		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + arriveSB.getDecelerationRadius() + "]",

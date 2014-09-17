@@ -108,7 +108,7 @@ public abstract class SteeringTest {
 		table.add(maxLinAcc);
 	}
 
-	protected void addMaxSpeedController (Table table, final Limiter limiter, float minValue, float maxValue, float step) {
+	protected void addMaxLinearSpeedController (Table table, final Limiter limiter, float minValue, float maxValue, float step) {
 		final Label labelMaxSpeed = new Label("Max.Lin.Speed [" + limiter.getMaxLinearSpeed() + "]", container.skin);
 		table.add(labelMaxSpeed);
 		table.row();

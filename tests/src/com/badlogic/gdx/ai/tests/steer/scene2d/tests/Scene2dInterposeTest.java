@@ -108,7 +108,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 		addMaxLinearAccelerationController(detailTable, character, 0, 10000, 20);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailTable.row();
 		final Label labelInterpositionRatio = new Label("Interposition Ratio [" + interposeSB.getInterpositionRatio() + "]",

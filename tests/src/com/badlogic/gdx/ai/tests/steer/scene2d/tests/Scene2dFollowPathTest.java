@@ -117,7 +117,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 		detailTable.add(pathOffset);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailTable.row();
 		addMaxLinearAccelerationController(detailTable, character, 0, 5000, 10);

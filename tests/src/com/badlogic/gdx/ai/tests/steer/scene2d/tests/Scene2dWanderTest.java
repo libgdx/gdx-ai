@@ -152,7 +152,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

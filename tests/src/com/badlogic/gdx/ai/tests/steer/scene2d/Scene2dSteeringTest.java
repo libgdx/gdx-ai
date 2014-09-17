@@ -45,8 +45,8 @@ public abstract class Scene2dSteeringTest extends SteeringTest {
 		addMaxLinearAccelerationController(table, limiter, 0, 500, 10);
 	}
 
-	protected void addMaxSpeedController (Table table, Limiter limiter) {
-		addMaxSpeedController(table, limiter, 0, 500, 10);
+	protected void addMaxLinearSpeedController (Table table, Limiter limiter) {
+		addMaxLinearSpeedController(table, limiter, 0, 500, 10);
 	}
 
 	protected void addMaxAngularAccelerationController (Table table, Limiter limiter) {

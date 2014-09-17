@@ -73,7 +73,7 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxSpeedController(detailTable, character, 0, 30, 1);
+		addMaxLinearSpeedController(detailTable, character, 0, 30, 1);
 
 		detailWindow = createDetailWindow(detailTable);
 	}
