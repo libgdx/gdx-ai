@@ -30,6 +30,8 @@ package com.badlogic.gdx.ai.tests.utils;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 /** Base class for tests.
  * 
@@ -51,5 +53,13 @@ public abstract class GdxAiTest extends InputAdapter implements ApplicationListe
 	}
 
 	public void dispose () {
+	}
+
+	public static void launch (ApplicationListener test) {
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.r = config.g = config.b = config.a = 8;
+		config.width = 960;
+		config.height = 600;
+		new LwjglApplication(test, config);
 	}
 }

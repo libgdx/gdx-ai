@@ -14,23 +14,22 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests;
+package com.badlogic.gdx.ai.tests.utils.scene2d;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-/**
- * Simple test starter.
- * @author davebaol
- */
-public class TestStarter {
-	public static void main (String[] argv) {
-		ApplicationListener test = new StateMachineTest();
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.r = config.g = config.b = config.a = 8;
-		config.width = 960;
-		config.height = 600;
-		new LwjglApplication(test, config);
+/** A {@code TabSelectionChangeListener} for a {@link TabbedPane} widget.
+ * 
+ * @author davebaol */
+public abstract class TabSelectionChangeListener extends ChangeListener {
+
+	@Override
+	public void changed (ChangeEvent event, Actor actor) {
+		if (event.getListenerActor() == event.getTarget()) {
+			tabSelectionChanged(event, actor);
+		}
 	}
+
+	public abstract void tabSelectionChanged (ChangeEvent event, Actor actor);
 }

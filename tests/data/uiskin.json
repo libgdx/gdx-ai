@@ -1,6 +1,9 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: default.fnt } },
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	default-font: { file: default.fnt }
+},
 com.badlogic.gdx.graphics.Color: {
+	gray: { a: 1, b: 0.75, g: 0.75, r: 0.75 },
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
@@ -8,6 +11,10 @@ com.badlogic.gdx.graphics.Color: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } }
+},
+
+com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane$TabbedPaneStyle: {
+	default: { font: default-font, fontColor: gray, checkedFontColor: white, titleBegin: tab-title-begin, titleEnd: tab-title-end, bodyBackground: tab-body, titleButtonUnselected: tab-title-unchecked, titleButtonSelected: tab-title-checked }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: { down: default-round-down, up: default-round },
@@ -22,8 +29,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
-		font: default-font, fontColor: white, background: default-select,
-		scrollStyle: default,
+		font: default-font, fontColor: white, background: default-select, backgroundDisabled: default-select,
+		scrollStyle: { background: default-rect },
 		listStyle: { font: default-font, selection: default-select-selection }
 	}
 },
