@@ -26,6 +26,10 @@ import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
  * @author davebaol */
 public class StateMachineTest extends GdxAiTest {
 
+	public static void main (String[] argv) {
+		launch(new StateMachineTest());
+	}
+
 	Bob bob;
 	Elsa elsa;
 	float elapsedTime;

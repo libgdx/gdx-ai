@@ -64,9 +64,10 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	ShapeRenderer shapeRenderer;
 
 	private World world;
-	private Body wall1;
-	private Body wall2;
-	private Body wall3;
+
+	private Body[] walls;
+	private int[] walls_hw;
+	private int[] walls_hh;
 
 	public Scene2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
 		super(container, "Raycast Obstacle Avoidance");
@@ -82,44 +83,12 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		// and tell it to sleep when possible.
 		world = new World(new Vector2(0, 0), true);
 
-		// next we create a static ground platform. This platform
-		// is not movable and will not react to any influences from
-		// outside. It will however influence other bodies. First we
-		// create a PolygonShape that holds the form of the platform.
-		// it will be 100 meters wide and 2 meters high, centered
-		// around the origin
-		PolygonShape groundPoly = new PolygonShape();
-		groundPoly.setAsBox(150, 20);
-
-		// next we create the body for the ground platform. It's
-		// simply a static body.
-		BodyDef groundBodyDef = new BodyDef();
-		groundBodyDef.position.set(200, 350);
-		groundBodyDef.type = BodyType.StaticBody;
-		wall1 = world.createBody(groundBodyDef);
-		groundBodyDef.position.set(600, 200);
-		wall2 = world.createBody(groundBodyDef);
-		groundBodyDef.position.set(350, 200);
-		wall3 = world.createBody(groundBodyDef);
-
-		// finally we add a fixture to the body using the polygon
-		// defined above. Note that we have to dispose PolygonShapes
-		// and CircleShapes once they are no longer used. This is the
-		// only time you have to care explicitly for memory management.
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = groundPoly;
-		fixtureDef.filter.groupIndex = 0;
-		wall1.createFixture(fixtureDef);
-		groundPoly.setAsBox(20, 80);
-		wall2.createFixture(fixtureDef);
-		groundPoly.setAsBox(50, 30);
-		wall3.createFixture(fixtureDef);
-		groundPoly.dispose();
+		createRandomWalls(8);
 
 		final SteeringActor character = new SteeringActor(container.greenFish, false);
 		character.setCenterPosition(50, 50);
-		character.setMaxLinearSpeed(50);
-		character.setMaxLinearAcceleration(100);
+		character.setMaxLinearSpeed(100);
+		character.setMaxLinearAcceleration(350);
 
 		@SuppressWarnings("unchecked")
 		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
@@ -223,10 +192,10 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	public void render () {
 		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
 
-		// next we render the ground body
-		renderBox(wall1, 150, 20);
-		renderBox(wall2, 20, 80);
-		renderBox(wall3, 50, 30);
+		// Draw the walls
+		for (int i = 0; i < walls.length; i++) {
+			renderBox(shapeRenderer, walls[i], walls_hw[i], walls_hh[i]);
+		}
 
 		if (drawDebug) {
 			Ray<Vector2>[] rays = rayConfigurations[rayConfigurationIndex].getRays();
@@ -250,7 +219,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 
 	Matrix4 transform = new Matrix4();
 
-	private void renderBox (Body body, float halfWidth, float halfHeight) {
+	private void renderBox (ShapeRenderer shapeRenderer, Body body, float halfWidth, float halfHeight) {
 		// get the bodies center and angle in world coordinates
 		Vector2 pos = body.getWorldCenter();
 		float angle = body.getAngle();
@@ -265,6 +234,32 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		shapeRenderer.setColor(1, 1, 1, 1);
 		shapeRenderer.rect(-halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2);
 		shapeRenderer.end();
+	}
+
+	private void createRandomWalls (int n) {
+		PolygonShape groundPoly = new PolygonShape();
+
+		BodyDef groundBodyDef = new BodyDef();
+		groundBodyDef.type = BodyType.StaticBody;
+
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = groundPoly;
+		fixtureDef.filter.groupIndex = 0;
+
+		walls = new Body[n];
+		walls_hw = new int[n];
+		walls_hh = new int[n];
+		for (int i = 0; i < n; i++) {
+			groundBodyDef.position.set(MathUtils.random(50, (int)container.stageWidth - 50),
+				MathUtils.random(50, (int)container.stageHeight - 50));
+			walls[i] = world.createBody(groundBodyDef);
+			walls_hw[i] = (int)MathUtils.randomTriangular(20, 150);
+			walls_hh[i] = (int)MathUtils.randomTriangular(30, 80);
+			groundPoly.setAsBox(walls_hw[i], walls_hh[i]);
+			walls[i].createFixture(fixtureDef);
+
+		}
+		groundPoly.dispose();
 	}
 
 }

@@ -65,9 +65,10 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	ShapeRenderer shapeRenderer;
 
 	private World world;
-	private Body wall1;
-	private Body wall2;
-	private Body wall3;
+
+	private Body[] walls;
+	private int[] walls_hw;
+	private int[] walls_hh;
 
 	private Vector2 tmp = new Vector2();
 	private Vector2 tmp2 = new Vector2();
@@ -87,42 +88,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		// Instantiate a new World with no gravity
 		world = createWorld();
 
-		// next we create a static ground platform. This platform
-		// is not movable and will not react to any influences from
-		// outside. It will however influence other bodies. First we
-		// create a PolygonShape that holds the form of the platform.
-		// it will be 100 meters wide and 2 meters high, centered
-		// around the origin
-		PolygonShape groundPoly = new PolygonShape();
-		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(150), Box2dSteeringTest.pixelsToMeters(20));
-
-		// next we create the body for the ground platform. It's
-		// simply a static body.
-		BodyDef groundBodyDef = new BodyDef();
-
-		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(200), Box2dSteeringTest.pixelsToMeters(350));
-		groundBodyDef.type = BodyType.StaticBody;
-		wall1 = world.createBody(groundBodyDef);
-
-		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(500), Box2dSteeringTest.pixelsToMeters(100));
-		wall2 = world.createBody(groundBodyDef);
-
-		groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(350), Box2dSteeringTest.pixelsToMeters(200));
-		wall3 = world.createBody(groundBodyDef);
-
-		// finally we add a fixture to the body using the polygon
-		// defined above. Note that we have to dispose PolygonShapes
-		// and CircleShapes once they are no longer used. This is the
-		// only time you have to care explicitly for memory management.
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = groundPoly;
-		fixtureDef.filter.groupIndex = 0;
-		wall1.createFixture(fixtureDef);
-		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(20), Box2dSteeringTest.pixelsToMeters(80));
-		wall2.createFixture(fixtureDef);
-		groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(50), Box2dSteeringTest.pixelsToMeters(30));
-		wall3.createFixture(fixtureDef);
-		groundPoly.dispose();
+		createRandomWalls(8);
 
 		character = createSteeringEntity(world, container.greenFish);
 		character.setMaxLinearSpeed(2);
@@ -137,7 +103,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
 		raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(character, rayConfigurations[rayConfigurationIndex],
-			raycastCollisionDetector, 40);
+			raycastCollisionDetector, Box2dSteeringTest.pixelsToMeters(50));
 
 		Wander<Vector2> wanderSB = new Wander<Vector2>(character) //
 			// Don't use Face internally because independent facing is off
@@ -168,7 +134,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			+ raycastObstacleAvoidanceSB.getDistanceFromBoundary() + "]", container.skin);
 		detailTable.add(labelDistFromBoundary);
 		detailTable.row();
-		Slider distFromBoundary = new Slider(0, 350, 1, false, container.skin);
+		Slider distFromBoundary = new Slider(0, 5, .1f, false, container.skin);
 		distFromBoundary.setValue(raycastObstacleAvoidanceSB.getDistanceFromBoundary());
 		distFromBoundary.addListener(new ChangeListener() {
 			@Override
@@ -228,10 +194,10 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 
 		world.step(deltaTime, 8, 3);
 
-		// next we render the ground body
-		renderBox(shapeRenderer, wall1, 150, 20);
-		renderBox(shapeRenderer, wall2, 20, 80);
-		renderBox(shapeRenderer, wall3, 50, 30);
+		// Draw the walls
+		for (int i = 0; i < walls.length; i++) {
+			renderBox(shapeRenderer, walls[i], walls_hw[i], walls_hh[i]);
+		}
 
 		if (drawDebug) {
 			Ray<Vector2>[] rays = rayConfigurations[rayConfigurationIndex].getRays();
@@ -266,4 +232,28 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		spriteBatch.dispose();
 	}
 
+	private void createRandomWalls(int n) {
+		PolygonShape groundPoly = new PolygonShape();
+
+		BodyDef groundBodyDef = new BodyDef();
+		groundBodyDef.type = BodyType.StaticBody;
+
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = groundPoly;
+		fixtureDef.filter.groupIndex = 0;
+		
+		walls = new Body[n];
+		walls_hw = new int[n];
+		walls_hh = new int[n];
+		for (int i = 0; i < n; i++) {
+			groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageWidth-50)), Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageHeight-50)));
+			walls[i] = world.createBody(groundBodyDef);
+			walls_hw[i] = (int)MathUtils.randomTriangular(20, 150);
+			walls_hh[i] = (int)MathUtils.randomTriangular(30, 80);
+			groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(walls_hw[i]), Box2dSteeringTest.pixelsToMeters(walls_hh[i]));
+			walls[i].createFixture(fixtureDef);
+			
+		}
+		groundPoly.dispose();
+	}
 }

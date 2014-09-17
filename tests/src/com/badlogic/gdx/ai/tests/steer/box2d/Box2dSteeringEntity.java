@@ -48,8 +48,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 	private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
 	public Box2dSteeringEntity (TextureRegion region, Body body, boolean independentFacing, float boundingRadius) {
-      System.out.println("BoundingRadius: " + boundingRadius);
-      System.out.println("region.width: " + region.getRegionWidth());
 		this.region = region;
 		this.body = body;
 		this.independentFacing = independentFacing;
@@ -152,7 +150,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			boolean anyAccelerations = false;
 			if (!steeringOutput.linear.isZero()) {
 				Vector2 force = steeringOutput.linear.scl(deltaTime);
-				// System.out.println("FORCE:" + force);
 				body.applyForceToCenter(force, true);
 				anyAccelerations = true;
 			}
@@ -160,8 +157,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			// Update orientation and angular velocity
 			if (isIndependentFacing()) {
 				if (steeringOutput.angular != 0) {
-					// System.out.println("applyTorque " + steeringOutput.angular +
-					// "; body.getAngle = "+body.getAngle()+"; isFixedRoration = "+body.isFixedRotation());
 					body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), true);
 					anyAccelerations = true;
 				}
@@ -195,7 +190,6 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 				// Cap the angular speed
 				float maxAngVelocity = getMaxAngularSpeed();
 				if (body.getAngularVelocity() > maxAngVelocity) {
-					// System.out.println("body.getAngularVelocity() = "+body.getAngularVelocity());
 					body.setAngularVelocity(maxAngVelocity);
 				}
 			}

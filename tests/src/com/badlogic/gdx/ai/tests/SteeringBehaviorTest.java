@@ -66,6 +66,10 @@ import com.badlogic.gdx.utils.StringBuilder;
  * @author davebaol */
 public class SteeringBehaviorTest extends GdxAiTest {
 
+	public static void main (String[] argv) {
+		launch(new SteeringBehaviorTest());
+	}
+
 	private static final boolean DEBUG_STAGE = false;
 
 	private static final String[] ENGINES = {"Scene2d", "Box2d", "Bullet"};
@@ -106,7 +110,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new BulletFollowPathTest(this, true),
 			new BulletJumpTest(this),
 			new BulletRaycastObstacleAvoidanceTest(this),
-			new BulletSeekTest(this),
+			new BulletSeekTest(this)
 		}
 	};
 
@@ -151,11 +155,11 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		stack.add(behaviorTable);
 
 		// Create behavior selection window
-		Array<List<String>> engineBehaviors = new Array<List<String>>(); 
+		Array<List<String>> engineBehaviors = new Array<List<String>>();
 		for (int k = 0; k < behaviors.length; k++) {
 			engineBehaviors.add(createBehaviorList(k));
 		}
-		behaviorSelectionWindow = addBehaviorSelectionWindow ("Behaviors", ENGINES, engineBehaviors,  0, -1);
+		behaviorSelectionWindow = addBehaviorSelectionWindow("Behaviors", ENGINES, engineBehaviors, 0, -1);
 
 		// Set selected behavior
 		changeBehavior(0, 0);
@@ -204,7 +208,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 	}
 
-	private List<String> createBehaviorList(final int engineIndex) {
+	private List<String> createBehaviorList (final int engineIndex) {
 		// Create behavior names
 		int numBehaviors = behaviors[engineIndex].length;
 		String[] behaviorNames = new String[numBehaviors];
@@ -226,7 +230,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 		return behaviorsList;
 	}
 
-	protected CollapsableWindow addBehaviorSelectionWindow (String title, String[] tabTitles, Array<List<String>> tabLists, float x, float y) {
+	protected CollapsableWindow addBehaviorSelectionWindow (String title, String[] tabTitles, Array<List<String>> tabLists,
+		float x, float y) {
 		if (tabTitles.length != tabLists.size)
 			throw new IllegalArgumentException("tabTitles and tabList must have the same size.");
 		CollapsableWindow window = new CollapsableWindow(title, skin);

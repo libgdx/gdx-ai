@@ -195,7 +195,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		jumpSB = new Jump<Vector2>(character, jumpDescriptor, world.getGravity(), GRAVITY_COMPONENT_HANDLER, jumpCallback) //
 			.setMaxVerticalVelocity(5) //
 			.setTakeoffPositionTolerance(.3f) //
-			.setTakeoffVelocityTolerance(2f) //
+			.setTakeoffVelocityTolerance(.7f) //
 			.setTimeToTarget(.01f);
 
 		// Setup the limiter for the run up
@@ -366,7 +366,8 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		character.draw(spriteBatch);
 		spriteBatch.end();
 	}
-private Vector2 tmp = new Vector2();
+
+	private Vector2 tmp = new Vector2();
 
 	private void drawPad(ShapeRenderer shapeRenderer, Vector2 centerPoint, float tolerance) {
 		int centerX = Box2dSteeringTest.metersToPixels(centerPoint.x);
