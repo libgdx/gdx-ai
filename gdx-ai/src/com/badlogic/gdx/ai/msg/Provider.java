@@ -9,5 +9,5 @@ public interface Provider {
      * @see com.badlogic.gdx.ai.msg.MessageDispatcher#addListener(Telegraph, int)
      * @see com.badlogic.gdx.ai.msg.MessageDispatcher#addListeners(Telegraph, int...)
      */
-    Object provides(int msg);
+    Object provideMessageInfo(int msg);
 }

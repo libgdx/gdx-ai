@@ -124,12 +124,12 @@ public class MessageDispatcher {
         if (providers != null) {
             for (int i = 0; i < providers.size; i++) {
                 Provider provider = providers.get(i);
-                Object infos = provider.provides(msg);
-                if (infos != null)
+                Object info = provider.provideMessageInfo(msg);
+                if (info != null)
                     if (ClassReflection.isInstance(Telegraph.class, provider))
-                        dispatchMessage(0, (Telegraph) provider, listener, msg, infos);
+                        dispatchMessage(0, (Telegraph) provider, listener, msg, info);
                     else
-                        dispatchMessage(0, null, listener, msg, infos);
+                        dispatchMessage(0, null, listener, msg, info);
             }
         }
     }
