@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 /** The MessageDispatcher is a singleton in charge of the creation, dispatch, and management of telegrams.
  * 
@@ -39,7 +40,9 @@ public class MessageDispatcher {
 
 	private final Pool<Telegram> pool;
 
-	private IntMap<Array<Telegraph>> msgListeners = new IntMap<Array<Telegraph>>();
+    private IntMap<Array<Telegraph>> msgListeners = new IntMap<Array<Telegraph>>();
+
+    private IntMap<Array<Provider>> msgProviders = new IntMap<Array<Provider>>();
 
 	private long timeGranularity;
 
@@ -104,29 +107,63 @@ public class MessageDispatcher {
 		addListener(listener, msg);
 	}
 
-	/** Registers a listener for the specified message code. Messages without an explicit receiver are broadcasted to all its
-	 * registered listeners.
-	 * @param msg the message code
-	 * @param listener the listener to add */
-	public void addListener (Telegraph listener, int msg) {
-		Array<Telegraph> listeners = msgListeners.get(msg);
-		if (listeners == null) {
-			// Associate an empty unordered array with the message code
-			listeners = new Array<Telegraph>(false, 16);
-			msgListeners.put(msg, listeners);
-		}
-		listeners.add(listener);
-	}
+    /** Registers a listener for the specified message code. Messages without an explicit receiver are broadcasted to all its
+     * registered listeners.
+     * @param msg the message code
+     * @param listener the listener to add */
+    public void addListener (Telegraph listener, int msg) {
+        Array<Telegraph> listeners = msgListeners.get(msg);
+        if (listeners == null) {
+            // Associate an empty unordered array with the message code
+            listeners = new Array<Telegraph>(false, 16);
+            msgListeners.put(msg, listeners);
+        }
+        listeners.add(listener);
+        // dispatch messages from registered providers
+        Array<Provider> providers = msgProviders.get(msg);
+        if (providers != null) {
+            for (int i = 0; i < providers.size; i++) {
+                Provider provider = providers.get(i);
+                Object infos = provider.provides(msg);
+                if (infos != null)
+                    if (ClassReflection.isInstance(Telegraph.class, provider))
+                        dispatchMessage(0, (Telegraph) provider, listener, msg, infos);
+                    else
+                        dispatchMessage(0, null, listener, msg, infos);
+            }
+        }
+    }
 
-	/** Registers a listener for a selection of message types. Messages without an explicit receiver are broadcasted to all its
-	 * registered listeners.
-	 * 
-	 * @param listener the listener to add
-	 * @param msgs the message codes */
-	public void addListeners (Telegraph listener, int... msgs) {
-		for (int msg : msgs)
-			addListener(listener, msg);
-	}
+    /** Registers a listener for a selection of message types. Messages without an explicit receiver are broadcasted to all its
+     * registered listeners.
+     *
+     * @param listener the listener to add
+     * @param msgs the message codes */
+    public void addListeners (Telegraph listener, int... msgs) {
+        for (int msg : msgs)
+            addListener(listener, msg);
+    }
+
+    /** Registers a provider for the specified message code.
+     * @param msg the message code
+     * @param provider the provider to add */
+    public void addProvider (Provider provider, int msg) {
+        Array<Provider> providers = msgProviders.get(msg);
+        if (providers == null) {
+            // Associate an empty unordered array with the message code
+            providers = new Array<Provider>(false, 16);
+            msgProviders.put(msg, providers);
+        }
+        providers.add(provider);
+    }
+
+    /** Registers a provider for a selection of message types.
+     * @param provider the provider to add
+     * @param msgs the message codes */
+    public void addProviders (Provider provider, int... msgs) {
+        for (int msg : msgs)
+            addProvider(provider, msg);
+    }
 
 	/** Unregister the specified listener for the specified message code.
 	 * @param msg the message code
@@ -175,7 +212,26 @@ public class MessageDispatcher {
 		msgListeners.clear();
 	}
 
-	/** Removes all the telegrams from the queue and releases them to the internal pool. */
+    /** Unregisters all the providers for the specified message code.
+     * @param msg the message code */
+    public void clearProviders (int msg) {
+        msgProviders.remove(msg);
+    }
+
+    /** Unregisters all the providers for the given message codes.
+     *
+     * @param msgs the message codes */
+    public void clearProviders (int... msgs) {
+        for (int msg : msgs)
+            clearProviders(msg);
+    }
+
+    /** Removes all the registered providers for all the message codes. */
+    public void clearProviders () {
+        msgProviders.clear();
+    }
+
+    /** Removes all the telegrams from the queue and releases them to the internal pool. */
 	public void clearQueue () {
 		for (int i = 0; i < queue.size(); i++) {
 			pool.free(queue.get(i));
@@ -187,6 +243,7 @@ public class MessageDispatcher {
 	public void clear () {
 		clearQueue();
 		clearListeners();
+        clearProviders();
 	}
 
 	/** Sends an immediate message to all registered listeners, with no extra info.
