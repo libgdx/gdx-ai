@@ -1,0 +1,5 @@
+[1.3.2]
+- API Addition: added steering behaviors.
+- API Change: renamed Agent to Telegraph and moved it to msg package. Also, removed the update method.
+- Now StateMachine implements Telegraph.
+
