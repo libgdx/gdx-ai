@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -75,8 +76,8 @@ public abstract class Scene2dSteeringTest extends SteeringTest {
 		int maxTries = Math.max(100, others.size * others.size); 
 		SET_NEW_POS:
 		while (--maxTries >= 0) {
-			character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
-			character.getPosition().set(character.getCenterX(), character.getCenterY());
+			character.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
+			character.getPosition().set(character.getX(Align.center), character.getY(Align.center));
 			for (int i = 0; i < others.size; i++) {
 				SteeringActor other = (SteeringActor)others.get(i);
 				if (character.getPosition().dst(other.getPosition()) <= character.getBoundingRadius() + other.getBoundingRadius()

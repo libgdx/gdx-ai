@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -96,7 +97,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 
 		table.addActor(character);
 
-		character.setCenterPosition(wayPoints.first().x, wayPoints.first().y);
+		character.setPosition(wayPoints.first().x, wayPoints.first().y, Align.center);
 
 		Table detailTable = new Table(container.skin);
 

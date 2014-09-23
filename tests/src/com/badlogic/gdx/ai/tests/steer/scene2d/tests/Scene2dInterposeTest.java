@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -55,13 +56,13 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 
 		// Set character
 		SteeringActor character = new SteeringActor(container.target, false);
-		character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		character.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		character.setMaxLinearSpeed(250);
 		character.setMaxLinearAcceleration(700);
 
 		// Set agentA
 		SteeringActor c1 = new SteeringActor(container.greenFish, false);
-		c1.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		c1.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		c1.setMaxLinearSpeed(80);
 		c1.setMaxLinearAcceleration(250);
 		c1.setMaxAngularAcceleration(0); // set to 0 because independent facing is disabled
@@ -69,7 +70,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 
 		// Set agentB
 		SteeringActor c2 = new SteeringActor(container.badlogicSmall, false);
-		c2.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		c2.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		c2.setMaxLinearSpeed(150);
 		c2.setMaxLinearAcceleration(450);
 		c2.setMaxAngularAcceleration(0); // set to 0 because independent facing is disabled

@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /** A class to test and experiment with the {@link LookWhereYouAreGoing} behavior.
@@ -47,14 +48,14 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 	@Override
 	public void create (Table table) {
 		character = new SteeringActor(container.badlogicSmall, true);
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
+		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 		character.setMaxLinearAcceleration(100);
 		character.setMaxLinearSpeed(100);
 		character.setMaxAngularAcceleration(40);
 		character.setMaxAngularSpeed(15);
 
 		target = new SteeringActor(container.target);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 
 		inputProcessor = new Scene2dTargetInputProcessor(target);
 

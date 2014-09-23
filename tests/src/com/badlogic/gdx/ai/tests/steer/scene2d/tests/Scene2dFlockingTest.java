@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -73,7 +74,7 @@ public class Scene2dFlockingTest extends Scene2dSteeringTest {
 
 		for (int i = 0; i < 60; i++) {
 			SteeringActor character = new SteeringActor(container.greenFish, false);
-			character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+			character.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 			character.setMaxLinearSpeed(70);
 			character.setMaxLinearAcceleration(400); //
 			character.setMaxAngularAcceleration(0);

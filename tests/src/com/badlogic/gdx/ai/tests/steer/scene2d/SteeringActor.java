@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 /** A SteeringActor is a scene2d {@link Actor} implementing the {@link Steerable} interface.
  * 
@@ -182,12 +183,12 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 
 	@Override
 	public void act (float delta) {
-		position.set(getCenterX(), getCenterY());
+		position.set(getX(Align.center), getY(Align.center));
 		if (steeringBehavior != null) {
 			steeringBehavior.steer(steeringOutput);
 			applySteering(steeringOutput, delta);
 			wrapAround(position, getParent().getWidth(), getParent().getHeight());
-			setCenterPosition(position.x, position.y);
+			setPosition(position.x, position.y, Align.center);
 		}
 		super.act(delta);
 	}
