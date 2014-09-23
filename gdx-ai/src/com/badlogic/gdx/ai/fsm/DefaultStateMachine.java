@@ -128,7 +128,7 @@ public class DefaultStateMachine<E> implements StateMachine<E> {
 	 * instead of the {@code equals} method.
 	 * 
 	 * @param state the state to be compared with the current state
-	 * @returns true if the current state and the given state are the same object. */
+	 * @return true if the current state and the given state are the same object. */
 	@Override
 	public boolean isInState (State<E> state) {
 		return currentState == state;
@@ -138,7 +138,7 @@ public class DefaultStateMachine<E> implements StateMachine<E> {
 	 * message, it's routed to the global state's message handler.
 	 * 
 	 * @param telegram the received telegram
-	 * @returns true if telegram has been successfully handled; false otherwise. */
+	 * @return true if telegram has been successfully handled; false otherwise. */
 	@Override
 	public boolean handleMessage (Telegram telegram) {
 

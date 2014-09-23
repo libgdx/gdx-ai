@@ -45,7 +45,7 @@ public abstract class SteeringBehavior<T extends Vector<T>> {
 	/** Creates a {@code SteeringBehavior} for the specified owner and limiter. The behavior is enabled.
 	 * 
 	 * @param owner the owner of this steering behavior
-	 * @param enabled a flag indicating whether this steering behavior is enabled or not */
+	 * @param limiter the limiter of this steering behavior */
 	public SteeringBehavior (Steerable<T> owner, Limiter limiter) {
 		this(owner, limiter, true);
 	}

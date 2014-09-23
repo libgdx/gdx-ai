@@ -50,7 +50,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Wander<T extends Vector<T>> extends Face<T> {
 
 	/** The forward offset of the wander circle */

@@ -36,7 +36,7 @@ import com.badlogic.gdx.math.Vector;
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * @param <P> Type of path parameter implementing the {@link PathParam} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class FollowPath<T extends Vector<T>, P extends PathParam> extends Arrive<T> {
 
 	/** The path to follow */
@@ -78,7 +78,6 @@ public class FollowPath<T extends Vector<T>, P extends PathParam> extends Arrive
 	 * @param path the path to be followed by the owner
 	 * @param pathOffset the distance along the path to generate the target. Can be negative if the owner is to move along the
 	 *           reverse direction.
-	 * @param maxLinearAcceleration the maximum acceleration that can be used to reach the internal target.
 	 * @param predictionTime the time in the future to predict the owner's position. Can be 0 for non-predictive path following. */
 	public FollowPath (Steerable<T> owner, Path<T, P> path, float pathOffset, float predictionTime) {
 		super(owner);

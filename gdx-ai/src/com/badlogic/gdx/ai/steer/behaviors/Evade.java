@@ -25,7 +25,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Evade<T extends Vector<T>> extends Pursue<T> {
 
 	/** Creates a {@code Evade} behavior for the specified owner and target. Maximum prediction time defaults to 1 second.

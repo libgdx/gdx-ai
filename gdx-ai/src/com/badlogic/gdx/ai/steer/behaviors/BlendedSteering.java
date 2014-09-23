@@ -54,9 +54,7 @@ public class BlendedSteering<T extends Vector<T>> extends SteeringBehavior<T> {
 
 	/** Creates a {@code BlendedSteering} for the specified {@code owner}, {@code maxLinearAcceleration} and
 	 * {@code maxAngularAcceleration}.
-	 * @param owner the owner of this behavior.
-	 * @param maxLinearAcceleration the maximum linear acceleration that can be used.
-	 * @param maxAngularAcceleration the maximum angular acceleration that can be used. */
+	 * @param owner the owner of this behavior. */
 	public BlendedSteering (Steerable<T> owner) {
 		super(owner);
 
