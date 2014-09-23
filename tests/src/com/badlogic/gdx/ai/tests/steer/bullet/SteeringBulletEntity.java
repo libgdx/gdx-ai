@@ -20,12 +20,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 
 /** @author Daniel Holderbaum */
 public class SteeringBulletEntity extends BulletEntity implements Steerable<Vector3> {
@@ -38,6 +38,7 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	float maxAngularAcceleration;
 	float boundingRadius;
 	boolean tagged;
+	boolean independentFacing;
 	protected SteeringBehavior<Vector3> steeringBehavior;
 	private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<Vector3>(new Vector3());
 
@@ -48,6 +49,10 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	private static final Vector3 ANGULAR_LOCK = new Vector3(0, 1, 0);
 
 	public SteeringBulletEntity (BulletEntity copyEntity) {
+		this(copyEntity, false);
+	}
+
+	public SteeringBulletEntity (BulletEntity copyEntity, boolean independentFacing) {
 		super(copyEntity.modelInstance, copyEntity.body);
 
 		if (!(copyEntity.body instanceof btRigidBody)) {
@@ -59,6 +64,8 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 
 		this.body = (btRigidBody)copyEntity.body;
 		body.setAngularFactor(ANGULAR_LOCK);
+		
+		this.independentFacing = independentFacing; 
 	}
 
 	public SteeringBehavior<Vector3> getSteeringBehavior () {
@@ -68,6 +75,8 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	public void setSteeringBehavior (SteeringBehavior<Vector3> steeringBehavior) {
 		this.steeringBehavior = steeringBehavior;
 	}
+
+//	float oldOrientation = 0;
 
 	public void update () {
 		if (steeringBehavior != null) {
@@ -80,9 +89,32 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 				body.applyCentralForce(steeringOutput.linear.scl(Gdx.graphics.getDeltaTime()));
 				anyAccelerations = true;
 			}
-			if (steeringOutput.angular != 0) {
-				body.applyTorque(tmpVector3.set(0, steeringOutput.angular * Gdx.graphics.getDeltaTime(), 0));
-				anyAccelerations = true;
+
+			// Update orientation and angular velocity
+			if (isIndependentFacing()) {
+				if (steeringOutput.angular != 0) {
+					body.applyTorque(tmpVector3.set(0, steeringOutput.angular * Gdx.graphics.getDeltaTime(), 0));
+					anyAccelerations = true;
+				}
+			}
+			else {
+				// If we haven't got any velocity, then we can do nothing.
+				Vector3 linVel = getLinearVelocity();
+				if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+					// 
+					// Commented out!!!
+					// Looks like the code below creates troubles in combination with the applyCentralForce above
+					// Maybe we should be more consistent by only applying forces or setting velocities.
+					//
+//					float newOrientation = vectorToAngle(linVel);
+//					Vector3 angVel = body.getAngularVelocity();
+//					angVel.y = (newOrientation - oldOrientation) % MathUtils.PI2;
+//					if (angVel.y > MathUtils.PI) angVel.y -= MathUtils.PI2;
+//					angVel.y /= Gdx.graphics.getDeltaTime();
+//					body.setAngularVelocity(angVel);
+//					anyAccelerations = true;
+//					oldOrientation = newOrientation;
+				}
 			}
 			if (anyAccelerations) {
 				body.activate();
@@ -108,6 +140,14 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 				}
 			}
 		}
+	}
+
+	public boolean isIndependentFacing () {
+		return independentFacing;
+	}
+
+	public void setIndependentFacing (boolean independentFacing) {
+		this.independentFacing = independentFacing;
 	}
 
 	@Override
@@ -150,12 +190,16 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 
 	@Override
 	public float vectorToAngle (Vector3 vector) {
-		return (float)Math.atan2(vector.z, vector.x);
+//		return (float)Math.atan2(vector.z, vector.x);
+		return (float)Math.atan2(-vector.z, vector.x);
 	}
 
 	@Override
 	public Vector3 angleToVector (Vector3 outVector, float angle) {
-		outVector.set(MathUtils.cos(angle), 0f, MathUtils.sin(angle));
+//		outVector.set(MathUtils.cos(angle), 0f, MathUtils.sin(angle));
+		outVector.z = -(float)Math.sin(angle);
+		outVector.y = 0;
+		outVector.x = (float)Math.cos(angle);
 		return outVector;
 	}
 
