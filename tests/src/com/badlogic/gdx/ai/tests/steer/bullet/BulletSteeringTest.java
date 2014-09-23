@@ -55,6 +55,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /** Base class for bullet steering behavior tests.
  * 
  * @author Daniel Holderbaum */
+@SuppressWarnings("deprecation")
 public abstract class BulletSteeringTest extends SteeringTest {
 
 	public PerspectiveCamera camera;
