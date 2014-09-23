@@ -75,7 +75,9 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	public void setSteeringBehavior (SteeringBehavior<Vector3> steeringBehavior) {
 		this.steeringBehavior = steeringBehavior;
 	}
-float oldOrientation = 0;
+
+//	float oldOrientation = 0;
+
 	public void update () {
 		if (steeringBehavior != null) {
 			// Calculate steering acceleration
@@ -102,6 +104,7 @@ float oldOrientation = 0;
 					// 
 					// Commented out!!!
 					// Looks like the code below creates troubles in combination with the applyCentralForce above
+					// Maybe we should be more consistent by only applying forces or setting velocities.
 					//
 //					float newOrientation = vectorToAngle(linVel);
 //					Vector3 angVel = body.getAngularVelocity();
