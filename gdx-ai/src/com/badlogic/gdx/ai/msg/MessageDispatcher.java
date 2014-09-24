@@ -42,7 +42,7 @@ public class MessageDispatcher {
 
     private IntMap<Array<Telegraph>> msgListeners = new IntMap<Array<Telegraph>>();
 
-    private IntMap<Array<Provider>> msgProviders = new IntMap<Array<Provider>>();
+    private IntMap<Array<TelegramProvider>> msgProviders = new IntMap<Array<TelegramProvider>>();
 
 	private long timeGranularity;
 
@@ -120,10 +120,10 @@ public class MessageDispatcher {
         }
         listeners.add(listener);
         // dispatch messages from registered providers
-        Array<Provider> providers = msgProviders.get(msg);
+        Array<TelegramProvider> providers = msgProviders.get(msg);
         if (providers != null) {
             for (int i = 0; i < providers.size; i++) {
-                Provider provider = providers.get(i);
+                TelegramProvider provider = providers.get(i);
                 Object info = provider.provideMessageInfo(msg, listener);
                 if (info != null)
                     if (ClassReflection.isInstance(Telegraph.class, provider))
@@ -147,11 +147,11 @@ public class MessageDispatcher {
     /** Registers a provider for the specified message code.
      * @param msg the message code
      * @param provider the provider to add */
-    public void addProvider (Provider provider, int msg) {
-        Array<Provider> providers = msgProviders.get(msg);
+    public void addProvider (TelegramProvider provider, int msg) {
+        Array<TelegramProvider> providers = msgProviders.get(msg);
         if (providers == null) {
             // Associate an empty unordered array with the message code
-            providers = new Array<Provider>(false, 16);
+            providers = new Array<TelegramProvider>(false, 16);
             msgProviders.put(msg, providers);
         }
         providers.add(provider);
@@ -160,7 +160,7 @@ public class MessageDispatcher {
     /** Registers a provider for a selection of message types.
      * @param provider the provider to add
      * @param msgs the message codes */
-    public void addProviders (Provider provider, int... msgs) {
+    public void addProviders (TelegramProvider provider, int... msgs) {
         for (int msg : msgs)
             addProvider(provider, msg);
     }

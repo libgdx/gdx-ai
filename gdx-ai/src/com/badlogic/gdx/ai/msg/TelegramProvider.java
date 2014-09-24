@@ -1,7 +1,7 @@
 package com.badlogic.gdx.ai.msg;
 
 /** @author avianey */
-public interface Provider {
+public interface TelegramProvider {
     /**
      * Provides {@link Telegram#extraInfo} to dispatch immediately when a {@link Telegraph} is registered for the given message type.
      * @param msg the message type to provide
