@@ -193,7 +193,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update();
+		character.update(Gdx.graphics.getDeltaTime());
 
 		super.render(true);
 

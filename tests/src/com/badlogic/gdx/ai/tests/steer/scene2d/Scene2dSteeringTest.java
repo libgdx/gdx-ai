@@ -19,7 +19,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -32,7 +32,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /** Base class for scene2d steering behavior tests.
  * 
  * @author davebaol */
-public abstract class Scene2dSteeringTest extends SteeringTest {
+public abstract class Scene2dSteeringTest extends SteeringTestBase {
 
 	public Scene2dSteeringTest (SteeringBehaviorTest container, String name) {
 		super(container, "Scene2d", name, null);

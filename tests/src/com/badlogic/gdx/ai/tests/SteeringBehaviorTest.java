@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dArriveTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dCollisionAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dFaceTest;
@@ -81,7 +81,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	StringBuilder fpsStringBuilder;
 
 	// Keep it sorted!
-	SteeringTest[][] behaviors = {
+	SteeringTestBase[][] behaviors = {
 		{ // Scene2d
 			new Scene2dArriveTest(this),
 			new Scene2dCollisionAvoidanceTest(this),
@@ -119,7 +119,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	};
 
 	Table behaviorTable;
-	SteeringTest currentBehavior;
+	SteeringTestBase currentBehavior;
 
 	public Stage stage;
 	public float stageWidth;

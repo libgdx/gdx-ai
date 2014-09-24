@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
@@ -138,7 +139,7 @@ public class BulletFaceTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update();
+		character.update(Gdx.graphics.getDeltaTime());
 
 		super.render(true);
 	}

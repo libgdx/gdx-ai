@@ -30,18 +30,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 /** Base class for cross-engine steering behavior tests.
  * 
  * @author davebaol */
-public abstract class SteeringTest {
+public abstract class SteeringTestBase {
 	protected SteeringBehaviorTest container;
 	public String engineName;
 	public String behaviorName;
 	protected InputProcessor inputProcessor;
 	protected CollapsableWindow detailWindow;
 
-	public SteeringTest (SteeringBehaviorTest container, String engineName, String name) {
+	public SteeringTestBase (SteeringBehaviorTest container, String engineName, String name) {
 		this(container, engineName, name, null);
 	}
 
-	public SteeringTest (SteeringBehaviorTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
+	public SteeringTestBase (SteeringBehaviorTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
 		this.container = container;
 		this.engineName = engineName;
 		this.behaviorName = behaviorName;

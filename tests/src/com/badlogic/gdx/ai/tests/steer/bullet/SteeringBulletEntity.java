@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -78,66 +77,80 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 
 //	float oldOrientation = 0;
 
-	public void update () {
+	public void update (float deltaTime) {
 		if (steeringBehavior != null) {
 			// Calculate steering acceleration
 			steeringBehavior.steer(steeringOutput);
 
-			// Apply steering accelerations (if any)
-			boolean anyAccelerations = false;
-			if (!steeringOutput.linear.isZero()) {
-				body.applyCentralForce(steeringOutput.linear.scl(Gdx.graphics.getDeltaTime()));
+			/*
+			 * Here you might want to add a motor control layer filtering steering accelerations.
+			 * 
+			 * For instance, a car in a driving game has physical constraints on its movement: it cannot turn while stationary; the
+			 * faster it moves, the slower it can turn (without going into a skid); it can brake much more quickly than it can
+			 * accelerate; and it only moves in the direction it is facing (ignoring power slides).
+			 */
+			
+			// Apply steering acceleration
+			applySteering(steeringOutput, deltaTime);
+		}
+	}
+
+	protected void applySteering (SteeringAcceleration<Vector3> steering, float deltaTime) {
+		boolean anyAccelerations = false;
+
+		// Update position and linear velocity
+		if (!steeringOutput.linear.isZero()) {
+			body.applyCentralForce(steeringOutput.linear.scl(deltaTime));
+			anyAccelerations = true;
+		}
+
+		// Update orientation and angular velocity
+		if (isIndependentFacing()) {
+			if (steeringOutput.angular != 0) {
+				body.applyTorque(tmpVector3.set(0, steeringOutput.angular * deltaTime, 0));
 				anyAccelerations = true;
 			}
-
-			// Update orientation and angular velocity
-			if (isIndependentFacing()) {
-				if (steeringOutput.angular != 0) {
-					body.applyTorque(tmpVector3.set(0, steeringOutput.angular * Gdx.graphics.getDeltaTime(), 0));
-					anyAccelerations = true;
-				}
+		}
+		else {
+			// If we haven't got any velocity, then we can do nothing.
+			Vector3 linVel = getLinearVelocity();
+			if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+				// 
+				// TODO: Commented out!!!
+				// Looks like the code below creates troubles in combination with the applyCentralForce above
+				// Maybe we should be more consistent by only applying forces or setting velocities.
+				//
+//				float newOrientation = vectorToAngle(linVel);
+//				Vector3 angVel = body.getAngularVelocity();
+//				angVel.y = (newOrientation - oldOrientation) % MathUtils.PI2;
+//				if (angVel.y > MathUtils.PI) angVel.y -= MathUtils.PI2;
+//				angVel.y /= deltaTime;
+//				body.setAngularVelocity(angVel);
+//				anyAccelerations = true;
+//				oldOrientation = newOrientation;
 			}
-			else {
-				// If we haven't got any velocity, then we can do nothing.
-				Vector3 linVel = getLinearVelocity();
-				if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
-					// 
-					// Commented out!!!
-					// Looks like the code below creates troubles in combination with the applyCentralForce above
-					// Maybe we should be more consistent by only applying forces or setting velocities.
-					//
-//					float newOrientation = vectorToAngle(linVel);
-//					Vector3 angVel = body.getAngularVelocity();
-//					angVel.y = (newOrientation - oldOrientation) % MathUtils.PI2;
-//					if (angVel.y > MathUtils.PI) angVel.y -= MathUtils.PI2;
-//					angVel.y /= Gdx.graphics.getDeltaTime();
-//					body.setAngularVelocity(angVel);
-//					anyAccelerations = true;
-//					oldOrientation = newOrientation;
-				}
+		}
+		if (anyAccelerations) {
+			body.activate();
+
+			// TODO:
+			// Looks like truncating speeds here after applying forces doesn't work as expected.
+			// We should likely cap speeds form inside an InternalTickCallback, see
+			// http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
+
+			// Cap the linear speed
+			Vector3 velocity = body.getLinearVelocity();
+			float currentSpeedSquare = velocity.len2();
+			float maxLinearSpeed = getMaxLinearSpeed();
+			if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
+				body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float)Math.sqrt(currentSpeedSquare)));
 			}
-			if (anyAccelerations) {
-				body.activate();
 
-				// TODO:
-				// Looks like truncating speeds here after applying forces doesn't work as expected.
-				// We should likely cap speeds form inside an InternalTickCallback, see
-				// http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
-
-				// Cap the linear speed
-				Vector3 velocity = body.getLinearVelocity();
-				float currentSpeedSquare = velocity.len2();
-				float maxLinearSpeed = getMaxLinearSpeed();
-				if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
-					body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float)Math.sqrt(currentSpeedSquare)));
-				}
-
-				// Cap the angular speed
-				Vector3 angVelocity = body.getAngularVelocity();
-				if (angVelocity.y > getMaxAngularSpeed()) {
-					angVelocity.y = getMaxAngularSpeed();
-					body.setAngularVelocity(angVelocity);
-				}
+			// Cap the angular speed
+			Vector3 angVelocity = body.getAngularVelocity();
+			if (angVelocity.y > getMaxAngularSpeed()) {
+				angVelocity.y = getMaxAngularSpeed();
+				body.setAngularVelocity(angVelocity);
 			}
 		}
 	}

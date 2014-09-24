@@ -146,57 +146,71 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 			// Calculate steering acceleration
 			steeringBehavior.steer(steeringOutput);
 
-			// Apply steering accelerations (if any)
-			boolean anyAccelerations = false;
-			if (!steeringOutput.linear.isZero()) {
-				Vector2 force = steeringOutput.linear.scl(deltaTime);
-				body.applyForceToCenter(force, true);
-				anyAccelerations = true;
-			}
-
-			// Update orientation and angular velocity
-			if (isIndependentFacing()) {
-				if (steeringOutput.angular != 0) {
-					body.applyTorque(steeringOutput.angular * Gdx.graphics.getDeltaTime(), true);
-					anyAccelerations = true;
-				}
-			}
-			else {
-				// If we haven't got any velocity, then we can do nothing.
-				Vector2 linVel = getLinearVelocity();
-				if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
-					float newOrientation = vectorToAngle(linVel);
-					body.setAngularVelocity((newOrientation - getAngularVelocity()) * deltaTime); // this is superfluous if independentFacing is always true
-					body.setTransform(body.getPosition(), newOrientation);
-				}
-			}
-
-			if (anyAccelerations) {
-				// body.activate();
-
-				// TODO:
-				// Looks like truncating speeds here after applying forces doesn't work as expected.
-				// We should likely cap speeds form inside an InternalTickCallback, see
-				// http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
-
-				// Cap the linear speed
-				Vector2 velocity = body.getLinearVelocity();
-				float currentSpeedSquare = velocity.len2();
-				float maxLinearSpeed = getMaxLinearSpeed();
-				if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
-					body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float)Math.sqrt(currentSpeedSquare)));
-				}
-
-				// Cap the angular speed
-				float maxAngVelocity = getMaxAngularSpeed();
-				if (body.getAngularVelocity() > maxAngVelocity) {
-					body.setAngularVelocity(maxAngVelocity);
-				}
-			}
+			/*
+			 * Here you might want to add a motor control layer filtering steering accelerations.
+			 * 
+			 * For instance, a car in a driving game has physical constraints on its movement: it cannot turn while stationary; the
+			 * faster it moves, the slower it can turn (without going into a skid); it can brake much more quickly than it can
+			 * accelerate; and it only moves in the direction it is facing (ignoring power slides).
+			 */
+			
+			// Apply steering acceleration
+			applySteering(steeringOutput, deltaTime);
 		}
 
 		wrapAround(Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getWidth()),
 			Box2dSteeringTest.pixelsToMeters(Gdx.graphics.getHeight()));
+	}
+
+	protected void applySteering (SteeringAcceleration<Vector2> steering, float deltaTime) {
+		boolean anyAccelerations = false;
+
+		// Update position and linear velocity.
+		if (!steeringOutput.linear.isZero()) {
+			Vector2 force = steeringOutput.linear.scl(deltaTime);
+			body.applyForceToCenter(force, true);
+			anyAccelerations = true;
+		}
+
+		// Update orientation and angular velocity
+		if (isIndependentFacing()) {
+			if (steeringOutput.angular != 0) {
+				body.applyTorque(steeringOutput.angular * deltaTime, true);
+				anyAccelerations = true;
+			}
+		}
+		else {
+			// If we haven't got any velocity, then we can do nothing.
+			Vector2 linVel = getLinearVelocity();
+			if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+				float newOrientation = vectorToAngle(linVel);
+				body.setAngularVelocity((newOrientation - getAngularVelocity()) * deltaTime); // this is superfluous if independentFacing is always true
+				body.setTransform(body.getPosition(), newOrientation);
+			}
+		}
+
+		if (anyAccelerations) {
+			// body.activate();
+
+			// TODO:
+			// Looks like truncating speeds here after applying forces doesn't work as expected.
+			// We should likely cap speeds form inside an InternalTickCallback, see
+			// http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
+
+			// Cap the linear speed
+			Vector2 velocity = body.getLinearVelocity();
+			float currentSpeedSquare = velocity.len2();
+			float maxLinearSpeed = getMaxLinearSpeed();
+			if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
+				body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float)Math.sqrt(currentSpeedSquare)));
+			}
+
+			// Cap the angular speed
+			float maxAngVelocity = getMaxAngularSpeed();
+			if (body.getAngularVelocity() > maxAngVelocity) {
+				body.setAngularVelocity(maxAngVelocity);
+			}
+		}
 	}
 
 	// the display area is considered to wrap around from top to bottom

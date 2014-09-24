@@ -20,7 +20,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletConstructor;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletWorld;
 import com.badlogic.gdx.graphics.Color;
@@ -56,7 +56,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  * 
  * @author Daniel Holderbaum */
 @SuppressWarnings("deprecation")
-public abstract class BulletSteeringTest extends SteeringTest {
+public abstract class BulletSteeringTest extends SteeringTestBase {
 
 	public PerspectiveCamera camera;
 	protected Viewport viewport;
