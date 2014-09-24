@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.bullet;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
@@ -99,6 +100,14 @@ public abstract class BulletSteeringTest extends SteeringTestBase {
 
 	public BulletWorld createWorld () {
 		return new BulletWorld(new Vector3(0, -9.81f, 0));
+	}
+
+	protected void setNewTargetInputProcessor(SteeringBulletEntity target, Vector3 offset) {
+		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, new Vector3(0, 1.5f, 0),
+			viewport, world.collisionWorld);
+		setInputProcessor(new InputMultiplexer(bulletTargetInputProcessor, cameraController));
+		
+		container.helpMessage = "Press space to move the target";
 	}
 
 	@Override

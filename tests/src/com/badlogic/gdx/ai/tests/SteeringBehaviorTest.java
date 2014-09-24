@@ -79,6 +79,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	public CollapsableWindow behaviorSelectionWindow;
 	Label fpsLabel;
 	StringBuilder fpsStringBuilder;
+	public String helpMessage;
 
 	// Keep it sorted!
 	SteeringTestBase[][] behaviors = {
@@ -210,6 +211,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	protected void getStatus (final StringBuilder stringBuilder) {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+		if (helpMessage != null)
+			stringBuilder.append("     ").append(helpMessage);
 	}
 
 	private List<String> createBehaviorList (final int engineIndex) {

@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet;
 
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Collision;
@@ -29,7 +29,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 /** An {@link InputProcessor} that allows you to manually move a {@link SteeringBulletEntity}.
  * 
- * @author Daniel Holderbaum */
+ * @author Daniel Holderbaum
+ * @author davebaol */
 public class BulletTargetInputProcessor extends InputAdapter {
 
 	SteeringBulletEntity target;
@@ -46,9 +47,44 @@ public class BulletTargetInputProcessor extends InputAdapter {
 
 	private static final Collision<Vector3> output = new Collision<Vector3>(new Vector3(), new Vector3());
 
+	boolean moveTarget = false;
+
+	public boolean keyDown (int keycode) {
+		if (keycode == Keys.SPACE) {
+			moveTarget = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyUp (int keycode) {
+		if (keycode == Keys.SPACE) {
+			moveTarget = false;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+		setTargetPosition(screenX, screenY);
+		return moveTarget;
+	}
+
+	@Override
+	public boolean touchDragged (int screenX, int screenY, int pointer) {
+		setTargetPosition(screenX, screenY);
+		return moveTarget;
+	}
+
 	@Override
 	public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-		if (button == Input.Buttons.LEFT) {
+		return setTargetPosition(screenX, screenY);
+	}
+
+	private boolean setTargetPosition (int screenX, int screenY) {
+		if (moveTarget) {
 			Ray pickRay = viewport.getPickRay(screenX, screenY);
 			btCollisionObject body = rayTest(output, pickRay);
 
@@ -56,9 +92,8 @@ public class BulletTargetInputProcessor extends InputAdapter {
 				target.transform.setToTranslation(output.point.add(offset));
 				target.body.setWorldTransform(target.transform);
 			}
+			return true;
 		}
-
-		// we still return false to let the following camera controller recognize the touch up event
 		return false;
 	}
 

@@ -46,6 +46,9 @@ public abstract class SteeringTestBase {
 		this.engineName = engineName;
 		this.behaviorName = behaviorName;
 		this.inputProcessor = inputProcessor;
+
+		// Reset help message
+		container.helpMessage = null;
 	}
 
 	public abstract void create (Table table);

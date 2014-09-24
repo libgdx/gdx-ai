@@ -17,11 +17,9 @@
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.BulletTargetInputProcessor;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.math.MathUtils;
@@ -66,9 +64,7 @@ public class BulletFaceTest extends BulletSteeringTest {
 			| btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		target = new SteeringBulletEntity(targetBase);
 
-		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, new Vector3(0, 1.5f, 0),
-			viewport, world.collisionWorld);
-		inputProcessor = new InputMultiplexer(bulletTargetInputProcessor, cameraController);
+		setNewTargetInputProcessor(target, new Vector3(0, 1.5f, 0));
 
 		final Face<Vector3> faceSB = new Face<Vector3>(character, target) //
 			.setAlignTolerance(.01f) //
