@@ -16,19 +16,20 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.BulletTargetInputProcessor;
-import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 
-/** @author Daniel Holderbaum */
+/** A class to test and experiment with the {@link Seek} behavior.
+ * 
+ * @author Daniel Holderbaum */
 public class BulletSeekTest extends BulletSteeringTest {
 
 	SteeringBulletEntity character;
@@ -54,12 +55,11 @@ public class BulletSeekTest extends BulletSteeringTest {
 		character.setMaxLinearAcceleration(2500);
 
 		BulletEntity targetBase = world.add("staticbox", new Matrix4().setToTranslation(new Vector3(5f, 1.5f, 5f)));
-		targetBase.body.setCollisionFlags(targetBase.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		targetBase.body.setCollisionFlags(targetBase.body.getCollisionFlags()
+			| btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		target = new SteeringBulletEntity(targetBase);
 
-		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, new Vector3(0, 1.5f, 0), viewport, world.collisionWorld);
-		InputMultiplexer multiplexer = new InputMultiplexer(bulletTargetInputProcessor, cameraController);
-		inputProcessor = multiplexer;
+		setNewTargetInputProcessor(target, new Vector3(0, 1.5f, 0));
 
 		final Seek<Vector3> seekSB = new Seek<Vector3>(character, target);
 		character.setSteeringBehavior(seekSB);
@@ -77,10 +77,10 @@ public class BulletSeekTest extends BulletSteeringTest {
 
 		detailWindow = createDetailWindow(detailTable);
 	}
-	
+
 	@Override
 	public void render () {
-		character.update();
+		character.update(Gdx.graphics.getDeltaTime());
 
 		super.render(true);
 	}

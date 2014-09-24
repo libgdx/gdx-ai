@@ -31,7 +31,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Separation<T extends Vector<T>> extends GroupBehavior<T> implements ProximityCallback<T> {
 
 	/** The constant coefficient of decay for the inverse square law force. It controls how fast the separation strength decays with

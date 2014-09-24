@@ -19,7 +19,7 @@ package com.badlogic.gdx.ai.tests.steer.box2d;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -40,7 +40,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /** Base class for box2d steering behavior tests.
  * 
  * @author davebaol */
-public abstract class Box2dSteeringTest extends SteeringTest {
+public abstract class Box2dSteeringTest extends SteeringTestBase {
 
 	public Box2dSteeringTest (SteeringBehaviorTest container, String name) {
 		this(container, name, null);

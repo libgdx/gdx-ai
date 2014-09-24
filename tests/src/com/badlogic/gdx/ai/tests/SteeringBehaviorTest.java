@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.ai.tests.steer.SteeringTest;
+import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dArriveTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dCollisionAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dFaceTest;
@@ -26,8 +26,10 @@ import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dJumpTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dLookWhereYouAreGoingTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dSeekTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFaceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletFollowPathTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletLookWhereYouAreGoingTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletSeekTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dArriveTest;
@@ -77,9 +79,10 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	public CollapsableWindow behaviorSelectionWindow;
 	Label fpsLabel;
 	StringBuilder fpsStringBuilder;
+	public String helpMessage;
 
 	// Keep it sorted!
-	SteeringTest[][] behaviors = {
+	SteeringTestBase[][] behaviors = {
 		{ // Scene2d
 			new Scene2dArriveTest(this),
 			new Scene2dCollisionAvoidanceTest(this),
@@ -106,16 +109,18 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new Box2dSeekTest(this)
 		},
 		{ // Bullet
+			new BulletFaceTest(this),
 			new BulletFollowPathTest(this, false),
 			new BulletFollowPathTest(this, true),
 			new BulletJumpTest(this),
+			new BulletLookWhereYouAreGoingTest(this),
 			new BulletRaycastObstacleAvoidanceTest(this),
 			new BulletSeekTest(this)
 		}
 	};
 
 	Table behaviorTable;
-	SteeringTest currentBehavior;
+	SteeringTestBase currentBehavior;
 
 	public Stage stage;
 	public float stageWidth;
@@ -206,6 +211,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	protected void getStatus (final StringBuilder stringBuilder) {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+		if (helpMessage != null)
+			stringBuilder.append("     ").append(helpMessage);
 	}
 
 	private List<String> createBehaviorList (final int engineIndex) {

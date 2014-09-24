@@ -40,7 +40,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Interpose<T extends Vector<T>> extends Arrive<T> {
 
 	protected Steerable<T> agentA;
@@ -62,13 +62,12 @@ public class Interpose<T extends Vector<T>> extends Arrive<T> {
 	 * @param agentA the first agent
 	 * @param agentB the other agent
 	 * @param interpositionRatio a number between 0 and 1 indicating the percentage of the distance between the 2 agents that the
-	 *           owner should reach, where 0 is agentA position and 1 is agentB position.
-	 * @param maxLinearAcceleration the maximum linear acceleration that can be used to arrive at the target. */
-	public Interpose (Steerable<T> owner, Steerable<T> agentA, Steerable<T> agentB, float interposingRatio) {
+	 *           owner should reach, where 0 is agentA position and 1 is agentB position. */
+	public Interpose (Steerable<T> owner, Steerable<T> agentA, Steerable<T> agentB, float interpositionRatio) {
 		super(owner);
 		this.agentA = agentA;
 		this.agentB = agentB;
-		this.interpositionRatio = interposingRatio;
+		this.interpositionRatio = interpositionRatio;
 
 		this.internalTargetPosition = owner.newVector();
 	}

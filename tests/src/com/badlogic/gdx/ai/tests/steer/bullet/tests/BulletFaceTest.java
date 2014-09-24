@@ -14,53 +14,64 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
+package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /** A class to test and experiment with the {@link Face} behavior.
  * 
  * @autor davebaol */
-public class Scene2dFaceTest extends Scene2dSteeringTest {
-	SteeringActor character;
-	SteeringActor target;
+public class BulletFaceTest extends BulletSteeringTest {
 
-	public Scene2dFaceTest (SteeringBehaviorTest container) {
+	SteeringBulletEntity character;
+	SteeringBulletEntity target;
+
+	public BulletFaceTest (SteeringBehaviorTest container) {
 		super(container, "Face");
 	}
 
 	@Override
 	public void create (Table table) {
-		character = new SteeringActor(container.badlogicSmall, true);
-		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
-		character.setMaxAngularAcceleration(100);
-		character.setMaxAngularSpeed(15);
+		super.create(table);
 
-		target = new SteeringActor(container.target);
-		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
+		BulletEntity ground = world.add("ground", 0f, 0f, 0f);
+		ground.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
+			0.25f + 0.5f * (float)Math.random(), 1f);
+		ground.body.userData = "ground";
 
-		inputProcessor = new Scene2dTargetInputProcessor(target);
+		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
-		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
-			.setTimeToTarget(0.1f) //
-			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.degreesToRadians * 180);
+		character = new SteeringBulletEntity(characterBase, true);
+		character.setMaxAngularAcceleration(50);
+		character.setMaxAngularSpeed(10);
+
+		BulletEntity targetBase = world.add("staticbox", new Matrix4().setToTranslation(new Vector3(5f, 1.5f, 5f)));
+		targetBase.body.setCollisionFlags(targetBase.body.getCollisionFlags()
+			| btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		target = new SteeringBulletEntity(targetBase);
+
+		setNewTargetInputProcessor(target, new Vector3(0, 1.5f, 0));
+
+		final Face<Vector3> faceSB = new Face<Vector3>(character, target) //
+			.setAlignTolerance(.01f) //
+			.setDecelerationRadius(MathUtils.PI2 * 3f / 4f) //
+			.setTimeToTarget(.01f);
+
 		character.setSteeringBehavior(faceSB);
-
-		table.addActor(character);
-		table.addActor(target);
 
 		Table detailTable = new Table(container.skin);
 
@@ -107,7 +118,7 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 		final Label labelTimeToTarget = new Label("Time to Target [" + faceSB.getTimeToTarget() + " sec.]", container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
-		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
+		Slider timeToTarget = new Slider(0, 1, 0.01f, false, container.skin);
 		timeToTarget.setValue(faceSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
@@ -124,10 +135,14 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 
 	@Override
 	public void render () {
+		character.update(Gdx.graphics.getDeltaTime());
+
+		super.render(true);
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }

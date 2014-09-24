@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /** A class to test and experiment with the {@link Arrive} behavior.
@@ -59,8 +60,8 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 		table.addActor(character);
 		table.addActor(target);
 
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
+		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 
 		Table detailTable = new Table(container.skin);
 

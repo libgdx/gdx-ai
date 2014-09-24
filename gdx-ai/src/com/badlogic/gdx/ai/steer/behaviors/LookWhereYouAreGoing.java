@@ -37,7 +37,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class LookWhereYouAreGoing<T extends Vector<T>> extends ReachOrientation<T> {
 
 	/** Creates a {@code LookWhereYouAreGoing} behavior for the specified owner.

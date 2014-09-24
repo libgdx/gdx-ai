@@ -32,7 +32,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
 	public static boolean DEBUG_ENABLED = false;
@@ -66,7 +66,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	 * @param owner the owner of this behavior
 	 * @param jumpDescriptor the descriptor of the jump to make
 	 * @param gravity the gravity vector
-	 * @param axisHandler the handler giving access to the vertical axis
+	 * @param gravityComponentHandler the handler giving access to the vertical axis
 	 * @param callback the callback that gets informed about jump achievability and when to jump */
 	public Jump (Steerable<T> owner, JumpDescriptor<T> jumpDescriptor, T gravity,
 		GravityComponentHandler<T> gravityComponentHandler, JumpCallback callback) {
@@ -320,7 +320,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	 * 
 	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
-	 * @autor davebaol */
+	 * @author davebaol */
 	public static class JumpDescriptor<T extends Vector<T>> {
 		/** The position of the takeoff pad */
 		public T takeoffPosition;
@@ -355,7 +355,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	 * 
 	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
-	 * @autor davebaol */
+	 * @author davebaol */
 	public interface GravityComponentHandler<T extends Vector<T>> {
 
 		/** Returns the component of the given vector along which the gravity operates.

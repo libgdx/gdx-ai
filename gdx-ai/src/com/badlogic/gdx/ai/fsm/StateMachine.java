@@ -66,7 +66,7 @@ public interface StateMachine<E> extends Telegraph {
 
 	/** Indicates whether the state machine is in the given state.
 	 * @param state the state to be compared with the current state
-	 * @returns true if the current state's type is equal to the type of the class passed as a parameter. */
+	 * @return true if the current state's type is equal to the type of the class passed as a parameter. */
 	public boolean isInState (State<E> state);
 
 	/** Handles received telegrams.
@@ -75,6 +75,6 @@ public interface StateMachine<E> extends Telegraph {
 	 * message, it should be routed to the global state.
 	 * </p>
 	 * @param telegram the received telegram
-	 * @returns true if telegram has been successfully handled; false otherwise. */
+	 * @return true if telegram has been successfully handled; false otherwise. */
 	public boolean handleMessage (Telegram telegram);
 }

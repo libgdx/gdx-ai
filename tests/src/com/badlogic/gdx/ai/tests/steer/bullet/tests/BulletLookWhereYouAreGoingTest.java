@@ -14,77 +14,88 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
+package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
-import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /** A class to test and experiment with the {@link LookWhereYouAreGoing} behavior.
  * 
  * @autor davebaol */
-public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
+public class BulletLookWhereYouAreGoingTest extends BulletSteeringTest {
 
-	SteeringActor character;
-	SteeringActor target;
+	SteeringBulletEntity character;
+	SteeringBulletEntity target;
 
-	public Scene2dLookWhereYouAreGoingTest (SteeringBehaviorTest container) {
+	public BulletLookWhereYouAreGoingTest (SteeringBehaviorTest container) {
 		super(container, "Look Where You're Going");
 	}
 
 	@Override
 	public void create (Table table) {
-		character = new SteeringActor(container.badlogicSmall, true);
-		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
-		character.setMaxLinearAcceleration(100);
-		character.setMaxLinearSpeed(100);
-		character.setMaxAngularAcceleration(40);
-		character.setMaxAngularSpeed(15);
+		super.create(table);
 
-		target = new SteeringActor(container.target);
-		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
+		BulletEntity ground = world.add("ground", 0f, 0f, 0f);
+		ground.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
+			0.25f + 0.5f * (float)Math.random(), 1f);
+		ground.body.userData = "ground";
 
-		inputProcessor = new Scene2dTargetInputProcessor(target);
+		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
-		final LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(character) //
-			.setTimeToTarget(0.1f) //
-			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.PI);
+		// Create character
+		character = new SteeringBulletEntity(characterBase, true);
+		character.setMaxLinearAcceleration(500);
+		character.setMaxLinearSpeed(5);
+		character.setMaxAngularAcceleration(50);
+		character.setMaxAngularSpeed(10);
 
-		final Arrive<Vector2> arriveSB = new Arrive<Vector2>(character, target) //
-			.setTimeToTarget(0.1f) //
-			.setArrivalTolerance(0.001f) //
-			.setDecelerationRadius(80);
+		BulletEntity targetBase = world.add("staticbox", new Matrix4().setToTranslation(new Vector3(5f, 1.5f, 5f)));
+		targetBase.body.setCollisionFlags(targetBase.body.getCollisionFlags()
+			| btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		target = new SteeringBulletEntity(targetBase);
 
-		BlendedSteering<Vector2> blendedSteering = new BlendedSteering<Vector2>(character) //
+		setNewTargetInputProcessor(target, new Vector3(0, 1.5f, 0));
+
+		final LookWhereYouAreGoing<Vector3> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector3>(character) //
+			.setAlignTolerance(.005f) //
+			.setDecelerationRadius(MathUtils.PI2 * 3f / 4f) //
+			.setTimeToTarget(.02f);
+
+		Arrive<Vector3> arriveSB = new Arrive<Vector3>(character, target) //
+			.setTimeToTarget(0.01f) //
+			.setArrivalTolerance(0.0002f) //
+			.setDecelerationRadius(3);
+
+		BlendedSteering<Vector3> blendedSteering = new BlendedSteering<Vector3>(character) //
 			.setLimiter(NullLimiter.NEUTRAL_LIMITER) //
 			.add(arriveSB, 1f) //
 			.add(lookWhereYouAreGoingSB, 1f);
-		character.setSteeringBehavior(blendedSteering);
 
-		table.addActor(character);
-		table.addActor(target);
+		character.setSteeringBehavior(blendedSteering);
 
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxAngularAccelerationController(detailTable, character, 0, 50, 1);
+		addMaxAngularAccelerationController(detailTable, character, 0, 100, 1);
 
 		detailTable.row();
-		addMaxAngularSpeedController(detailTable, character, 0, 20, 1);
+		addMaxAngularSpeedController(detailTable, character, 0, 30, 1);
 
 		detailTable.row();
 		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + lookWhereYouAreGoingSB.getDecelerationRadius()
@@ -108,7 +119,7 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 			container.skin);
 		detailTable.add(labelAlignTolerance);
 		detailTable.row();
-		Slider alignTolerance = new Slider(0, 1, 0.0001f, false, container.skin);
+		Slider alignTolerance = new Slider(0, 0.1f, 0.0001f, false, container.skin);
 		alignTolerance.setValue(lookWhereYouAreGoingSB.getAlignTolerance());
 		alignTolerance.addListener(new ChangeListener() {
 			@Override
@@ -125,7 +136,7 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 			container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
-		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
+		Slider timeToTarget = new Slider(0, 1, 0.01f, false, container.skin);
 		timeToTarget.setValue(lookWhereYouAreGoingSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
@@ -142,10 +153,14 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 
 	@Override
 	public void render () {
+		character.update(Gdx.graphics.getDeltaTime());
+
+		super.render(true);
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }

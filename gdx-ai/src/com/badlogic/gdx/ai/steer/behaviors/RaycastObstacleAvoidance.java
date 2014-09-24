@@ -65,7 +65,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class RaycastObstacleAvoidance<T extends Vector<T>> extends SteeringBehavior<T> {
 
 	/** The inputRay configuration */
@@ -233,7 +233,7 @@ public class RaycastObstacleAvoidance<T extends Vector<T>> extends SteeringBehav
 	 * 
 	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
-	 * @autor davebaol */
+	 * @author davebaol */
 	public interface RaycastCollisionDetector<T extends Vector<T>> {
 
 		/** Find the closest collision between the given input ray and the objects in the game world. In case of collision,
@@ -246,7 +246,7 @@ public class RaycastObstacleAvoidance<T extends Vector<T>> extends SteeringBehav
 
 	/** @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
-	 * @autor davebaol */
+	 * @author davebaol */
 	public static class Ray<T extends Vector<T>> {
 
 		/** The starting point of this ray. */
@@ -285,7 +285,7 @@ public class RaycastObstacleAvoidance<T extends Vector<T>> extends SteeringBehav
 
 	/** @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
 	 * 
-	 * @autor davebaol */
+	 * @author davebaol */
 	public static class Collision<T extends Vector<T>> {
 
 		/** The collision point. */

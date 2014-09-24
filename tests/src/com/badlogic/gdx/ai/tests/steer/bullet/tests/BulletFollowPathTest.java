@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.paths.LinePath;
 import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
@@ -74,8 +75,8 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 
 		character = new SteeringBulletEntity(characterBase) {
 			@Override
-			public void update () {
-				super.update();
+			public void update (float deltaTime) {
+				super.update(deltaTime);
 				if (openPath) {
 					// Once arrived at an extremity of the path we want to go the other way around
 					Vector3 extremity = followPathSB.getPathOffset() >= 0 ? linePath.getEndPoint() : linePath.getStartPoint();
@@ -203,7 +204,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update();
+		character.update(Gdx.graphics.getDeltaTime());
 
 		super.render(true);
 

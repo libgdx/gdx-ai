@@ -33,7 +33,7 @@ import com.badlogic.gdx.math.Vector;
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
- * @autor davebaol */
+ * @author davebaol */
 public class Cohesion<T extends Vector<T>> extends GroupBehavior<T> implements ProximityCallback<T> {
 
 	private T centerOfMass;

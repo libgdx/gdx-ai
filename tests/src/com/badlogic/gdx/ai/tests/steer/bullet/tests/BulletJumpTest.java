@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -103,8 +104,8 @@ public class BulletJumpTest extends BulletSteeringTest {
 
 		character = new SteeringBulletEntity(characterBase) {
 			@Override
-			public void update () {
-				super.update();
+			public void update (float deltaTime) {
+				super.update(deltaTime);
 				// Should the character switch to Jump behavior?
 				if (character.getSteeringBehavior() == followPathSB) {
 					float d1 = followPathSB.getPathParam().getDistance();
@@ -325,7 +326,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 	@Override
 	public void render () {
 		MessageDispatcher.getInstance().dispatchDelayedMessages();
-		character.update();
+		character.update(Gdx.graphics.getDeltaTime());
 
 		super.render(true);
 

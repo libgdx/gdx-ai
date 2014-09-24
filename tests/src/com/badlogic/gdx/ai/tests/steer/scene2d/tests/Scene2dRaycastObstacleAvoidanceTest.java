@@ -49,6 +49,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -86,7 +87,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		createRandomWalls(8);
 
 		final SteeringActor character = new SteeringActor(container.greenFish, false);
-		character.setCenterPosition(50, 50);
+		character.setPosition(50, 50, Align.center);
 		character.setMaxLinearSpeed(100);
 		character.setMaxLinearAcceleration(350);
 

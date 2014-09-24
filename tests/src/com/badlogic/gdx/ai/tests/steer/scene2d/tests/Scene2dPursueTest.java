@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /** A class to test and experiment with the {@link Pursue} behavior.
@@ -43,12 +44,12 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 	@Override
 	public void create (Table table) {
 		character = new SteeringActor(container.badlogicSmall, false);
-		character.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		character.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		character.setMaxLinearSpeed(100);
 		character.setMaxLinearAcceleration(600);
 
 		prey = new SteeringActor(container.target, false);
-		prey.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		prey.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		prey.setMaxLinearSpeed(100);
 		prey.setMaxLinearAcceleration(250);
 		prey.setMaxAngularAcceleration(0); // used by Wander; set to 0 because independent facing is disabled

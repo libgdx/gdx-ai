@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 /** A SteeringActor is a scene2d {@link Actor} implementing the {@link Steerable} interface.
  * 
@@ -182,12 +183,25 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 
 	@Override
 	public void act (float delta) {
-		position.set(getCenterX(), getCenterY());
+		position.set(getX(Align.center), getY(Align.center));
 		if (steeringBehavior != null) {
+
+			// Calculate steering acceleration
 			steeringBehavior.steer(steeringOutput);
+
+			/*
+			 * Here you might want to add a motor control layer filtering steering accelerations.
+			 * 
+			 * For instance, a car in a driving game has physical constraints on its movement: it cannot turn while stationary; the
+			 * faster it moves, the slower it can turn (without going into a skid); it can brake much more quickly than it can
+			 * accelerate; and it only moves in the direction it is facing (ignoring power slides).
+			 */
+
+			// Apply steering acceleration
 			applySteering(steeringOutput, delta);
+
 			wrapAround(position, getParent().getWidth(), getParent().getHeight());
-			setCenterPosition(position.x, position.y);
+			setPosition(position.x, position.y, Align.center);
 		}
 		super.act(delta);
 	}

@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -72,7 +73,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 
 		table.addActor(character);
 
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
+		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 
 		Table detailTable = new Table(container.skin);
 

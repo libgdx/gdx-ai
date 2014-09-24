@@ -24,6 +24,7 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 /** A class to test and experiment with the {@link Seek} behavior.
  * 
@@ -52,8 +53,8 @@ public class Scene2dSeekTest extends Scene2dSteeringTest {
 		table.addActor(character);
 		table.addActor(target);
 
-		character.setCenterPosition(container.stageWidth / 2, container.stageHeight / 2);
-		target.setCenterPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight));
+		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
+		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 
 		Table detailTable = new Table(container.skin);
 
