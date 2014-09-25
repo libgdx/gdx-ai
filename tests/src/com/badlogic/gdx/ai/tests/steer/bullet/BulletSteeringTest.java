@@ -102,12 +102,12 @@ public abstract class BulletSteeringTest extends SteeringTestBase {
 		return new BulletWorld(new Vector3(0, -9.81f, 0));
 	}
 
-	protected void setNewTargetInputProcessor(SteeringBulletEntity target, Vector3 offset) {
-		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, new Vector3(0, 1.5f, 0),
-			viewport, world.collisionWorld);
+	protected void setNewTargetInputProcessor (SteeringBulletEntity target, Vector3 offset) {
+		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, offset, viewport,
+			world.collisionWorld);
 		setInputProcessor(new InputMultiplexer(bulletTargetInputProcessor, cameraController));
-		
-		container.helpMessage = "Press space to move the target";
+
+		container.helpMessage = "Keep SPACE pressed to move the target";
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import com.badlogic.gdx.ai.tests.msg.City;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 
 /** A simple test to demonstrate telegram providers.<br/>
- * Build a ideal city where every new citizen say hello to every existing citizens...
+ * It builds an ideal city where every new citizen says hello to all the citizens that don't live in his house.
  * @author avianey */
 public class TelegramProviderTest extends GdxAiTest {
 

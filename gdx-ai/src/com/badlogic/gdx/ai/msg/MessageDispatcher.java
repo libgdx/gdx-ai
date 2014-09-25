@@ -109,8 +109,8 @@ public class MessageDispatcher {
 
 	/** Registers a listener for the specified message code. Messages without an explicit receiver are broadcasted to all its
 	 * registered listeners.
-	 * @param msg the message code
-	 * @param listener the listener to add */
+	 * @param listener the listener to add 
+	 * @param msg the message code */
 	public void addListener (Telegraph listener, int msg) {
 		Array<Telegraph> listeners = msgListeners.get(msg);
 		if (listeners == null) {
@@ -119,7 +119,8 @@ public class MessageDispatcher {
 			msgListeners.put(msg, listeners);
 		}
 		listeners.add(listener);
-		// dispatch messages from registered providers
+
+		// Dispatch messages from registered providers
 		Array<TelegramProvider> providers = msgProviders.get(msg);
 		if (providers != null) {
 			for (int i = 0; i < providers.size; i++) {
@@ -174,8 +175,8 @@ public class MessageDispatcher {
 	}
 
 	/** Unregister the specified listener for the specified message code.
-	 * @param msg the message code
-	 * @param listener the listener to remove */
+	 * @param listener the listener to remove 
+	 * @param msg the message code */
 	public void removeListener (Telegraph listener, int msg) {
 		Array<Telegraph> listeners = msgListeners.get(msg);
 		if (listeners != null) {

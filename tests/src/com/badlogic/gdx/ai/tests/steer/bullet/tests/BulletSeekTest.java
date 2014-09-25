@@ -51,8 +51,8 @@ public class BulletSeekTest extends BulletSteeringTest {
 		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
 		character = new SteeringBulletEntity(characterBase);
-		character.setMaxLinearSpeed(250);
-		character.setMaxLinearAcceleration(2500);
+		character.setMaxLinearSpeed(80);
+		character.setMaxLinearAcceleration(8000);
 
 		BulletEntity targetBase = world.add("staticbox", new Matrix4().setToTranslation(new Vector3(5f, 1.5f, 5f)));
 		targetBase.body.setCollisionFlags(targetBase.body.getCollisionFlags()
@@ -73,7 +73,7 @@ public class BulletSeekTest extends BulletSteeringTest {
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxLinearSpeedController(detailTable, character);
+		addMaxLinearSpeedController(detailTable, character, 0, 250, 1);
 
 		detailWindow = createDetailWindow(detailTable);
 	}
