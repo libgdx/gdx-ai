@@ -18,8 +18,6 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
-import com.badlogic.gdx.ai.tests.fsm.Bob;
-import com.badlogic.gdx.ai.tests.fsm.Elsa;
 import com.badlogic.gdx.ai.tests.msg.City;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 
@@ -28,9 +26,8 @@ import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
  * @author avianey */
 public class TelegramProviderTest extends GdxAiTest {
 
-    public static final int MSG_TIME_TO_ACT     = 0;
-    public static final int MSG_EXISTING_CITIZEN = 1;
-    public static final int MSG_HOUSE_BUILT     = 2;
+	public static final int MSG_TIME_TO_ACT = 0;
+	public static final int MSG_EXISTING_CITIZEN = 1;
 
 	public static void main (String[] args) {
 		launch(new TelegramProviderTest());
