@@ -2,4 +2,4 @@
 - API Addition: added steering behaviors.
 - API Change: renamed Agent to Telegraph and moved it to msg package. Also, removed the update method.
 - Now StateMachine implements Telegraph.
-
+- API Addition: added support for telegram providers, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#telegram-providers
