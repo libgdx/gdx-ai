@@ -8,7 +8,7 @@ The gdxAI project is a libGDX extension living under the [libGDX umbrella](https
 
 * ~~[Use gdxAI in your project](https://github.com/libgdx/gdx-ai/wiki/Getting-started-with-gdxAI)~~
 * [Read the wiki](https://github.com/libgdx/gdx-ai/wiki)
-* ~~[Refer to the javadocs](http://libgdx.badlogicgames.com/gdx-ai/docs/)~~
+* [Refer to the javadocs](http://libgdx.badlogicgames.com/gdx-ai/docs/)
 * [Read the examples](https://github.com/libgdx/gdx-ai/tree/master/tests)
 
 
