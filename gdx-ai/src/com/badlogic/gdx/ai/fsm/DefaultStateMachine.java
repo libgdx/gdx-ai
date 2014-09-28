@@ -32,7 +32,7 @@ public class DefaultStateMachine<E> implements StateMachine<E> {
 	protected State<E> currentState;
 
 	/** The last state the owner was in. */
-	private State<E> previousState;
+	protected State<E> previousState;
 
 	/** The global state of the owner. Its logic is called every time the FSM is updated. */
 	protected State<E> globalState;
