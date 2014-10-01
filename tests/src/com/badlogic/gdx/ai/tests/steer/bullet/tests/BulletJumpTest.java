@@ -203,7 +203,6 @@ public class BulletJumpTest extends BulletSteeringTest {
 						return false;
 					}
 				};
-				MessageDispatcher.getInstance().setTimeGranularity(0);
 				MessageDispatcher.getInstance().dispatchMessage(time, telegraph, telegraph, 1);
 			}
 
@@ -325,8 +324,9 @@ public class BulletJumpTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		MessageDispatcher.getInstance().dispatchDelayedMessages();
-		character.update(Gdx.graphics.getDeltaTime());
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		MessageDispatcher.getInstance().update(deltaTime);
+		character.update(deltaTime);
 
 		super.render(true);
 

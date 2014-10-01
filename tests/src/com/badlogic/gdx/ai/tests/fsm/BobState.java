@@ -103,7 +103,7 @@ public enum BobState implements State<Bob> {
 			if (telegram.message == MessageType.STEW_READY) {
 
 				System.out.println("Message handled by " + bob.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getCurrentTime());
+					+ MessageDispatcher.getInstance().getCurrentTime());
 
 				talk(bob, "Okay Hun, ahm a comin'!");
 

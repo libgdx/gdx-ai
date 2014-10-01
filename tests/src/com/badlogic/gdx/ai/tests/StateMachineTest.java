@@ -56,7 +56,7 @@ public class StateMachineTest extends GdxAiTest {
 			elsa.update(elapsedTime);
 
 			// Dispatch any delayed messages
-			MessageDispatcher.getInstance().dispatchDelayedMessages();
+			MessageDispatcher.getInstance().update(elapsedTime);
 
 			elapsedTime = 0;
 		}

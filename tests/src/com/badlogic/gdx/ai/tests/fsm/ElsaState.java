@@ -96,7 +96,7 @@ public enum ElsaState implements State<Elsa> {
 			if (telegram.message == MessageType.STEW_READY) {
 
 				System.out.println("Message received by " + elsa.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getCurrentTime());
+					+ MessageDispatcher.getInstance().getCurrentTime());
 
 				talk(elsa, "StewReady! Lets eat");
 
@@ -134,7 +134,7 @@ public enum ElsaState implements State<Elsa> {
 			if (telegram.message == MessageType.HI_HONEY_I_M_HOME) {
 
 				System.out.println("Message handled by " + elsa.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getCurrentTime());
+					+ MessageDispatcher.getInstance().getCurrentTime());
 
 				talk(elsa, "Hi honey. Let me make you some of mah fine country stew");
 

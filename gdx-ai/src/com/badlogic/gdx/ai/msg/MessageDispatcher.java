@@ -20,7 +20,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 /** The MessageDispatcher is a singleton in charge of the creation, dispatch, and management of telegrams.
@@ -30,11 +29,7 @@ public class MessageDispatcher {
 
 	private static final String LOG_TAG = MessageDispatcher.class.getSimpleName();
 
-	private static final float NANOS_PER_SEC = 1000000000f;
-
 	private static final MessageDispatcher instance = new MessageDispatcher();
-
-	private static final long START = TimeUtils.nanoTime();
 
 	private PriorityQueue<Telegram> queue = new PriorityQueue<Telegram>();
 
@@ -44,7 +39,7 @@ public class MessageDispatcher {
 
 	private IntMap<Array<TelegramProvider>> msgProviders = new IntMap<Array<TelegramProvider>>();
 
-	private long timeGranularity;
+	private float currentTime;
 
 	private boolean debugEnabled;
 
@@ -55,7 +50,6 @@ public class MessageDispatcher {
 				return new Telegram();
 			}
 		};
-		setTimeGranularity(0.25f);
 	}
 
 	/** Returns the singleton instance of the message dispatcher. */
@@ -63,28 +57,9 @@ public class MessageDispatcher {
 		return instance;
 	}
 
-	/** Returns the current time in nanoseconds.
-	 * <p>
-	 * This implementation returns the value of the system timer minus a constant value determined when this class was loaded the
-	 * first time in order to ensure it takes increasing values (for 2 ^ 63 nanoseconds, i.e. 292 years) since the time stamp is
-	 * used to order the telegrams in the queue. */
-	public static long getCurrentTime () {
-		return TimeUtils.nanoTime() - START;
-	}
-
-	/** Returns the time granularity. */
-	public float getTimeGranularity () {
-		return timeGranularity / NANOS_PER_SEC;
-	}
-
-	/** Sets the time granularity. Delayed telegrams having the same sender, recipient and message type are considered identical
-	 * when they belong to the same time slot. If time granularity is greater than 0 identical telegrams are not doubled into the
-	 * queue. This prevents many similar telegrams from bunching up in the queue and being delivered en masse, thus flooding an
-	 * agent with identical messages. To eliminate time granularity just set it to 0. */
-	public void setTimeGranularity (float timeGranularity) {
-		boolean uniqueness = timeGranularity > 0;
-		this.timeGranularity = uniqueness ? (long)(timeGranularity * NANOS_PER_SEC) : 0;
-		this.queue.setUniqueness(uniqueness);
+	/** Returns the current time. */
+	public float getCurrentTime () {
+		return currentTime;
 	}
 
 	/** Returns true if debug mode is on; false otherwise. */
@@ -99,17 +74,7 @@ public class MessageDispatcher {
 
 	/** Registers a listener for the specified message code. Messages without an explicit receiver are broadcasted to all its
 	 * registered listeners.
-	 * @param msg the message code
 	 * @param listener the listener to add
-	 * @deprecated Use {@link #addListener(Telegraph, int)} instead. */
-	@Deprecated
-	public void addListener (int msg, Telegraph listener) {
-		addListener(listener, msg);
-	}
-
-	/** Registers a listener for the specified message code. Messages without an explicit receiver are broadcasted to all its
-	 * registered listeners.
-	 * @param listener the listener to add 
 	 * @param msg the message code */
 	public void addListener (Telegraph listener, int msg) {
 		Array<Telegraph> listeners = msgListeners.get(msg);
@@ -136,7 +101,7 @@ public class MessageDispatcher {
 
 	/** Registers a listener for a selection of message types. Messages without an explicit receiver are broadcasted to all its
 	 * registered listeners.
-	 *
+	 * 
 	 * @param listener the listener to add
 	 * @param msgs the message codes */
 	public void addListeners (Telegraph listener, int... msgs) {
@@ -166,16 +131,7 @@ public class MessageDispatcher {
 	}
 
 	/** Unregister the specified listener for the specified message code.
-	 * @param msg the message code
 	 * @param listener the listener to remove
-	 * @deprecated Use {@link #removeListener(Telegraph, int)} instead. */
-	@Deprecated
-	public void removeListener (int msg, Telegraph listener) {
-		removeListener(listener, msg);
-	}
-
-	/** Unregister the specified listener for the specified message code.
-	 * @param listener the listener to remove 
 	 * @param msg the message code */
 	public void removeListener (Telegraph listener, int msg) {
 		Array<Telegraph> listeners = msgListeners.get(msg);
@@ -219,7 +175,7 @@ public class MessageDispatcher {
 	}
 
 	/** Unregisters all the providers for the given message codes.
-	 *
+	 * 
 	 * @param msgs the message codes */
 	public void clearProviders (int... msgs) {
 		for (int msg : msgs)
@@ -237,6 +193,7 @@ public class MessageDispatcher {
 			pool.free(queue.get(i));
 		}
 		queue.clear();
+		currentTime = 0;
 	}
 
 	/** Removes all the telegrams from the queue and the registered listeners for all the messages. */
@@ -358,15 +315,14 @@ public class MessageDispatcher {
 		// If there is no delay, route telegram immediately
 		if (delay <= 0.0f) {
 			if (debugEnabled)
-				Gdx.app.log(LOG_TAG, "Instant telegram dispatched at time: " + getCurrentTime() + " by " + sender + " for "
-					+ receiver + ". Msg is " + msg);
+				Gdx.app.log(LOG_TAG, "Instant telegram dispatched at time: " + currentTime + " by " + sender + " for " + receiver
+					+ ". Msg is " + msg);
 
 			// Send the telegram to the recipient
 			discharge(telegram);
 		} else {
 			// Set the timestamp for the delayed telegram
-			long currentTime = getCurrentTime();
-			telegram.setTimestamp(currentTime + (long)(delay * NANOS_PER_SEC), timeGranularity);
+			telegram.setTimestamp(this.currentTime + delay);
 
 			// Put the telegram in the queue
 			boolean added = queue.add(telegram);
@@ -377,7 +333,7 @@ public class MessageDispatcher {
 			if (debugEnabled) {
 				if (added)
 					Gdx.app.log(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " recorded at time "
-						+ getCurrentTime() + ". Msg is " + msg);
+						+ this.currentTime + ". Msg is " + msg);
 				else
 					Gdx.app.log(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " rejected by the queue. Msg is "
 						+ msg);
@@ -387,19 +343,18 @@ public class MessageDispatcher {
 
 	/** Dispatches any telegrams with a timestamp that has expired. Any dispatched telegrams are removed from the queue.
 	 * <p>
-	 * This method must be called each time through the main game loop. */
-	public void dispatchDelayedMessages () {
-		if (queue.size() == 0) return;
+	 * This method must be called each time through the main game loop.
+	 * @param deltaTime the time span between the current frame and the last frame in seconds */
+	public void update (float deltaTime) {
+		currentTime += deltaTime;
 
-		// Get current time
-		long currentTime = getCurrentTime();
-
-		// Now peek at the queue to see if any telegrams need dispatching.
+		// Peek at the queue to see if any telegrams need dispatching.
 		// Remove all telegrams from the front of the queue that have gone
 		// past their time stamp.
-		do {
-			// Read the telegram from the front of the queue
-			final Telegram telegram = queue.peek();
+		Telegram telegram;
+		while ((telegram = queue.peek()) != null) {
+
+			// Exit loop if the telegram is in the future
 			if (telegram.getTimestamp() > currentTime) break;
 
 			if (debugEnabled) {
@@ -412,12 +367,13 @@ public class MessageDispatcher {
 
 			// Remove it from the queue
 			queue.poll();
-		} while (queue.size() > 0);
+		}
 
 	}
 
-	/** This method is used by {@link #dispatchMessage} or {@link #dispatchDelayedMessages}. It first calls the message handling
-	 * method of the receiving agents with the specified telegram then returns the telegram to the pool.
+	/** This method is used by {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage} for immediate
+	 * telegrams and {@link #update(float) update} for delayed telegrams. It first calls the message handling method of the
+	 * receiving agents with the specified telegram then returns the telegram to the pool.
 	 * @param telegram the telegram to discharge */
 	private void discharge (Telegram telegram) {
 		if (telegram.receiver != null) {
