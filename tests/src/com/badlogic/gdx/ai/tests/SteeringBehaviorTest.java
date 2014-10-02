@@ -81,6 +81,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 	StringBuilder fpsStringBuilder;
 	public String helpMessage;
 
+	// @off - disable libgdx formatter
 	// Keep it sorted!
 	SteeringTestBase[][] behaviors = {
 		{ // Scene2d
@@ -118,6 +119,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new BulletSeekTest(this)
 		}
 	};
+	// @on - enable libgdx formatter
 
 	Table behaviorTable;
 	SteeringTestBase currentBehavior;
@@ -211,8 +213,7 @@ public class SteeringBehaviorTest extends GdxAiTest {
 
 	protected void getStatus (final StringBuilder stringBuilder) {
 		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-		if (helpMessage != null)
-			stringBuilder.append("     ").append(helpMessage);
+		if (helpMessage != null) stringBuilder.append("     ").append(helpMessage);
 	}
 
 	private List<String> createBehaviorList (final int engineIndex) {

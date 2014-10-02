@@ -21,21 +21,19 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.tests.TelegramProviderTest;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
 
 /** @author avianey */
 public class House implements Telegraph {
 
 	static int NUM = 0;
 
-	List<Citizen> citizens;
+	Array<Citizen> citizens;
 	final int num;
 
 	public House () {
 		num = NUM++;
-		citizens = new ArrayList<>();
+		citizens = new Array<Citizen>();
 		Gdx.app.log(House.class.getSimpleName() + " " + num, "New house in town");
 		// Mr & Mrs
 		citizens.add(new Citizen(this));
@@ -45,7 +43,7 @@ public class House implements Telegraph {
 
 	@Override
 	public boolean handleMessage (Telegram msg) {
-		if (citizens.size() < 3) {
+		if (citizens.size < 3) {
 			// new child
 			Gdx.app.log(House.class.getSimpleName() + " " + num, "We're having a baby!");
 			citizens.add(new Citizen(this));

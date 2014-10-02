@@ -107,7 +107,7 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 
 	@Override
 	public boolean handleMessage (Telegram msg) {
-		this.msgCounter = (int)msg.extraInfo;
+		this.msgCounter = (Integer)msg.extraInfo;
 		this.msgTimeStamp = msg.getTimestamp();
 		System.out.println("Counter: " + msgCounter + "; timestamp: " + msgTimeStamp);
 		if (timerEnabled) {
