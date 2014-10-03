@@ -1,0 +1,10 @@
+selector
+  parallel
+    task:com.badlogic.gdx.ai.tests.btree.dogtasks.CareTask
+    alwaysFail
+      task:com.badlogic.gdx.ai.tests.btree.dogtasks.RestTask
+  sequence
+    task:com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask
+    task:com.badlogic.gdx.ai.tests.btree.dogtasks.WalkTask
+    task:com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask
+    task:com.badlogic.gdx.ai.tests.btree.dogtasks.MarkTask
