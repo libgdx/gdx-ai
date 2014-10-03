@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.Array;
 /**
  * A parallel is a special branch node that starts or resumes all children nodes
  * every single time, parallel node will succeed if all the children succeed,
- * fail if one of the children fail. The typical usecase: make the game entity
+ * fail if one of the children fail. The typical use case: make the game entity
  * react on event while sleeping or wandering.
  *
  * @param <E> type of the blackboard nodes use to read or modify game state
@@ -46,7 +46,8 @@ public class Parallel<E> extends BranchNode<E> {
 
   public Parallel(Array<Node<E>> nodes) {
     super(nodes);
-    this.runningNodes = new Array<Node<E>>(nodes.size);
+    // Create an unordered array to make item removal faster
+    this.runningNodes = new Array<Node<E>>(false, nodes.size);
   }
 
   @Override
