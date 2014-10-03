@@ -1,6 +1,6 @@
 [1.3.2]
-- API Addition: added steering behaviors.
+- API Addition: added steering behaviors, see https://github.com/libgdx/gdx-ai/wiki/Steering-Behaviors
+- API Addition: added support for telegram providers, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#telegram-providers
 - API Change: MessageDispatcher's dispatchDelayedMessages renamed to update which now takes deltaTime as input to properly support game pause; removed time granularity.
 - API Change: renamed Agent to Telegraph and moved it to msg package. Also, removed the update method.
 - API Addition: now StateMachine implements Telegraph.
-- API Addition: added support for telegram providers, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#telegram-providers
