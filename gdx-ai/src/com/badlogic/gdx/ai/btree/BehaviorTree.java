@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree;
 
-import com.badlogic.gdx.ai.btree.parser.TreeParser;
 import com.badlogic.gdx.ai.btree.parser.TreeLineProcessor;
+import com.badlogic.gdx.ai.btree.parser.TreeParser;
 
 /**
  * The behavior tree itself
@@ -48,7 +49,7 @@ public class BehaviorTree<E> extends Node<E> {
    * @param object the blackboard
    */
   public BehaviorTree(String data, E object) {
-    this.rootNode = TreeParser.parse(data, new TreeLineProcessor());
+    this.rootNode = TreeParser.parse(data, new TreeLineProcessor<E>());
     this.object = object;
   }
 

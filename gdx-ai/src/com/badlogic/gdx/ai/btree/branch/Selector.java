@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.branch;
 
 import com.badlogic.gdx.ai.btree.BranchNode;
 import com.badlogic.gdx.ai.btree.Node;
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * A selector is a branch node that runs every children nodes until one of them
@@ -30,7 +31,15 @@ import java.util.List;
  */
 public class Selector<E> extends BranchNode<E> {
 
-  public Selector(List<Node<E>> nodes) {
+  public Selector() {
+    super(new Array<Node<E>>());
+  }
+
+  public Selector(Node<E>...nodes) {
+    super(new Array<Node<E>>(nodes));
+  }
+
+  public Selector(Array<Node<E>> nodes) {
     super(nodes);
   }
 
@@ -38,7 +47,7 @@ public class Selector<E> extends BranchNode<E> {
   public void childFail(Node<E> runningNode) {
     super.childFail(runningNode);
     this.actualTask += 1;
-    if (actualTask < children.size()) {
+    if (actualTask < children.size) {
       run(this.object);
     } else {
       fail();

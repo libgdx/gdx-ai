@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.branch;
 
 import com.badlogic.gdx.ai.btree.BranchNode;
 import com.badlogic.gdx.ai.btree.Node;
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * A sequence is a branch node that runs every children nodes until one of them
@@ -30,15 +31,23 @@ import java.util.List;
  */
 public class Sequence<E> extends BranchNode<E> {
 
-  public Sequence(List<Node<E>> nodes) {
+  public Sequence() {
+    super(new Array<Node<E>>());
+  }
+
+  public Sequence(Array<Node<E>> nodes) {
     super(nodes);
+  }
+
+  public Sequence(Node<E>...nodes) {
+    super(new Array<Node<E>>(nodes));
   }
 
   @Override
   public void childSuccess(Node<E> runningNode) {
     super.childSuccess(runningNode);
-    this.actualTask += 1;
-    if (actualTask < children.size()) {
+    this.actualTask++;
+    if (actualTask < children.size) {
       run(this.object);
     } else {
       success();

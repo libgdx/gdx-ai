@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree;
 
 /**
@@ -28,7 +29,13 @@ public abstract class Decorator<E> extends Node<E> {
   private Node<E> node;
 
   /**
-   * Create a decorator that wraps a tree node
+   * Creates a decorator with no child node.
+   */
+  public Decorator() {
+  }
+
+  /**
+   * Creates a decorator that wraps a tree node
    *
    * @param node the node that will be wrapped
    */

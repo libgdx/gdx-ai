@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.branch;
 
 import com.badlogic.gdx.ai.btree.BranchNode;
 import com.badlogic.gdx.ai.btree.Node;
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * A parallel is a special branch node that starts or resumes all children nodes
@@ -32,12 +32,21 @@ import java.util.List;
  */
 public class Parallel<E> extends BranchNode<E> {
 
-  private final List<Node<E>> runningNodes = new ArrayList<Node<E>>();
+  private final Array<Node<E>> runningNodes;
   private boolean success = true;
   private int notDone;
 
-  public Parallel(List<Node<E>> nodes) {
+  public Parallel() {
+    this(new Array<Node<E>>());
+  }
+
+  public Parallel(Node<E>...nodes) {
+	  this(new Array<Node<E>>(nodes));
+  }
+
+  public Parallel(Array<Node<E>> nodes) {
     super(nodes);
+    this.runningNodes = new Array<Node<E>>(nodes.size);
   }
 
   @Override
@@ -49,7 +58,7 @@ public class Parallel<E> extends BranchNode<E> {
 
   @Override
   public void childRunning(Node<E> node, Node<E> reporter) {
-    if (!runningNodes.contains(reporter)) {
+    if (!runningNodes.contains(reporter, true)) {
       runningNodes.add(reporter);
     }
     notDone--;
@@ -58,10 +67,10 @@ public class Parallel<E> extends BranchNode<E> {
 
   @Override
   public void run(E object) {
-    notDone = children.size();
+    notDone = children.size;
     this.object = object;
     for (Node<E> node : children) {
-      if (runningNodes.contains(node)) {
+      if (runningNodes.contains(node, true)) {
         node.run(object);
       } else {
         node.setControl(this);
@@ -73,10 +82,10 @@ public class Parallel<E> extends BranchNode<E> {
 
   @Override
   public void childSuccess(Node<E> runningNode) {
-    runningNodes.remove(runningNode);
+    runningNodes.removeValue(runningNode, true);
     success = success && true;
     notDone--;
-    if (runningNodes.isEmpty() && notDone == 0) {
+    if (runningNodes.size == 0 && notDone == 0) {
       if (success) {
         success();
       } else {
@@ -87,10 +96,10 @@ public class Parallel<E> extends BranchNode<E> {
 
   @Override
   public void childFail(Node<E> runningNode) {
-    runningNodes.remove(runningNode);
-    success = success && false;
+	 runningNodes.removeValue(runningNode, true);
+    success = false;
     notDone--;
-    if (runningNodes.isEmpty() && notDone == 0) {
+    if (runningNodes.size == 0 && notDone == 0) {
       if (success) {
         success();
       } else {

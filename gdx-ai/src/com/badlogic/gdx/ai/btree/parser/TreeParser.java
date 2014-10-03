@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.parser;
 
-import java.util.Stack;
+import com.badlogic.gdx.utils.Array;
 
 /**
  *
@@ -29,7 +30,7 @@ public class TreeParser {
     T root = null;
     T prev = null;
     int step = 1;
-    Stack<T> out = new Stack<T>();
+    Array<T> out = new Array<T>();
     for (String string : lines) {
       String line = string.replaceAll("^[ \\t]+", "");
       int tabs = string.length() - line.length();
@@ -42,7 +43,7 @@ public class TreeParser {
         }
         T t = processor.process(line);
         if (tabs > currentDepth) {
-          out.push(prev);
+          out.add(prev); // push
         } else if (tabs < currentDepth) {
           int i = (currentDepth - tabs) / step;
           for (int j = 0; j < i; j++) {

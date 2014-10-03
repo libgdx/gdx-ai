@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.parser;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.Node;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.Selector;
@@ -24,51 +26,53 @@ import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 /**
  *
  * @author implicit-invocation
  */
-public class TreeLineProcessor implements LineProcessor<Node> {
+public class TreeLineProcessor<E> implements LineProcessor<Node<E>> {
 
-  public Node process(String line) {
+  public Node<E> process(String line) {
     String[] frags = line.split(":");
     String type = frags[0];
     if ("sequence".equals(type)) {
-      return new Sequence(new ArrayList<Node>());
+      return new Sequence<E>(new Array<Node<E>>());
     } else if ("selector".equals(type)) {
-      return new Selector(new ArrayList<Node>());
+      return new Selector<E>(new Array<Node<E>>());
     } else if ("parallel".equals(type)) {
-      return new Parallel(new ArrayList<Node>());
+      return new Parallel<E>(new Array<Node<E>>());
     } else if ("alwaysFail".equals(type)) {
-      return new AlwaysFail(null);
+      return new AlwaysFail<E>();
     } else if ("alwaysSucceed".equals(type)) {
-      return new AlwaysSucceed(null);
+      return new AlwaysSucceed<E>();
     } else if ("invert".equals(type)) {
-      return new Invert(null);
+      return new Invert<E>();
     } else if ("untilFail".equals(type)) {
-      return new UntilFail(null);
+      return new UntilFail<E>();
     } else if ("untilSuccess".equals(type)) {
-      return new UntilSuccess(null);
+      return new UntilSuccess<E>();
     } else if ("task".equals(type)) {
       String className = frags[1];
       try {
-        return (Node) Class.forName(className).newInstance();
-      } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TreeLineProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        @SuppressWarnings("unchecked")
+		  Node<E> newInstance = (Node<E>) ClassReflection.forName(className).newInstance();
+		  return newInstance;
+      } catch (ReflectionException e) {
+         Gdx.app.log(TreeLineProcessor.class.getName(), null, e);
       } catch (InstantiationException ex) {
-        Logger.getLogger(TreeLineProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        Gdx.app.log(TreeLineProcessor.class.getName(), null, ex);
       } catch (IllegalAccessException ex) {
-        Logger.getLogger(TreeLineProcessor.class.getName()).log(Level.SEVERE, null, ex);
-      }
+        Gdx.app.log(TreeLineProcessor.class.getName(), null, ex);
+		}
     }
     return null;
   }
 
-  public void addChild(Node parent, Node child) {
+  public void addChild(Node<E> parent, Node<E> child) {
     parent.addChild(child);
   }
 

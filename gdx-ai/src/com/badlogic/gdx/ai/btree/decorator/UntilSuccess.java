@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
@@ -28,6 +29,9 @@ import com.badlogic.gdx.ai.btree.Node;
  * @author implicit-invocation
  */
 public class UntilSuccess<E> extends Decorator<E> {
+
+  public UntilSuccess() {
+  }
 
   public UntilSuccess(Node<E> node) {
     super(node);

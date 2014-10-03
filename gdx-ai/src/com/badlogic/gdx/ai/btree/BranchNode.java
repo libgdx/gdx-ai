@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.badlogic.gdx.ai.btree;
 
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * A branch node defines a behavior tree branch, contains logic of starting or
@@ -35,7 +36,7 @@ public abstract class BranchNode<E> extends Node<E> {
    *
    * @param nodes list of this node's children, can be empty
    */
-  public BranchNode(List<Node<E>> nodes) {
+  public BranchNode(Array<Node<E>> nodes) {
     this.children = nodes;
   }
 
@@ -51,7 +52,7 @@ public abstract class BranchNode<E> extends Node<E> {
       runningNode.run(object);
     } else {
       this.object = object;
-      if (actualTask < children.size()) {
+      if (actualTask < children.size) {
         runningNode = children.get(actualTask);
         runningNode.setControl(this);
         runningNode.object = object;
