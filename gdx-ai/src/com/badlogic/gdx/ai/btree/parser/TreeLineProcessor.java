@@ -55,15 +55,12 @@ public class TreeLineProcessor<E> implements LineProcessor<Node<E>> {
 		} else if ("task".equals(type)) {
 			String className = frags[1];
 			try {
+				Class<?> clazz = ClassReflection.forName(className);
 				@SuppressWarnings("unchecked")
-				Node<E> newInstance = (Node<E>)ClassReflection.forName(className).newInstance();
+				Node<E> newInstance = (Node<E>)ClassReflection.newInstance(clazz);
 				return newInstance;
 			} catch (ReflectionException e) {
 				Gdx.app.log(TreeLineProcessor.class.getName(), null, e);
-			} catch (InstantiationException ex) {
-				Gdx.app.log(TreeLineProcessor.class.getName(), null, ex);
-			} catch (IllegalAccessException ex) {
-				Gdx.app.log(TreeLineProcessor.class.getName(), null, ex);
 			}
 		}
 		return null;
