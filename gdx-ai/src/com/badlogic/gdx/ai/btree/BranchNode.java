@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 /** A branch node defines a behavior tree branch, contains logic of starting or running sub-branches and leaves
@@ -25,7 +26,9 @@ import com.badlogic.gdx.utils.Array;
  * @author implicit-invocation */
 public abstract class BranchNode<E> extends Node<E> {
 
-	public static final Metadata METADATA = new Metadata(-1);
+	public static final Metadata METADATA = new Metadata(-1, "deterministic");
+
+	public boolean deterministic = true;
 
 	protected int actualTask;
 	protected Node<E> nodeRunning;
@@ -50,6 +53,11 @@ public abstract class BranchNode<E> extends Node<E> {
 		} else {
 			this.object = object;
 			if (actualTask < children.size) {
+				if (!deterministic) {
+					int lastTask = children.size - 1;
+					if (actualTask < lastTask)
+						children.swap(actualTask, MathUtils.random(actualTask, lastTask));
+				}
 				runningNode = children.get(actualTask);
 				runningNode.setControl(this);
 				runningNode.object = object;

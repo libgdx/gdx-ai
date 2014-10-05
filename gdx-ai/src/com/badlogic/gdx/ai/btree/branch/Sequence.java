@@ -43,8 +43,7 @@ public class Sequence<E> extends BranchNode<E> {
 	@Override
 	public void childSuccess (Node<E> runningNode) {
 		super.childSuccess(runningNode);
-		this.actualTask++;
-		if (actualTask < children.size) {
+		if (++actualTask < children.size) {
 			run(this.object);
 		} else {
 			success();

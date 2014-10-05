@@ -43,8 +43,7 @@ public class Selector<E> extends BranchNode<E> {
 	@Override
 	public void childFail (Node<E> runningNode) {
 		super.childFail(runningNode);
-		this.actualTask += 1;
-		if (actualTask < children.size) {
+		if (++actualTask < children.size) {
 			run(this.object);
 		} else {
 			fail();
