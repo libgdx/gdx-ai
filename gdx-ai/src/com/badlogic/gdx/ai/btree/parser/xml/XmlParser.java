@@ -47,7 +47,7 @@ public class XmlParser<E> {
 		xmlReader = new MyXmlReader<E>();
 	}
 
-	public BehaviorTree<E> parser (Reader reader, E object) throws IOException {
+	public BehaviorTree<E> parse (Reader reader, E object) throws IOException {
 		xmlReader.parse(reader);
 		return new BehaviorTree<E>(xmlReader.root, object);
 	}
