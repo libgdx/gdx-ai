@@ -17,15 +17,20 @@
 package com.badlogic.gdx.ai.tests.btree.dogtasks;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.tests.btree.Dog;
 
 /** @author implicit-invocation */
 public class CareTask extends Task<Dog> {
 
+	public static final Metadata METADATA = new Metadata(Task.METADATA, "urgentProb");
+
+	public float urgentProb = 0.8f;
+
 	@Override
 	public void run (Dog dog) {
-		if (Math.random() > 0.2) {
+		if (Math.random() < urgentProb) {
 			success();
 		} else {
 			Gdx.app.log("Dog brain", "It's leaking out!!!");

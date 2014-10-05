@@ -16,12 +16,23 @@
 
 package com.badlogic.gdx.ai.btree;
 
-/** Leaf node of a behavior tree, contains task or condition logic, should not have any child
+/** Leaf node of a behavior tree, contains action or condition logic, can not have any child.
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
  * @author implicit-invocation */
 public abstract class Task<E> extends Node<E> {
+
+	@Override
+	public void addChild (Node<E> node) {
+		// TODO Should we throw an exception?
+		//throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getChildCount () {
+		return 0;
+	}
 
 	@Override
 	public final void childRunning (Node<E> runningNode, Node<E> reporter) {

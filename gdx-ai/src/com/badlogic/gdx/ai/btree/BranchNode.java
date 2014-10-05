@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.Array;
  * @author implicit-invocation */
 public abstract class BranchNode<E> extends Node<E> {
 
+	public static final Metadata METADATA = new Metadata(-1);
+
 	protected int actualTask;
 	protected Node<E> nodeRunning;
 

@@ -1,0 +1,22 @@
+<BehaviorTree>
+  <Import task="com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask" as="Bark"/>
+  <Import task="com.badlogic.gdx.ai.tests.btree.dogtasks.CareTask" as="Care"/>
+  <Import task="com.badlogic.gdx.ai.tests.btree.dogtasks.RestTask"/> <!-- implicit alias "RestTask" -->
+  <Import task="com.badlogic.gdx.ai.tests.btree.dogtasks.WalkTask" as="Walk"/>
+  <Root>
+    <Selector>
+      <Parallel>
+        <Care urgentProb="0.8"/>
+        <AlwaysFail>
+          <RestTask/>
+        </AlwaysFail>
+      </Parallel>
+      <Sequence>
+        <Bark times="3"/>
+        <Walk/>
+        <Bark/>
+        <com.badlogic.gdx.ai.tests.btree.dogtasks.MarkTask/> <!-- Using fully qualified name -->
+      </Sequence>
+    </Selector>
+  </Root>
+</BehaviorTree>

@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.Array;
  * @author implicit-invocation */
 public abstract class Node<E> {
 
+	public static final Metadata METADATA = new Metadata();
+
 	protected Node<E> control;
 	protected Node<E> runningNode;
 	protected Array<Node<E>> children;
@@ -35,6 +37,13 @@ public abstract class Node<E> {
 	 * @param node the child node which will be added */
 	public void addChild (Node<E> node) {
 		children.add(node);
+	}
+
+	/** Returns the number of children of this node.
+	 * 
+	 * @return an int giving the number of children of this node */
+	public int getChildCount () {
+		return children.size;
 	}
 
 	/** This method will set a node as this node's control (parent)
@@ -101,4 +110,10 @@ public abstract class Node<E> {
 	public void childRunning (Node<E> runningNode, Node<E> reporter) {
 		this.runningNode = runningNode;
 	}
+
+	/** Returns the metadata of this node. */
+	public Metadata getMetadata () {
+		return Metadata.findMetadata(this.getClass());
+	}
+
 }

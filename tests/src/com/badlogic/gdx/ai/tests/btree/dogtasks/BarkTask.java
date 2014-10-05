@@ -16,15 +16,21 @@
 
 package com.badlogic.gdx.ai.tests.btree.dogtasks;
 
+import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.tests.btree.Dog;
 
 /** @author implicit-invocation */
 public class BarkTask extends Task<Dog> {
 
+	public static final Metadata METADATA = new Metadata(Task.METADATA, "times");
+
+	public int times = 1;
+
 	@Override
 	public void run (Dog dog) {
-		dog.bark();
+		for (int i = 0; i < times; i++)
+			dog.bark();
 		success();
 	}
 

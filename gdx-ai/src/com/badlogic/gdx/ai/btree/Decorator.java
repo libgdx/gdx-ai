@@ -16,12 +16,14 @@
 
 package com.badlogic.gdx.ai.btree;
 
-/** Decorators are wrappers that provide custom behaviors for nodes of any kind (branch node and task)
+/** Decorators are wrappers that provide custom behaviors for nodes of any kind (branch node and task).
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
  * @author implicit-invocation */
 public abstract class Decorator<E> extends Node<E> {
+
+	public static final Metadata METADATA = new Metadata(1);
 
 	private Node<E> node;
 
@@ -39,6 +41,13 @@ public abstract class Decorator<E> extends Node<E> {
 	@Override
 	public void addChild (Node<E> node) {
 		this.node = node;
+	}
+
+	/** Returns the number of children of this node.
+	 * 
+	 * @return an int giving the number of children of this node */
+	public int getChildCount () {
+		return node == null ? 0 : 1;
 	}
 
 	@Override
