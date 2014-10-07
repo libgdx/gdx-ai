@@ -43,7 +43,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 
 	/** Creates a closed {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path
-	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or empty. */
+	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or has less than two (2) waypoints. */
 	public LinePath (Array<T> waypoints) {
 		this(waypoints, false);
 	}
@@ -51,7 +51,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	/** Creates a {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path
 	 * @param isOpen a flag indicating whether the path is open or not
-	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or empty. */
+	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or has less than two (2) waypoints.  */
 	public LinePath (Array<T> waypoints, boolean isOpen) {
 		this.isOpen = isOpen;
 		createPath(waypoints);
@@ -184,7 +184,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	 * @param waypoints The way points of this path. 
 	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or empty. */
 	public void createPath (Array<T> waypoints) {
-		if (waypoints == null || waypoints.size == 0) throw new IllegalArgumentException("waypoints cannot be null or empty");
+		if (waypoints == null || waypoints.size < 2) throw new IllegalArgumentException("waypoints cannot be null and must contain at least two (2) waypoints");
 
 		segments = new Array<Segment<T>>(waypoints.size);
 		pathLength = 0;
