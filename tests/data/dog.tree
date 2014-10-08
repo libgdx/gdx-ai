@@ -1,10 +1,22 @@
-selector
-  parallel
-    task:com.badlogic.gdx.ai.tests.btree.dogtasks.CareTask
-    alwaysFail
-      task:com.badlogic.gdx.ai.tests.btree.dogtasks.RestTask
-  sequence
-    task:com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask
-    task:com.badlogic.gdx.ai.tests.btree.dogtasks.WalkTask
-    task:com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask
-    task:com.badlogic.gdx.ai.tests.btree.dogtasks.MarkTask
+#
+# Dog tree
+#
+
+# Alias definitions
+import bark:"com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask"
+import care:"com.badlogic.gdx.ai.tests.btree.dogtasks.CareTask"
+import mark:"com.badlogic.gdx.ai.tests.btree.dogtasks.MarkTask"
+import walk:"com.badlogic.gdx.ai.tests.btree.dogtasks.WalkTask"
+
+# Tree definition (note that root is optional)
+root
+  selector
+    parallel
+      care urgentProb:0.8
+      alwaysFail
+        com.badlogic.gdx.ai.tests.btree.dogtasks.RestTask # fully qualified task
+    sequence
+      bark times:2
+      walk
+      com.badlogic.gdx.ai.tests.btree.dogtasks.BarkTask # fully qualified task
+      mark

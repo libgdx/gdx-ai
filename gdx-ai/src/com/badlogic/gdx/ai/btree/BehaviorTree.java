@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.ai.btree;
 
-import com.badlogic.gdx.ai.btree.parser.TreeLineProcessor;
-import com.badlogic.gdx.ai.btree.parser.TreeParser;
-
 /** The behavior tree itself
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
@@ -34,15 +31,6 @@ public class BehaviorTree<E> extends Node<E> {
 	 * @param object the blackboard */
 	public BehaviorTree (Node<E> rootNode, E object) {
 		this.rootNode = rootNode;
-		this.object = object;
-	}
-
-	/** Create a behavior tree with a text format definition and a blackboard object
-	 * 
-	 * @param data the text tree
-	 * @param object the blackboard */
-	public BehaviorTree (String data, E object) {
-		this.rootNode = TreeParser.parse(data, new TreeLineProcessor<E>());
 		this.object = object;
 	}
 

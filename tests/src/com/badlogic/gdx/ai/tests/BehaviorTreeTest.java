@@ -16,20 +16,19 @@
 
 package com.badlogic.gdx.ai.tests;
 
-import java.io.IOException;
 import java.io.Reader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
-import com.badlogic.gdx.ai.btree.parser.xml.XmlParser;
+import com.badlogic.gdx.ai.btree.parser.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.Dog;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
 /** A simple test to demonstrate behavior tree
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public class BehaviorTreeTest extends GdxAiTest {
 
 	public static void main (String[] argv) {
@@ -43,16 +42,11 @@ public class BehaviorTreeTest extends GdxAiTest {
 	public void create () {
 		elapsedTime = 0;
 
-// String treeData = Gdx.files.internal("data/dog.tree").readString();
-// dogBehaviorTree = new BehaviorTree<Dog>(treeData, new Dog());
-
 		Reader reader = null;
 		try {
-			reader = Gdx.files.internal("data/dog.tree.xml").reader();
-			XmlParser<Dog> parser = new XmlParser<Dog>();
+			reader = Gdx.files.internal("data/dog.tree").reader();
+			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
 			dogBehaviorTree = parser.parse(reader, new Dog());
-		} catch (IOException e) {
-			throw new GdxRuntimeException(e);
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}

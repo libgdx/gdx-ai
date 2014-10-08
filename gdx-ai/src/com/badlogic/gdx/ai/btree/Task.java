@@ -35,6 +35,11 @@ public abstract class Task<E> extends Node<E> {
 	}
 
 	@Override
+	public Node<E> getChild (int i) {
+		return null;
+	}
+
+	@Override
 	public final void childRunning (Node<E> runningNode, Node<E> reporter) {
 	}
 

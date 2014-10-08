@@ -46,6 +46,11 @@ public abstract class Node<E> {
 		return children.size;
 	}
 
+	/** Returns the child at the given index. */
+	public Node<E> getChild (int i) {
+		return children.get(i);
+	}
+
 	/** This method will set a node as this node's control (parent)
 	 * 
 	 * @param control the parent node */

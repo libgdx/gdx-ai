@@ -43,11 +43,14 @@ public abstract class Decorator<E> extends Node<E> {
 		this.node = node;
 	}
 
-	/** Returns the number of children of this node.
-	 * 
-	 * @return an int giving the number of children of this node */
+	@Override
 	public int getChildCount () {
 		return node == null ? 0 : 1;
+	}
+
+	@Override
+	public Node<E> getChild (int i) {
+		return node;
 	}
 
 	@Override
