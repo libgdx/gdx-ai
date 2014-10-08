@@ -439,10 +439,10 @@ case 5:
 		}
 
 		if (p < pe || (statementName != null && !taskProcessed)) {
-			throw new SerializationException("Error parsing JSON on line " + lineNumber + " near: " + new String(data, p, pe - p),
+			throw new SerializationException("Error parsing behavior tree on line " + lineNumber + " near: " + new String(data, p, pe - p),
 				parseRuntimeEx);
 		} else if (parseRuntimeEx != null) {
-			throw new SerializationException("Error parsing JSON: " + new String(data), parseRuntimeEx);
+			throw new SerializationException("Error parsing behavior tree: " + new String(data), parseRuntimeEx);
 		}
 	}
 

@@ -240,7 +240,7 @@ public abstract class BehaviorTreeReader {
 			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"\r\n\t ] >unquotedChars %attrValue;
 			attribute = attrName ws* ':' ws* attrValue;
 			attributes = (ws+ attribute)+;
-			taskName = [a-zA-Z_] @taskName;   # remove ':' from the action
+			taskName = [a-zA-Z_] @taskName;
 			task = taskName attributes?;
 			line = indent* task? ws* comment? %endLine;
 			main := line (nl line)** nl?;
@@ -254,10 +254,10 @@ public abstract class BehaviorTreeReader {
 		}
 
 		if (p < pe || (statementName != null && !taskProcessed)) {
-			throw new SerializationException("Error parsing JSON on line " + lineNumber + " near: " + new String(data, p, pe - p),
+			throw new SerializationException("Error parsing behavior tree on line " + lineNumber + " near: " + new String(data, p, pe - p),
 				parseRuntimeEx);
 		} else if (parseRuntimeEx != null) {
-			throw new SerializationException("Error parsing JSON: " + new String(data), parseRuntimeEx);
+			throw new SerializationException("Error parsing behavior tree: " + new String(data), parseRuntimeEx);
 		}
 	}
 
