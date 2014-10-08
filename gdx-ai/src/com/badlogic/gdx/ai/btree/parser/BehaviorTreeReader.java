@@ -31,7 +31,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.StreamUtils;
 
-/** An abstract event driven {@link BehaviorTree} parser.<br>
+/** An abstract event driven {@link BehaviorTree} parser.
  * 
  * @author davebaol */
 public abstract class BehaviorTreeReader {
