@@ -14,31 +14,40 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.btree;
+package com.badlogic.gdx.ai.tests.btree.dog;
 
 import com.badlogic.gdx.Gdx;
 
-/** @author implicit-invocation */
+/** @author implicit-invocation
+ * @author davebaol */
 public class Dog {
 
+	public String name;
+	public String brainLog;
+
+	public Dog (String name) {
+		this.name = name;
+		this.brainLog = name + " brain";
+	}
+
 	public void bark () {
-		Gdx.app.log("Dog", "Bow wow!!!");
+		log("Bow wow!!!");
 	}
 
 	public void randomlyWalk () {
-		Gdx.app.log("Dog", "Dog walks randomly around!");
+		log("Dog walks randomly around!");
 	}
 
 	public boolean standBesideATree () {
 		if (Math.random() < 0.5) {
-			Gdx.app.log("Dog", "No tree found :(");
+			log("No tree found :(");
 			return false;
 		}
 		return true;
 	}
 
 	public void markATree () {
-		Gdx.app.log("Dog", "Dog lifts a leg and pee!");
+		log("Dog lifts a leg and pee!");
 	}
 
 	private boolean urgent = false;
@@ -49,6 +58,14 @@ public class Dog {
 
 	public void setUrgent (boolean urgent) {
 		this.urgent = urgent;
+	}
+
+	public void log (String msg) {
+		Gdx.app.log(name, msg);
+	}
+
+	public void brainLog (String msg) {
+		Gdx.app.log(brainLog, msg);
 	}
 
 }

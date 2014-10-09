@@ -14,25 +14,37 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.btree.dogtasks;
+package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.btree.Metadata;
+import com.badlogic.gdx.ai.btree.Node;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.tests.btree.Dog;
 
-/** @author implicit-invocation */
-public class RestTask extends Task<Dog> {
+/** @author implicit-invocation
+ * @author davebaol */
+public class CareTask extends Task<Dog> {
+
+	public static final Metadata METADATA = new Metadata(Task.METADATA, "urgentProb");
+
+	public float urgentProb = 0.8f;
 
 	@Override
 	public void run (Dog dog) {
-		if (dog.isUrgent()) {
-			Gdx.app.log("Dog brain", "No time to rest");
-			fail();
+		if (Math.random() < urgentProb) {
+			success();
 		} else {
-			Gdx.app.log("Dog brain", "zz zz");
-			running();
+			dog.brainLog("It's leaking out!!!");
+			dog.setUrgent(true);
+			success();
 		}
+	}
 
+	@Override
+	protected Node<Dog> copyTo (Node<Dog> node) {
+		CareTask care = (CareTask)node;
+		care.urgentProb = urgentProb;
+
+		return node;
 	}
 
 }

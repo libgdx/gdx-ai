@@ -20,7 +20,8 @@ package com.badlogic.gdx.ai.btree;
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public abstract class Decorator<E> extends Node<E> {
 
 	public static final Metadata METADATA = new Metadata(1);
@@ -83,6 +84,14 @@ public abstract class Decorator<E> extends Node<E> {
 	@Override
 	public void childSuccess (Node<E> runningNode) {
 		control.childSuccess(this);
+	}
+
+	@Override
+	protected Node<E> copyTo (Node<E> node) {
+		Decorator<E> decorator = (Decorator<E>)node;
+		decorator.node = this.node.cloneNode();
+
+		return node;
 	}
 
 }

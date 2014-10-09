@@ -17,12 +17,15 @@
 package com.badlogic.gdx.ai.btree;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 /** Node of a behavior tree, has one control and a list of children
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public abstract class Node<E> {
 
 	public static final Metadata METADATA = new Metadata();
@@ -121,4 +124,41 @@ public abstract class Node<E> {
 		return Metadata.findMetadata(this.getClass());
 	}
 
+	/** Clones this node to a new one.
+	 * @return the cloned node 
+	 * @throws CloneNodeException if the node cannot be successfully cloned. */
+	@SuppressWarnings("unchecked")
+	public Node<E> cloneNode () {
+		try {
+			return copyTo(ClassReflection.newInstance(this.getClass()));
+		} catch (ReflectionException e) {
+			throw new CloneNodeException(e);
+		}
+	}
+
+	/** Copies this node to the given node.
+	 * @param node the node to be filled
+	 * @return the given node for chaining */
+	protected abstract Node<E> copyTo (Node<E> node);
+
+	@SuppressWarnings("serial")
+	public static class CloneNodeException extends RuntimeException {
+
+		public CloneNodeException () {
+			super();
+		}
+
+		public CloneNodeException (String message) {
+			super(message);
+		}
+
+		public CloneNodeException (Throwable cause) {
+			super(cause);
+		}
+
+		public CloneNodeException (String message, Throwable cause) {
+			super(message, cause);
+		}
+		
+	}
 }

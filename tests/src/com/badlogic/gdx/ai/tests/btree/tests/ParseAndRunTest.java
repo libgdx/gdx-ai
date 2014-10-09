@@ -14,43 +14,44 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests;
+package com.badlogic.gdx.ai.tests.btree.tests;
 
 import java.io.Reader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.parser.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.btree.Dog;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.dog.Dog;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.StreamUtils;
 
 /** A simple test to demonstrate behavior tree
  * 
  * @author implicit-invocation
  * @author davebaol */
-public class BehaviorTreeTest extends GdxAiTest {
-
-	public static void main (String[] argv) {
-		launch(new BehaviorTreeTest());
-	}
+public class ParseAndRunTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
 
+	public ParseAndRunTest (BehaviorTreeTests container) {
+		super(container, "Parse and Run");
+	}
+
 	@Override
-	public void create () {
+	public void create (Table table) {
 		elapsedTime = 0;
 
 		Reader reader = null;
 		try {
 			reader = Gdx.files.internal("data/dog.tree").reader();
 			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
-			dogBehaviorTree = parser.parse(reader, new Dog());
+			dogBehaviorTree = parser.parse(reader, new Dog("Buddy"));
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
-
 	}
 
 	@Override
@@ -61,5 +62,9 @@ public class BehaviorTreeTest extends GdxAiTest {
 			dogBehaviorTree.step();
 			elapsedTime = 0;
 		}
+	}
+
+	@Override
+	public void dispose () {
 	}
 }

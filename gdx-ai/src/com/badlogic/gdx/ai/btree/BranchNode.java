@@ -23,7 +23,8 @@ import com.badlogic.gdx.utils.Array;
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public abstract class BranchNode<E> extends Node<E> {
 
 	public static final Metadata METADATA = new Metadata(-1, "deterministic");
@@ -55,8 +56,7 @@ public abstract class BranchNode<E> extends Node<E> {
 			if (actualTask < children.size) {
 				if (!deterministic) {
 					int lastTask = children.size - 1;
-					if (actualTask < lastTask)
-						children.swap(actualTask, MathUtils.random(actualTask, lastTask));
+					if (actualTask < lastTask) children.swap(actualTask, MathUtils.random(actualTask, lastTask));
 				}
 				runningNode = children.get(actualTask);
 				runningNode.setControl(this);
@@ -73,6 +73,19 @@ public abstract class BranchNode<E> extends Node<E> {
 	public void start (E object) {
 		this.actualTask = 0;
 		runningNode = null;
+	}
+
+	@Override
+	protected Node<E> copyTo (Node<E> node) {
+		BranchNode<E> branch = (BranchNode<E>)node;
+		branch.deterministic = deterministic;
+		if (children != null) {
+			for (int i = 0; i < children.size; i++) {
+				branch.children.add(children.get(i).cloneNode());
+			}
+		}
+
+		return node;
 	}
 
 }

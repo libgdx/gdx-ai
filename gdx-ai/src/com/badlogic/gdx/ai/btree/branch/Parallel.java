@@ -30,7 +30,7 @@ import com.badlogic.gdx.utils.Array;
 public class Parallel<E> extends BranchNode<E> {
 
 	private final Array<Node<E>> runningNodes;
-	private boolean success = true;
+	private boolean success;
 	private int notDone;
 
 	public Parallel () {
@@ -43,8 +43,9 @@ public class Parallel<E> extends BranchNode<E> {
 
 	public Parallel (Array<Node<E>> nodes) {
 		super(nodes);
+		this.success = true;
 		// Create an unordered array to make item removal faster
-		this.runningNodes = new Array<Node<E>>(false, nodes.size);
+		this.runningNodes = new Array<Node<E>>(false, nodes.size > 0 ? nodes.size : 8);
 	}
 
 	@Override

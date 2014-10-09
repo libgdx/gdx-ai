@@ -14,24 +14,36 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.btree.dogtasks;
+package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Metadata;
+import com.badlogic.gdx.ai.btree.Node;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.tests.btree.Dog;
 
-/** @author implicit-invocation */
-public class BarkTask extends Task<Dog> {
+/** @author implicit-invocation
+ * @author davebaol */
+public class WalkTask extends Task<Dog> {
 
-	public static final Metadata METADATA = new Metadata(Task.METADATA, "times");
+	private int i = 0;
 
-	public int times = 1;
+	@Override
+	public void start (Dog dog) {
+		i = 0;
+	}
 
 	@Override
 	public void run (Dog dog) {
-		for (int i = 0; i < times; i++)
-			dog.bark();
-		success();
+		i++;
+		dog.randomlyWalk();
+		if (i < 3) {
+			running();
+		} else {
+			success();
+		}
+	}
+
+	@Override
+	protected Node<Dog> copyTo (Node<Dog> node) {
+		return node;
 	}
 
 }

@@ -20,12 +20,29 @@ package com.badlogic.gdx.ai.btree;
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public class BehaviorTree<E> extends Node<E> {
 
-	private final Node<E> rootNode;
+	private Node<E> rootNode;
 
-	/** Create a behavior tree with a root node and a blackboard object
+	/** Creates a behavior tree with no root node and no blackboard object. Both the root node and the blackboard object must be set
+	 * before running this behavior tree.
+	 * 
+	 * @param rootNode the root node of this tree */
+	public BehaviorTree () {
+		this(null, null);
+	}
+
+	/** Creates a behavior tree with a root node and no blackboard object. The blackboard object must be set before running this
+	 * behavior tree.
+	 * 
+	 * @param rootNode the root node of this tree */
+	public BehaviorTree (Node<E> rootNode) {
+		this(rootNode, null);
+	}
+
+	/** Creates a behavior tree with a root node and a blackboard object
 	 * 
 	 * @param rootNode the root node of this tree
 	 * @param object the blackboard */
@@ -34,7 +51,7 @@ public class BehaviorTree<E> extends Node<E> {
 		this.object = object;
 	}
 
-	/** Change the blackboard object
+	/** Sets the blackboard object.
 	 * 
 	 * @param object the new blackboard */
 	public void setObject (E object) {
@@ -56,6 +73,14 @@ public class BehaviorTree<E> extends Node<E> {
 
 	@Override
 	public void run (E object) {
+	}
+
+	@Override
+	protected Node<E> copyTo (Node<E> node) {
+		BehaviorTree<E> tree = (BehaviorTree<E>)node;
+		tree.rootNode = rootNode.cloneNode();
+
+		return node;
 	}
 
 }

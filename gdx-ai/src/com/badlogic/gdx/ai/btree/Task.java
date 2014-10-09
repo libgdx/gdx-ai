@@ -20,13 +20,14 @@ package com.badlogic.gdx.ai.btree;
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public abstract class Task<E> extends Node<E> {
 
 	@Override
 	public void addChild (Node<E> node) {
 		// TODO Should we throw an exception?
-		//throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	@Override
