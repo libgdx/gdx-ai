@@ -32,6 +32,7 @@ import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletLookWhereYouAreGoingTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletSeekTest;
+import com.badlogic.gdx.ai.tests.steer.scene2d.formation.Scene2dFormationTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dArriveTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dCollisionAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFaceTest;
@@ -92,6 +93,8 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new Scene2dFollowFlowFieldTest(this),
 			new Scene2dFollowPathTest(this, false),
 			new Scene2dFollowPathTest(this, true),
+			new Scene2dFormationTest(this, false),
+			new Scene2dFormationTest(this, true),
 			new Scene2dHideTest(this),
 			new Scene2dInterposeTest(this),
 			new Scene2dLookWhereYouAreGoingTest(this),

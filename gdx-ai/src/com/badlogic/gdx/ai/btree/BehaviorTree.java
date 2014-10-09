@@ -72,6 +72,16 @@ public class BehaviorTree<E> extends Node<E> {
 	}
 
 	@Override
+	public int getChildCount () {
+		return rootNode == null ? 0 : 1;
+	}
+
+	@Override
+	public Node<E> getChild (int i) {
+		return rootNode;
+	}
+
+	@Override
 	public void run (E object) {
 	}
 

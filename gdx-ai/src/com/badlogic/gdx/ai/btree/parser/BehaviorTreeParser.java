@@ -22,18 +22,21 @@ import java.io.Reader;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.SubtreeReference;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
+import com.badlogic.gdx.ai.btree.decorator.SubtreeLazyReference;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -60,22 +63,41 @@ public class BehaviorTreeParser<E> {
 		btReader = new ConcreteBehaviorTreeReader<E>(this);
 	}
 
-	public BehaviorTree<E> parse (String bTree, E object) {
-		btReader.debug = true;
-		btReader.parse(bTree);
+	/** Parses the given string.
+	 * @param string the string to parse
+	 * @param object the blackboard object. It can be {@code null}.
+	 * @return the behavior tree
+	 * @throws SerializationException if the string cannot be successfully parsed. */
+	public BehaviorTree<E> parse (String string, E object) {
+		btReader.parse(string);
 		return createBehaviorTree(btReader.root, object);
 	}
 
+	/** Parses the given input stream.
+	 * @param input the input stream to parse
+	 * @param object the blackboard object. It can be {@code null}.
+	 * @return the behavior tree
+	 * @throws SerializationException if the input stream cannot be successfully parsed. */
 	public BehaviorTree<E> parse (InputStream input, E object) {
 		btReader.parse(input);
 		return createBehaviorTree(btReader.root, object);
 	}
 
+	/** Parses the given file.
+	 * @param file the file to parse
+	 * @param object the blackboard object. It can be {@code null}.
+	 * @return the behavior tree
+	 * @throws SerializationException if the file cannot be successfully parsed. */
 	public BehaviorTree<E> parse (FileHandle file, E object) {
 		btReader.parse(file);
 		return createBehaviorTree(btReader.root, object);
 	}
 
+	/** Parses the given reader.
+	 * @param reader the reader to parse
+	 * @param object the blackboard object. It can be {@code null}.
+	 * @return the behavior tree
+	 * @throws SerializationException if the reader cannot be successfully parsed. */
 	public BehaviorTree<E> parse (Reader reader, E object) {
 		btReader.parse(reader);
 		return createBehaviorTree(btReader.root, object);
@@ -106,6 +128,8 @@ public class BehaviorTreeParser<E> {
 				Parallel.class,
 				Selector.class,
 				Sequence.class,
+				SubtreeLazyReference.class,
+				SubtreeReference.class,
 				UntilFail.class,
 				UntilSuccess.class
 			}; // @on - enable libgdx formatter

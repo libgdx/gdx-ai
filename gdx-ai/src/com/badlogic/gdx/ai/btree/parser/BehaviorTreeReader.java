@@ -40,14 +40,22 @@ public abstract class BehaviorTreeReader {
 	protected int lineNumber;
 
 	protected abstract void startStatement (int indent, String name);
+
 	protected abstract void attribute (String name, Object value);
+
 	protected abstract void endStatement ();
 
-	public void parse (String bTree) {
-		char[] data = bTree.toCharArray();
+	/** Parses the given string.
+	 * @param string the string
+	 * @throws SerializationException if the string cannot be successfully parsed. */
+	public void parse (String string) {
+		char[] data = string.toCharArray();
 		parse(data, 0, data.length);
 	}
 
+	/** Parses the given reader.
+	 * @param reader the reader
+	 * @throws SerializationException if the reader cannot be successfully parsed. */
 	public void parse (Reader reader) {
 		try {
 			char[] data = new char[1024];
@@ -70,6 +78,9 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given input stream.
+	 * @param input the input stream
+	 * @throws SerializationException if the input stream cannot be successfully parsed. */
 	public void parse (InputStream input) {
 		try {
 			parse(new InputStreamReader(input, "UTF-8"));
@@ -80,6 +91,9 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given file.
+	 * @param file the file
+	 * @throws SerializationException if the file cannot be successfully parsed. */
 	public void parse (FileHandle file) {
 		try {
 			parse(file.reader("UTF-8"));
@@ -88,6 +102,11 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given data buffer from the offset up to the specified number of characters.
+	 * @param data the buffer
+	 * @param offset the initial index
+	 * @param length the specified number of characters to parse.
+	 * @throws SerializationException if the buffer cannot be successfully parsed. */
 	public void parse (char[] data, int offset, int length) {
 		int cs, p = offset, pe = length, eof = pe;
 
@@ -106,12 +125,12 @@ public abstract class BehaviorTreeReader {
 
 		try {
 		
-// line 108 "BehaviorTreeReader.java"
+// line 127 "BehaviorTreeReader.java"
 	{
 	cs = btree_start;
 	}
 
-// line 112 "BehaviorTreeReader.java"
+// line 131 "BehaviorTreeReader.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -192,7 +211,7 @@ case 1:
 			switch ( _btree_actions[_acts++] )
 			{
 	case 0:
-// line 109 "BehaviorTreeReader.rl"
+// line 128 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
@@ -235,7 +254,7 @@ case 1:
 			}
 	break;
 	case 1:
-// line 149 "BehaviorTreeReader.rl"
+// line 168 "BehaviorTreeReader.rl"
 	{
 				if (debug) System.out.println("unquotedChars");
 				s = p;
@@ -261,7 +280,7 @@ case 1:
 			}
 	break;
 	case 2:
-// line 172 "BehaviorTreeReader.rl"
+// line 191 "BehaviorTreeReader.rl"
 	{
 				if (debug) System.out.println("quotedChars");
 				s = ++p;
@@ -284,7 +303,7 @@ case 1:
 			}
 	break;
 	case 3:
-// line 192 "BehaviorTreeReader.rl"
+// line 211 "BehaviorTreeReader.rl"
 	{
 				indent = 0;
 				statementName = null;
@@ -294,13 +313,13 @@ case 1:
 			}
 	break;
 	case 4:
-// line 199 "BehaviorTreeReader.rl"
+// line 218 "BehaviorTreeReader.rl"
 	{
 				indent++;
 			}
 	break;
 	case 5:
-// line 202 "BehaviorTreeReader.rl"
+// line 221 "BehaviorTreeReader.rl"
 	{
 				taskProcessed = true;
 				if (statementName != null)
@@ -309,13 +328,13 @@ case 1:
 			}
 	break;
 	case 6:
-// line 208 "BehaviorTreeReader.rl"
+// line 227 "BehaviorTreeReader.rl"
 	{
 				if (debug) System.out.println("# Comment");
 			}
 	break;
 	case 7:
-// line 211 "BehaviorTreeReader.rl"
+// line 230 "BehaviorTreeReader.rl"
 	{
 				s = p;
 				char c;
@@ -330,7 +349,7 @@ case 1:
 			}
 	break;
 	case 8:
-// line 223 "BehaviorTreeReader.rl"
+// line 242 "BehaviorTreeReader.rl"
 	{
 				s = p;
 				char c;
@@ -343,7 +362,7 @@ case 1:
 				p--;
 			}
 	break;
-// line 344 "BehaviorTreeReader.java"
+// line 363 "BehaviorTreeReader.java"
 			}
 		}
 	}
@@ -365,7 +384,7 @@ case 4:
 	while ( __nacts-- > 0 ) {
 		switch ( _btree_actions[__acts++] ) {
 	case 0:
-// line 109 "BehaviorTreeReader.rl"
+// line 128 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
@@ -408,7 +427,7 @@ case 4:
 			}
 	break;
 	case 5:
-// line 202 "BehaviorTreeReader.rl"
+// line 221 "BehaviorTreeReader.rl"
 	{
 				taskProcessed = true;
 				if (statementName != null)
@@ -417,12 +436,12 @@ case 4:
 			}
 	break;
 	case 6:
-// line 208 "BehaviorTreeReader.rl"
+// line 227 "BehaviorTreeReader.rl"
 	{
 				if (debug) System.out.println("# Comment");
 			}
 	break;
-// line 423 "BehaviorTreeReader.java"
+// line 442 "BehaviorTreeReader.java"
 		}
 	}
 	}
@@ -432,7 +451,7 @@ case 5:
 	break; }
 	}
 
-// line 251 "BehaviorTreeReader.rl"
+// line 270 "BehaviorTreeReader.rl"
 
 		} catch (RuntimeException ex) {
 			parseRuntimeEx = ex;
@@ -447,7 +466,7 @@ case 5:
 	}
 
 	
-// line 446 "BehaviorTreeReader.java"
+// line 465 "BehaviorTreeReader.java"
 private static byte[] init__btree_actions_0()
 {
 	return new byte [] {
@@ -567,7 +586,7 @@ static final int btree_error = 0;
 static final int btree_en_main = 4;
 
 
-// line 265 "BehaviorTreeReader.rl"
+// line 284 "BehaviorTreeReader.rl"
 
 	private String unescape (String value) {
 		int length = value.length();

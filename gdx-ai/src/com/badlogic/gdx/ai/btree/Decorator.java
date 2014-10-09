@@ -26,7 +26,7 @@ public abstract class Decorator<E> extends Node<E> {
 
 	public static final Metadata METADATA = new Metadata(1);
 
-	private Node<E> node;
+	protected Node<E> node;
 
 	/** Creates a decorator with no child node. */
 	public Decorator () {

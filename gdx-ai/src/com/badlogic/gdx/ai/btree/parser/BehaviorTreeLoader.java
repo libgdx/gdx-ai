@@ -47,16 +47,16 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 		this.behaviorTree = null;
 
 		Object blackboard = null;
-		int debug = BehaviorTreeParser.DEBUG_NONE;
+		BehaviorTreeParser parser = null;
 		if (parameter != null) {
 			blackboard = parameter.blackboard;
-			debug = parameter.debug;
+			parser = parameter.parser;
 		}
 
 		Reader reader = null;
 		try {
 			reader = file.reader();
-			BehaviorTreeParser parser = new BehaviorTreeParser(debug);
+			parser = (parameter.parser == null ? new BehaviorTreeParser() : parameter.parser);
 			this.behaviorTree = parser.parse(reader, blackboard);
 		} finally {
 			StreamUtils.closeQuietly(reader);
@@ -77,19 +77,19 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 
 	static public class BehaviorTreeParameter extends AssetLoaderParameters<BehaviorTree> {
 		public final Object blackboard;
-		public final int debug;
+		public final BehaviorTreeParser parser;
 
 		public BehaviorTreeParameter () {
 			this(null);
 		}
 
 		public BehaviorTreeParameter (Object blackboard) {
-			this(blackboard, BehaviorTreeParser.DEBUG_NONE);
+			this(blackboard, null);
 		}
 
-		public BehaviorTreeParameter (Object blackboard, int debug) {
+		public BehaviorTreeParameter (Object blackboard, BehaviorTreeParser parser) {
 			this.blackboard = blackboard;
-			this.debug = debug;
+			this.parser = parser;
 		}
 	}
 

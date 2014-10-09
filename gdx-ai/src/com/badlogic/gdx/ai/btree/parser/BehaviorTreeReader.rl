@@ -38,14 +38,22 @@ public abstract class BehaviorTreeReader {
 	protected int lineNumber;
 
 	protected abstract void startStatement (int indent, String name);
+
 	protected abstract void attribute (String name, Object value);
+
 	protected abstract void endStatement ();
 
-	public void parse (String bTree) {
-		char[] data = bTree.toCharArray();
+	/** Parses the given string.
+	 * @param string the string
+	 * @throws SerializationException if the string cannot be successfully parsed. */
+	public void parse (String string) {
+		char[] data = string.toCharArray();
 		parse(data, 0, data.length);
 	}
 
+	/** Parses the given reader.
+	 * @param reader the reader
+	 * @throws SerializationException if the reader cannot be successfully parsed. */
 	public void parse (Reader reader) {
 		try {
 			char[] data = new char[1024];
@@ -68,6 +76,9 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given input stream.
+	 * @param input the input stream
+	 * @throws SerializationException if the input stream cannot be successfully parsed. */
 	public void parse (InputStream input) {
 		try {
 			parse(new InputStreamReader(input, "UTF-8"));
@@ -78,6 +89,9 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given file.
+	 * @param file the file
+	 * @throws SerializationException if the file cannot be successfully parsed. */
 	public void parse (FileHandle file) {
 		try {
 			parse(file.reader("UTF-8"));
@@ -86,6 +100,11 @@ public abstract class BehaviorTreeReader {
 		}
 	}
 
+	/** Parses the given data buffer from the offset up to the specified number of characters.
+	 * @param data the buffer
+	 * @param offset the initial index
+	 * @param length the specified number of characters to parse.
+	 * @throws SerializationException if the buffer cannot be successfully parsed. */
 	public void parse (char[] data, int offset, int length) {
 		int cs, p = offset, pe = length, eof = pe;
 

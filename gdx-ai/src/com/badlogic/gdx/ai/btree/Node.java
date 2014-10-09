@@ -125,40 +125,21 @@ public abstract class Node<E> {
 	}
 
 	/** Clones this node to a new one.
-	 * @return the cloned node 
-	 * @throws CloneNodeException if the node cannot be successfully cloned. */
+	 * @return the cloned node
+	 * @throws NodeCloneException if the node cannot be successfully cloned. */
 	@SuppressWarnings("unchecked")
 	public Node<E> cloneNode () {
 		try {
 			return copyTo(ClassReflection.newInstance(this.getClass()));
 		} catch (ReflectionException e) {
-			throw new CloneNodeException(e);
+			throw new NodeCloneException(e);
 		}
 	}
 
 	/** Copies this node to the given node.
 	 * @param node the node to be filled
-	 * @return the given node for chaining */
+	 * @return the given node for chaining
+	 * @throws NodeCloneException if the node cannot be successfully copied. */
 	protected abstract Node<E> copyTo (Node<E> node);
 
-	@SuppressWarnings("serial")
-	public static class CloneNodeException extends RuntimeException {
-
-		public CloneNodeException () {
-			super();
-		}
-
-		public CloneNodeException (String message) {
-			super(message);
-		}
-
-		public CloneNodeException (Throwable cause) {
-			super(cause);
-		}
-
-		public CloneNodeException (String message, Throwable cause) {
-			super(message, cause);
-		}
-		
-	}
 }

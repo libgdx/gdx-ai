@@ -16,47 +16,38 @@
 
 package com.badlogic.gdx.ai.tests.btree.tests;
 
-import java.io.Reader;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.BehaviorTreeLibrary;
+import com.badlogic.gdx.ai.btree.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.parser.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.StreamUtils;
 
-/** A simple test to demonstrate behavior tree cloning capabilities.
+/** A simple test to demonstrate subtree reference capabilities.
  * 
  * @author davebaol */
-public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
+public class SubtreeReferenceTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
 
-	public ParseCloneAndRunTest (BehaviorTreeTests container) {
-		super(container, "Parse, Clone and Run");
+	public SubtreeReferenceTest (BehaviorTreeTests container) {
+		super(container, "Subtree Reference");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void create (Table table) {
 		elapsedTime = 0;
 
-		BehaviorTree<Dog> dogBehaviorTreeArchetype = null;
+		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
+		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
 
-		Reader reader = null;
-		try {
-			reader = Gdx.files.internal("data/dog.tree").reader();
-			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
-			dogBehaviorTreeArchetype = parser.parse(reader, null);
-		} finally {
-			StreamUtils.closeQuietly(reader);
-		}
-		if (dogBehaviorTreeArchetype != null) {
-			dogBehaviorTree = (BehaviorTree<Dog>)dogBehaviorTreeArchetype.cloneNode();
-			dogBehaviorTree.setObject(new Dog("Cloned Buddy"));
-		}
+		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree("data/dogRef.tree");
+		dogBehaviorTree.setObject(new Dog("Buddy"));
 	}
 
 	@Override
