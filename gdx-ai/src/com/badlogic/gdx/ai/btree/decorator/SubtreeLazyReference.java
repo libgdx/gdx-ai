@@ -21,7 +21,7 @@ import com.badlogic.gdx.ai.btree.Decorator;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Node;
 
-/** A {@code SubtreeLookupDecorator} ...
+/** A {@code SubtreeLazyReference} ...
  * 
  * @param <E> type of the blackboard nodes use to read or modify game state
  * 
@@ -70,8 +70,6 @@ public class SubtreeLazyReference<E> extends Decorator<E> {
 
 	@Override
 	protected Node<E> copyTo (Node<E> node) {
-		if (node == null) super.copyTo(node);
-
 		SubtreeLazyReference<E> include = (SubtreeLazyReference<E>)node;
 		include.reference = reference;
 
