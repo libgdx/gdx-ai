@@ -18,7 +18,6 @@ package com.badlogic.gdx.ai.btree.parser;
 
 import java.io.Reader;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -46,16 +45,19 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 	@Override
 	public void loadAsync (AssetManager manager, String fileName, FileHandle file, BehaviorTreeParameter parameter) {
 		this.behaviorTree = null;
-		if (parameter == null)
-			throw new IllegalArgumentException("BehaviorTreeParameter can not be null");
-		if (parameter.blackboard == null)
-			throw new IllegalArgumentException("BehaviorTreeParameter.blackboard can not be null");
+
+		Object blackboard = null;
+		int debug = BehaviorTreeParser.DEBUG_NONE;
+		if (parameter != null) {
+			blackboard = parameter.blackboard;
+			debug = parameter.debug;
+		}
 
 		Reader reader = null;
 		try {
-			reader = Gdx.files.internal("data/dog.tree.xml").reader();
-			BehaviorTreeParser parser = new BehaviorTreeParser(parameter.debug);
-			this.behaviorTree = parser.parse(reader, parameter.blackboard);
+			reader = file.reader();
+			BehaviorTreeParser parser = new BehaviorTreeParser(debug);
+			this.behaviorTree = parser.parse(reader, blackboard);
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
@@ -76,6 +78,10 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 	static public class BehaviorTreeParameter extends AssetLoaderParameters<BehaviorTree> {
 		public final Object blackboard;
 		public final int debug;
+
+		public BehaviorTreeParameter () {
+			this(null);
+		}
 
 		public BehaviorTreeParameter (Object blackboard) {
 			this(blackboard, BehaviorTreeParser.DEBUG_NONE);
