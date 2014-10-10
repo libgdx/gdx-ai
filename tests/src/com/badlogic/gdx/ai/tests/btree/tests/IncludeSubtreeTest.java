@@ -26,16 +26,16 @@ import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-/** A simple test to demonstrate subtree reference capabilities.
+/** A simple test to demonstrate subtree inclusion at clone-time (non lazy).
  * 
  * @author davebaol */
-public class SubtreeReferenceTest extends BehaviorTreeTestBase {
+public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
 
-	public SubtreeReferenceTest (BehaviorTreeTests container) {
-		super(container, "Subtree Reference");
+	public IncludeSubtreeTest (BehaviorTreeTests container) {
+		super(container, "Include Subtree");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,7 +46,7 @@ public class SubtreeReferenceTest extends BehaviorTreeTestBase {
 		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
 		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
 
-		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree("data/dogRef.tree");
+		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree("data/dogInclude.tree");
 		dogBehaviorTree.setObject(new Dog("Buddy"));
 	}
 

@@ -22,14 +22,13 @@ import java.io.Reader;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Node;
-import com.badlogic.gdx.ai.btree.SubtreeReference;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
+import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
-import com.badlogic.gdx.ai.btree.decorator.SubtreeLazyReference;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
 import com.badlogic.gdx.files.FileHandle;
@@ -124,12 +123,11 @@ public class BehaviorTreeParser<E> {
 			Class<?>[] classes = new Class<?>[] {// @off - disable libgdx formatter
 				AlwaysFail.class,
 				AlwaysSucceed.class,
+				Include.class,
 				Invert.class,
 				Parallel.class,
 				Selector.class,
 				Sequence.class,
-				SubtreeLazyReference.class,
-				SubtreeReference.class,
 				UntilFail.class,
 				UntilSuccess.class
 			}; // @on - enable libgdx formatter
