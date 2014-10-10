@@ -23,6 +23,10 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SerializationException;
 
+/** A {@code BehaviorTreeLibrary} is a repository of behavior tree archetypes. Behavior tree archetypes never run. Indeed, they are
+ * only cloned to create behavior tree instances that can run.
+ * 
+ * @author davebaol */
 public class BehaviorTreeLibrary {
 
 	protected ObjectMap<String, BehaviorTree<?>> repository;
@@ -63,22 +67,36 @@ public class BehaviorTreeLibrary {
 		this.parser = new BehaviorTreeParser(parserDebugLevel);
 	}
 
-	/** Creates the root node of {@link BehaviorTree} from the specified reference.
+	/** Creates the root node of {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
 	 * @return the root node of the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
 	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
-	public Node<?> createRootNode (String treeReference) {
-		return retrieveArchetypeTree(treeReference).getChild(0).cloneNode();
+	@SuppressWarnings("unchecked")
+	public <T> Node<T> createRootNode (String treeReference) {
+		return (Node<T>)retrieveArchetypeTree(treeReference).getChild(0).cloneNode();
 	}
 
-	/** Creates the {@link BehaviorTree} from the specified reference.
+	/** Creates the {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
 	 * @return the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
 	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
-	public BehaviorTree<?> createBehaviorTree (String treeReference) {
-		return (BehaviorTree<?>)retrieveArchetypeTree(treeReference).cloneNode();
+	public <T> BehaviorTree<T> createBehaviorTree (String treeReference) {
+		return createBehaviorTree(treeReference, null);
+	}
+
+	/** Creates the {@link BehaviorTree} for the specified reference and blackboard object.
+	 * @param treeReference the tree identifier, typically a path
+	 * @param blackboard the blackboard object (it can be {@code null}).
+	 * @return the tree cloned from the archetype.
+	 * @throws SerializationException if the reference cannot be successfully parsed.
+	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	@SuppressWarnings("unchecked")
+	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
+		BehaviorTree<T> bt = (BehaviorTree<T>)retrieveArchetypeTree(treeReference).cloneNode();
+		bt.setObject(blackboard);
+		return bt;
 	}
 
 	/** Retrieves the archetype tree from the library. If the library doesn't contain the archetype tree it is loaded and added to

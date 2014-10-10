@@ -100,9 +100,7 @@ public class Include<E> extends Decorator<E> {
 		return node;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Node<E> createSubtreeRootNode () {
-		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
-		return (Node<E>)libraryManager.createRootNode(subtree);
+		return BehaviorTreeLibraryManager.getInstance().createRootNode(subtree);
 	}
 }

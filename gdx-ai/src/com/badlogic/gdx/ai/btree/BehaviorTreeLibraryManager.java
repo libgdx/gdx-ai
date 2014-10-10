@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.utils.SerializationException;
+
 /** @author davebaol */
 public class BehaviorTreeLibraryManager {
 
@@ -30,16 +32,40 @@ public class BehaviorTreeLibraryManager {
 		return instance;
 	}
 
+	public BehaviorTreeLibrary getLibrary () {
+		return library;
+	}
+
 	public void setLibrary (BehaviorTreeLibrary library) {
 		this.library = library;
 	}
 
-	public BehaviorTree<?> createBehaviorTree (String treeReference) {
+	/** Creates the root node of {@link BehaviorTree} for the specified reference.
+	 * @param treeReference the tree identifier, typically a path
+	 * @return the root node of the tree cloned from the archetype.
+	 * @throws SerializationException if the reference cannot be successfully parsed.
+	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	public <T> Node<T> createRootNode (String treeReference) {
+		return library.createRootNode(treeReference);
+	}
+
+	/** Creates the {@link BehaviorTree} for the specified reference.
+	 * @param treeReference the tree identifier, typically a path
+	 * @return the tree cloned from the archetype.
+	 * @throws SerializationException if the reference cannot be successfully parsed.
+	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	public <T> BehaviorTree<T> createBehaviorTree (String treeReference) {
 		return library.createBehaviorTree(treeReference);
 	}
 
-	public Node<?> createRootNode (String treeReference) {
-		return library.createRootNode(treeReference);
+	/** Creates the {@link BehaviorTree} for the specified reference and blackboard object.
+	 * @param treeReference the tree identifier, typically a path
+	 * @param blackboard the blackboard object (it can be {@code null}).
+	 * @return the tree cloned from the archetype.
+	 * @throws SerializationException if the reference cannot be successfully parsed.
+	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
+		return library.createBehaviorTree(treeReference, blackboard);
 	}
 
 }

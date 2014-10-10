@@ -40,7 +40,6 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 		this.lazy = lazy;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void create (Table table) {
 		elapsedTime = 0;
@@ -49,8 +48,7 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
 
 		String name = lazy ? "data/dogIncludeLazy.tree" : "data/dogInclude.tree";
-		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree(name);
-		dogBehaviorTree.setObject(new Dog("Buddy"));
+		dogBehaviorTree = libraryManager.createBehaviorTree(name, new Dog("Buddy"));
 	}
 
 	@Override
