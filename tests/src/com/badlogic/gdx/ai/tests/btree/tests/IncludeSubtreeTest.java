@@ -26,16 +26,18 @@ import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-/** A simple test to demonstrate subtree inclusion at clone-time (non lazy).
+/** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (non run-time).
  * 
  * @author davebaol */
 public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
+	private boolean lazy;
 
-	public IncludeSubtreeTest (BehaviorTreeTests container) {
-		super(container, "Include Subtree");
+	public IncludeSubtreeTest (BehaviorTreeTests container, boolean lazy) {
+		super(container, "Include Subtree" + (lazy ? " Lazily" : ""));
+		this.lazy = lazy;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,7 +48,8 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
 		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
 
-		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree("data/dogInclude.tree");
+		String name = lazy ? "data/dogIncludeLazy.tree" : "data/dogInclude.tree";
+		dogBehaviorTree = (BehaviorTree<Dog>)libraryManager.createBehaviorTree(name);
 		dogBehaviorTree.setObject(new Dog("Buddy"));
 	}
 
