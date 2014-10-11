@@ -22,7 +22,7 @@ import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRadiusProximity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
@@ -56,7 +56,7 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 	private World world;
 	private Batch spriteBatch;
 
-	public Box2dCollisionAvoidanceTest (SteeringBehaviorTest container) {
+	public Box2dCollisionAvoidanceTest (SteeringBehaviorsTest container) {
 		super(container, "Collision Avoidance");
 	}
 

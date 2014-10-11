@@ -24,7 +24,7 @@ import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.Separation;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.proximities.FieldOfViewProximity;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -56,7 +56,7 @@ public class Scene2dFlockingTest extends Scene2dSteeringTest {
 	
 	float separationDecayCoefficient;
 
-	public Scene2dFlockingTest (SteeringBehaviorTest container) {
+	public Scene2dFlockingTest (SteeringBehaviorsTest container) {
 		super(container, "Flocking");
 	}
 

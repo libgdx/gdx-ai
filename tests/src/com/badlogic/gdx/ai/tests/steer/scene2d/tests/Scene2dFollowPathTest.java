@@ -19,7 +19,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.paths.LinePath;
 import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -54,7 +54,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 	final boolean openPath;
 	Slider pathOffset;
 
-	public Scene2dFollowPathTest (SteeringBehaviorTest container, boolean openPath) {
+	public Scene2dFollowPathTest (SteeringBehaviorsTest container, boolean openPath) {
 		super(container, "Follow " + (openPath ? "Open" : "Closed") + " Path");
 		this.openPath = openPath;
 	}

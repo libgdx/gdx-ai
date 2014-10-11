@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.Limiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -34,11 +34,11 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author davebaol */
 public abstract class Scene2dSteeringTest extends SteeringTestBase {
 
-	public Scene2dSteeringTest (SteeringBehaviorTest container, String name) {
+	public Scene2dSteeringTest (SteeringBehaviorsTest container, String name) {
 		super(container, "Scene2d", name, null);
 	}
 
-	public Scene2dSteeringTest (SteeringBehaviorTest container, String name, InputProcessor inputProcessor) {
+	public Scene2dSteeringTest (SteeringBehaviorsTest container, String name, InputProcessor inputProcessor) {
 		super(container, "Scene2d", name, inputProcessor);
 	}
 

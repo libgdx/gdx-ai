@@ -28,7 +28,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Jump.JumpDescriptor;
 import com.badlogic.gdx.ai.steer.limiters.LinearLimiter;
 import com.badlogic.gdx.ai.steer.paths.LinePath;
 import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
@@ -81,7 +81,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 	int airbornePlanarVelocityToUse = 0;
 	float runUpLength = 3.5f;
 
-	public BulletJumpTest (SteeringBehaviorTest container) {
+	public BulletJumpTest (SteeringBehaviorsTest container) {
 		super(container, "Jump");
 	}
 

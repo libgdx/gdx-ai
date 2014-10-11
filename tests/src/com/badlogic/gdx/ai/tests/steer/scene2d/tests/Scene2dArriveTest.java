@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
@@ -37,7 +37,7 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor target;
 
-	public Scene2dArriveTest (SteeringBehaviorTest container) {
+	public Scene2dArriveTest (SteeringBehaviorsTest container) {
 		super(container, "Arrive");
 	}
 

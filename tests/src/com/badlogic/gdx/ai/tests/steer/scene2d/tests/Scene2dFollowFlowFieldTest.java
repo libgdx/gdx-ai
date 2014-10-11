@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.FollowFlowField;
 import com.badlogic.gdx.ai.steer.behaviors.FollowFlowField.FlowField;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -47,7 +47,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 
 	RandomFlowField2DWithRepulsors flowField;
 
-	public Scene2dFollowFlowFieldTest (SteeringBehaviorTest container) {
+	public Scene2dFollowFlowFieldTest (SteeringBehaviorsTest container) {
 		super(container, "Follow Flow Field");
 	}
 

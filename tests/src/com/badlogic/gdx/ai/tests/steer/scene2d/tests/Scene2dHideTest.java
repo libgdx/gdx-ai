@@ -24,7 +24,7 @@ import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
 import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
 import com.badlogic.gdx.ai.steer.proximities.InfiniteProximity;
 import com.badlogic.gdx.ai.steer.proximities.RadiusProximity;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
@@ -56,7 +56,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 	Wander<Vector2> wanderSB;
 	boolean hideMode;
 
-	public Scene2dHideTest (SteeringBehaviorTest container) {
+	public Scene2dHideTest (SteeringBehaviorsTest container) {
 		super(container, "Hide");
 	}
 

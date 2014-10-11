@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.steer.Limiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -31,17 +31,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
  * 
  * @author davebaol */
 public abstract class SteeringTestBase {
-	protected SteeringBehaviorTest container;
+	protected SteeringBehaviorsTest container;
 	public String engineName;
 	public String behaviorName;
 	protected InputProcessor inputProcessor;
 	protected CollapsableWindow detailWindow;
 
-	public SteeringTestBase (SteeringBehaviorTest container, String engineName, String name) {
+	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String name) {
 		this(container, engineName, name, null);
 	}
 
-	public SteeringTestBase (SteeringBehaviorTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
+	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
 		this.container = container;
 		this.engineName = engineName;
 		this.behaviorName = behaviorName;

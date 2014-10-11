@@ -22,7 +22,7 @@ import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloneException;
 
-/** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link lazy} parameter:
+/** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link #lazy} parameter:
  * at clone-time if is {@code false}, at run-time if is {@code true}.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state

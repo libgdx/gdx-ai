@@ -21,7 +21,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dTargetInputProcessor;
@@ -47,7 +47,7 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 	private World world;
 	private Batch spriteBatch;
 
-	public Box2dLookWhereYouAreGoingTest (SteeringBehaviorTest container) {
+	public Box2dLookWhereYouAreGoingTest (SteeringBehaviorsTest container) {
 		super(container, "Look Where You're Going");
 	}
 

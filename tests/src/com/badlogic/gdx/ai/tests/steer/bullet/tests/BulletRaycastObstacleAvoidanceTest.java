@@ -42,7 +42,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
@@ -61,7 +61,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	private Vector3 tmp = new Vector3();
 
-	public BulletRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
+	public BulletRaycastObstacleAvoidanceTest (SteeringBehaviorsTest container) {
 		super(container, "Raycast Obstacle Avoidance");
 	}
 

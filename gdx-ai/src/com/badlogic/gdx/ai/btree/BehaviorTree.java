@@ -26,10 +26,8 @@ public class BehaviorTree<E> extends Task<E> {
 
 	private Task<E> rootTask;
 
-	/** Creates a behavior tree with no root task and no blackboard object. Both the root task and the blackboard object must be set
-	 * before running this behavior tree.
-	 * 
-	 * @param rootTask the root task of this tree */
+	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
+	 * be set before running this behavior tree. */
 	public BehaviorTree () {
 		this(null, null);
 	}

@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
@@ -35,7 +35,7 @@ public class BulletSeekTest extends BulletSteeringTest {
 	SteeringBulletEntity character;
 	SteeringBulletEntity target;
 
-	public BulletSeekTest (SteeringBehaviorTest container) {
+	public BulletSeekTest (SteeringBehaviorsTest container) {
 		super(container, "Seek");
 	}
 

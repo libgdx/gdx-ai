@@ -24,7 +24,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Jump.JumpCallback;
 import com.badlogic.gdx.ai.steer.behaviors.Jump.JumpDescriptor;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.limiters.LinearLimiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -90,7 +90,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 	int airbornePlanarVelocityToUse = 0;
 	float runUpLength = 3.5f;
 
-	public Box2dJumpTest (SteeringBehaviorTest container) {
+	public Box2dJumpTest (SteeringBehaviorsTest container) {
 		super(container, "Jump");
 	}
 

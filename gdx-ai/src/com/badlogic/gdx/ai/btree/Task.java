@@ -64,35 +64,37 @@ public abstract class Task<E> {
 
 	/** This method will be called once before this task's first run
 	 * 
-	 * @param object the blackboard */
+	 * @param object the blackboard object */
 	public void start (E object) {
 
 	}
 
 	/** This method will be called when this task succeeds or fails
 	 * 
-	 * @param object blackboard */
+	 * @param object the blackboard object */
 	public void end (E object) {
 
 	}
 
 	/** This method contains update logic of this task
 	 * 
-	 * @param object blackboard */
+	 * @param object the blackboard object */
 	public abstract void run (E object);
 
-	/** This method will be called in {@link #run(E)} to inform control that this task needs to run again */
+	/** This method will be called in {@link #run(Object) run()} to inform control that this task needs to run again */
 	public final void running () {
 		control.childRunning(this, this);
 	}
 
-	/** This method will be called in {@link #run(E)} to inform control that this task has finished running with a success result */
+	/** This method will be called in {@link #run(Object) run()} to inform control that this task has finished running with a
+	 * success result */
 	public void success () {
 		end(object);
 		control.childSuccess(this);
 	}
 
-	/** This method will be called in {@link #run(E)} to inform control that this task has finished running with a failure result */
+	/** This method will be called in {@link #run(Object) run()} to inform control that this task has finished running with a
+	 * failure result */
 	public void fail () {
 		end(object);
 		control.childFail(this);

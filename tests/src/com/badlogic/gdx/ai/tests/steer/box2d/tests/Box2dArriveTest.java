@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dTargetInputProcessor;
@@ -42,7 +42,7 @@ public class Box2dArriveTest extends Box2dSteeringTest {
 	private World world;
 	private Batch spriteBatch;
 
-	public Box2dArriveTest (SteeringBehaviorTest container) {
+	public Box2dArriveTest (SteeringBehaviorsTest container) {
 		super(container, "Arrive");
 	}
 

@@ -20,7 +20,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.steer.Limiter;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletConstructor;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletWorld;
@@ -94,7 +94,7 @@ public abstract class BulletSteeringTest extends SteeringTestBase {
 
 	protected final static Vector3 tmpV1 = new Vector3(), tmpV2 = new Vector3();
 
-	public BulletSteeringTest (SteeringBehaviorTest container, String name) {
+	public BulletSteeringTest (SteeringBehaviorsTest container, String name) {
 		super(container, "Bullet", name);
 	}
 

@@ -35,7 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
@@ -56,7 +56,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 	final boolean openPath;
 	Slider pathOffset;
 
-	public BulletFollowPathTest (SteeringBehaviorTest container, boolean openPath) {
+	public BulletFollowPathTest (SteeringBehaviorsTest container, boolean openPath) {
 		super(container, "Follow " + (openPath ? "Open" : "Closed") + " Path");
 		this.openPath = openPath;
 	}

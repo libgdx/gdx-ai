@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.math.MathUtils;
@@ -37,7 +37,7 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 	SteeringActor character;
 	SteeringActor prey;
 
-	public Scene2dPursueTest (SteeringBehaviorTest container) {
+	public Scene2dPursueTest (SteeringBehaviorsTest container) {
 		super(container, "Pursue");
 	}
 

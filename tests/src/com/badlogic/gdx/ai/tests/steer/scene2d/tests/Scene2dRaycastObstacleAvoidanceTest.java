@@ -27,7 +27,7 @@ import com.badlogic.gdx.ai.steer.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.steer.rays.ParallelSideRayConfiguration;
 import com.badlogic.gdx.ai.steer.rays.RayConfigurationBase;
 import com.badlogic.gdx.ai.steer.rays.SingleRayConfiguration;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRaycastCollisionDetector;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
@@ -70,7 +70,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	private int[] walls_hw;
 	private int[] walls_hh;
 
-	public Scene2dRaycastObstacleAvoidanceTest (SteeringBehaviorTest container) {
+	public Scene2dRaycastObstacleAvoidanceTest (SteeringBehaviorsTest container) {
 		super(container, "Raycast Obstacle Avoidance");
 	}
 

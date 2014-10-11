@@ -32,7 +32,6 @@ import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletJumpTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletLookWhereYouAreGoingTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.tests.BulletSeekTest;
-import com.badlogic.gdx.ai.tests.steer.scene2d.formation.Scene2dFormationTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dArriveTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dCollisionAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dFaceTest;
@@ -67,10 +66,10 @@ import com.badlogic.gdx.utils.StringBuilder;
 /** Test class for steering behaviors.
  * 
  * @author davebaol */
-public class SteeringBehaviorTest extends GdxAiTest {
+public class SteeringBehaviorsTest extends GdxAiTest {
 
 	public static void main (String[] argv) {
-		launch(new SteeringBehaviorTest());
+		launch(new SteeringBehaviorsTest());
 	}
 
 	private static final boolean DEBUG_STAGE = false;
@@ -93,8 +92,6 @@ public class SteeringBehaviorTest extends GdxAiTest {
 			new Scene2dFollowFlowFieldTest(this),
 			new Scene2dFollowPathTest(this, false),
 			new Scene2dFollowPathTest(this, true),
-			new Scene2dFormationTest(this, false),
-			new Scene2dFormationTest(this, true),
 			new Scene2dHideTest(this),
 			new Scene2dInterposeTest(this),
 			new Scene2dLookWhereYouAreGoingTest(this),

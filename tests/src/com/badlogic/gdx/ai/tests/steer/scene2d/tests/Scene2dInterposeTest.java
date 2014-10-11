@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
 import com.badlogic.gdx.ai.steer.behaviors.Interpose;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorTest;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dSteeringTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -44,7 +44,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 
 	Interpose<Vector2> interposeSB;
 
-	public Scene2dInterposeTest (SteeringBehaviorTest container) {
+	public Scene2dInterposeTest (SteeringBehaviorsTest container) {
 		super(container, "Interpose");
 	}
 
