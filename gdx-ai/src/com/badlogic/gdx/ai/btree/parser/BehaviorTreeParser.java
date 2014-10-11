@@ -29,6 +29,7 @@ import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
+import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
 import com.badlogic.gdx.files.FileHandle;
@@ -127,6 +128,7 @@ public class BehaviorTreeParser<E> {
 				Invert.class,
 				Parallel.class,
 				Selector.class,
+				SemaphoreGuard.class,
 				Sequence.class,
 				UntilFail.class,
 				UntilSuccess.class
@@ -174,6 +176,11 @@ public class BehaviorTreeParser<E> {
 			step = 1;
 			stack.clear();
 			super.parse(data, offset, length);
+
+			// Pop all node from the stack and check their minimum number of children
+			popAndcheckMinChildren(0);
+
+			if (root == null) throw new GdxRuntimeException("The tree must have at least the node");
 		}
 
 		@Override
@@ -348,17 +355,11 @@ public class BehaviorTreeParser<E> {
 					}
 					if (indent > currentDepth) {
 						stack.add(prevNode); // push
-					} else if (indent < currentDepth) {
+					} else if (indent <= currentDepth) {
+						// Pop nodes from the stack based on indentation
+						// and check their minimum number of children
 						int i = (currentDepth - indent) / step;
-						for (int j = 0; j < i; j++) {
-							StackedNode<E> stackedNode = stack.pop();
-
-							// Check the minimum number of children
-							int minChildren = stackedNode.metadata.getMinChildren();
-							if (stackedNode.node.getChildCount() < minChildren)
-								throw new GdxRuntimeException(stackedNode.name + ": not enough children ("
-									+ stackedNode.node.getChildCount() + " < " + minChildren + ")");
-						}
+						popAndcheckMinChildren(stack.size - i);
 					}
 
 					// Check the max number of children of the parent
@@ -376,6 +377,26 @@ public class BehaviorTreeParser<E> {
 			} catch (ReflectionException e) {
 				throw new GdxRuntimeException("Cannot parse behavior tree!!!", e);
 			}
+		}
+
+		private void popAndcheckMinChildren (int upToFloor) {
+			// Check the minimum number of children in prevNode
+			if (prevNode != null) checkMinChildren(prevNode);
+
+			// Check the minimum number of children while popping up to the specified floor
+			while (stack.size > upToFloor) {
+				StackedNode<E> stackedNode = stack.pop();
+				checkMinChildren(stackedNode);
+			}
+		}
+
+		private void checkMinChildren (StackedNode<E> stackedNode) {
+			// Check the minimum number of children
+			int minChildren = stackedNode.metadata.getMinChildren();
+			System.out.println(stackedNode.name + ": PASSO");
+			if (stackedNode.node.getChildCount() < minChildren)
+				throw new GdxRuntimeException(stackedNode.name + ": not enough children (" + stackedNode.node.getChildCount() + " < "
+					+ minChildren + ")");
 		}
 
 		private static class StackedNode<E> {
