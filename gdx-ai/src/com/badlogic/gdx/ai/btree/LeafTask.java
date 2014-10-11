@@ -14,45 +14,42 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.btree.branch;
+package com.badlogic.gdx.ai.btree;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.utils.Array;
-
-/** A {@code Selector} is a branch task that runs every children until one of them succeeds. If a child task fails, the selector will
- * start and run the next child task.
+/** A {@code LeafTask} is a terminal task of a behavior tree, contains action or condition logic, can not have any child.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
- * @author implicit-invocation */
-public class Selector<E> extends BranchTask<E> {
+ * @author implicit-invocation
+ * @author davebaol */
+public abstract class LeafTask<E> extends Task<E> {
 
-	public Selector () {
-		super(new Array<Task<E>>());
-	}
-
-	public Selector (Task<E>... tasks) {
-		super(new Array<Task<E>>(tasks));
-	}
-
-	public Selector (Array<Task<E>> tasks) {
-		super(tasks);
+	@Override
+	public void addChild (Task<E> child) {
+		// Should we throw an UnsupportedOperationException ?
+		// throw new UnsupportedOperationException("A leaf task can not have any child");
 	}
 
 	@Override
-	public void childFail (Task<E> runningTask) {
-		super.childFail(runningTask);
-		if (++actualTask < children.size) {
-			run(this.object);
-		} else {
-			fail();
-		}
+	public int getChildCount () {
+		return 0;
 	}
 
 	@Override
-	public void childSuccess (Task<E> runningTask) {
-		success();
+	public Task<E> getChild (int i) {
+		throw new ArrayIndexOutOfBoundsException("A leaf task can not have any child");
+	}
+
+	@Override
+	public final void childRunning (Task<E> runningTask, Task<E> reporter) {
+	}
+
+	@Override
+	public final void childFail (Task<E> runningTask) {
+	}
+
+	@Override
+	public final void childSuccess (Task<E> runningTask) {
 	}
 
 }

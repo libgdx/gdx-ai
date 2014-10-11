@@ -17,11 +17,11 @@
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.Task;
 
-/** An AlwaysSucceed Decorator will succeed no matter the wrapped node succeeds or fails.
+/** An {@code AlwaysSucceed} decorator will succeed no matter the wrapped task succeeds or fails.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
 public class AlwaysSucceed<E> extends Decorator<E> {
@@ -29,17 +29,17 @@ public class AlwaysSucceed<E> extends Decorator<E> {
 	public AlwaysSucceed () {
 	}
 
-	public AlwaysSucceed (Node<E> node) {
-		super(node);
+	public AlwaysSucceed (Task<E> task) {
+		super(task);
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
+	public void childSuccess (Task<E> runningTask) {
 		control.childSuccess(this);
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
+	public void childFail (Task<E> runningTask) {
 		control.childSuccess(this);
 	}
 

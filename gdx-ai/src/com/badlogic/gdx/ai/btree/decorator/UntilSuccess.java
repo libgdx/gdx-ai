@@ -17,12 +17,12 @@
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.Task;
 
-/** A UntilSuccess Decorator will repeat the wrapped node until that node succeeds. Using UntilSuccess with AlwaysFail without any
- * ancestor call running() will cause StackOverflow.
+/** An {@code UntilSuccess} decorator will repeat the wrapped task until that task succeeds. Using {@code UntilSuccess} with
+ * {@code AlwaysFail} without any ancestor call {@link #running()} will cause {@link StackOverflowError}.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
 public class UntilSuccess<E> extends Decorator<E> {
@@ -30,17 +30,17 @@ public class UntilSuccess<E> extends Decorator<E> {
 	public UntilSuccess () {
 	}
 
-	public UntilSuccess (Node<E> node) {
-		super(node);
+	public UntilSuccess (Task<E> task) {
+		super(task);
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
+	public void childSuccess (Task<E> runningTask) {
 		control.childSuccess(this);
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
+	public void childFail (Task<E> runningTask) {
 		start(object);
 		run(object);
 	}

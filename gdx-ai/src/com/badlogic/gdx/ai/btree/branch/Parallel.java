@@ -16,49 +16,49 @@
 
 package com.badlogic.gdx.ai.btree.branch;
 
-import com.badlogic.gdx.ai.btree.BranchNode;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
 
-/** A parallel is a special branch node that starts or resumes all children nodes every single time, parallel node will succeed if
+/** A {@code Parallel} is a special branch task that starts or resumes all children every single time, parallel task will succeed if
  * all the children succeed, fail if one of the children fail. The typical use case: make the game entity react on event while
  * sleeping or wandering.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
-public class Parallel<E> extends BranchNode<E> {
+public class Parallel<E> extends BranchTask<E> {
 
-	private final Array<Node<E>> runningNodes;
+	private final Array<Task<E>> runningTasks;
 	private boolean success;
 	private int notDone;
 
 	public Parallel () {
-		this(new Array<Node<E>>());
+		this(new Array<Task<E>>());
 	}
 
-	public Parallel (Node<E>... nodes) {
-		this(new Array<Node<E>>(nodes));
+	public Parallel (Task<E>... tasks) {
+		this(new Array<Task<E>>(tasks));
 	}
 
-	public Parallel (Array<Node<E>> nodes) {
-		super(nodes);
+	public Parallel (Array<Task<E>> tasks) {
+		super(tasks);
 		this.success = true;
 		// Create an unordered array to make item removal faster
-		this.runningNodes = new Array<Node<E>>(false, nodes.size > 0 ? nodes.size : 8);
+		this.runningTasks = new Array<Task<E>>(false, tasks.size > 0 ? tasks.size : 8);
 	}
 
 	@Override
 	public void start (E object) {
 		this.object = object;
-		runningNodes.clear();
+		runningTasks.clear();
 		success = true;
 	}
 
 	@Override
-	public void childRunning (Node<E> node, Node<E> reporter) {
-		if (!runningNodes.contains(reporter, true)) {
-			runningNodes.add(reporter);
+	public void childRunning (Task<E> task, Task<E> reporter) {
+		if (!runningTasks.contains(reporter, true)) {
+			runningTasks.add(reporter);
 		}
 		notDone--;
 		control.childRunning(this, this);
@@ -68,23 +68,23 @@ public class Parallel<E> extends BranchNode<E> {
 	public void run (E object) {
 		notDone = children.size;
 		this.object = object;
-		for (Node<E> node : children) {
-			if (runningNodes.contains(node, true)) {
-				node.run(object);
+		for (Task<E> child : children) {
+			if (runningTasks.contains(child, true)) {
+				child.run(object);
 			} else {
-				node.setControl(this);
-				node.start(object);
-				node.run(object);
+				child.setControl(this);
+				child.start(object);
+				child.run(object);
 			}
 		}
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
-		runningNodes.removeValue(runningNode, true);
+	public void childSuccess (Task<E> runningTask) {
+		runningTasks.removeValue(runningTask, true);
 		success = success && true;
 		notDone--;
-		if (runningNodes.size == 0 && notDone == 0) {
+		if (runningTasks.size == 0 && notDone == 0) {
 			if (success) {
 				success();
 			} else {
@@ -94,11 +94,11 @@ public class Parallel<E> extends BranchNode<E> {
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
-		runningNodes.removeValue(runningNode, true);
+	public void childFail (Task<E> runningTask) {
+		runningTasks.removeValue(runningTask, true);
 		success = false;
 		notDone--;
-		if (runningNodes.size == 0 && notDone == 0) {
+		if (runningTasks.size == 0 && notDone == 0) {
 			if (success) {
 				success();
 			} else {

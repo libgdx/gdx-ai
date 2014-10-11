@@ -19,39 +19,39 @@ package com.badlogic.gdx.ai.btree;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
-/** A branch node defines a behavior tree branch, contains logic of starting or running sub-branches and leaves
+/** A branch task defines a behavior tree branch, contains logic of starting or running sub-branches and leaves
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation
  * @author davebaol */
-public abstract class BranchNode<E> extends Node<E> {
+public abstract class BranchTask<E> extends Task<E> {
 
-	/** The node metadata specifying static information used by parsers and tools. */
+	/** The task metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata(1, -1, "deterministic");
 
 	public boolean deterministic = true;
 
 	protected int actualTask;
-	protected Node<E> nodeRunning;
+	protected Task<E> taskRunning;
 
-	/** Create a branch node with a list of children
+	/** Create a branch task with a list of children
 	 * 
-	 * @param nodes list of this node's children, can be empty */
-	public BranchNode (Array<Node<E>> nodes) {
-		this.children = nodes;
+	 * @param tasks list of this task's children, can be empty */
+	public BranchTask (Array<Task<E>> tasks) {
+		this.children = tasks;
 	}
 
 	@Override
-	public void childRunning (Node<E> node, Node<E> reporter) {
-		runningNode = node;
-		control.childRunning(node, this);
+	public void childRunning (Task<E> task, Task<E> reporter) {
+		runningTask = task;
+		control.childRunning(task, this);
 	}
 
 	@Override
 	public void run (E object) {
-		if (runningNode != null) {
-			runningNode.run(object);
+		if (runningTask != null) {
+			runningTask.run(object);
 		} else {
 			this.object = object;
 			if (actualTask < children.size) {
@@ -59,10 +59,10 @@ public abstract class BranchNode<E> extends Node<E> {
 					int lastTask = children.size - 1;
 					if (actualTask < lastTask) children.swap(actualTask, MathUtils.random(actualTask, lastTask));
 				}
-				runningNode = children.get(actualTask);
-				runningNode.setControl(this);
-				runningNode.object = object;
-				runningNode.start(object);
+				runningTask = children.get(actualTask);
+				runningTask.setControl(this);
+				runningTask.object = object;
+				runningTask.start(object);
 				run(object);
 			} else {
 				end(object);
@@ -73,20 +73,20 @@ public abstract class BranchNode<E> extends Node<E> {
 	@Override
 	public void start (E object) {
 		this.actualTask = 0;
-		runningNode = null;
+		runningTask = null;
 	}
 
 	@Override
-	protected Node<E> copyTo (Node<E> node) {
-		BranchNode<E> branch = (BranchNode<E>)node;
+	protected Task<E> copyTo (Task<E> task) {
+		BranchTask<E> branch = (BranchTask<E>)task;
 		branch.deterministic = deterministic;
 		if (children != null) {
 			for (int i = 0; i < children.size; i++) {
-				branch.children.add(children.get(i).cloneNode());
+				branch.children.add(children.get(i).cloneTask());
 			}
 		}
 
-		return node;
+		return task;
 	}
 
 }

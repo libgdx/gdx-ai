@@ -29,7 +29,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StreamUtils;
 
-/** {@link AssetLoader} for {@link BehaviorTree} instances. The BehaviorTree is loaded asynchronously.
+/** {@link AssetLoader} for {@link BehaviorTree} instances. The behavior tree is loaded asynchronously.
  * 
  * @author davebaol */
 @SuppressWarnings("rawtypes")

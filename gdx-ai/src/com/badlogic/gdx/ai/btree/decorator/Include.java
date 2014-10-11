@@ -19,19 +19,19 @@ package com.badlogic.gdx.ai.btree.decorator;
 import com.badlogic.gdx.ai.btree.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.Decorator;
 import com.badlogic.gdx.ai.btree.Metadata;
-import com.badlogic.gdx.ai.btree.Node;
-import com.badlogic.gdx.ai.btree.NodeCloneException;
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.TaskCloneException;
 
 /** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link lazy} parameter:
  * at clone-time if is {@code false}, at run-time if is {@code true}.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author davebaol
  * @author implicit-invocation */
 public class Include<E> extends Decorator<E> {
 
-	/** The node metadata specifying static information used by parsers and tools. */
+	/** The task metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata("subtree", "lazy");
 
 	/** The path of the subtree we're referencing to. */
@@ -63,45 +63,45 @@ public class Include<E> extends Decorator<E> {
 	 * of the superclass directly since the child has already been set. A {@link UnsupportedOperationException} is thrown if this
 	 * {@code Include} is eager.
 	 * 
-	 * @param control the parent node
+	 * @param control the parent task
 	 * @throws UnsupportedOperationException if this {@code Include} is eager */
 	@Override
-	public void setControl (Node<E> control) {
+	public void setControl (Task<E> control) {
 		if (!lazy)
 			throw new UnsupportedOperationException("A non-lazy " + Include.class.getSimpleName() + " isn't meant to be run!");
 
-		if (node == null) {
+		if (child == null) {
 			// Lazy include is grafted at run-time
-			node = createSubtreeRootNode();
+			child = createSubtreeRootTask();
 		}
 
 		super.setControl(control);
 	}
 
 	/** Returns a clone of the referenced subtree if this {@code Import} is eager; otherwise returns a clone of itself. */
-	public Node<E> cloneNode () {
-		if (lazy) return super.cloneNode();
+	public Task<E> cloneTask () {
+		if (lazy) return super.cloneTask();
 
 		// Non lazy include is grafted at clone-time
-		return createSubtreeRootNode();
+		return createSubtreeRootTask();
 	}
 
-	/** Copies this {@code Include} to the given node. A {@link NodeCloneException} is thrown if this {@code Include} is eager.
-	 * @param node the node to be filled
-	 * @return the given node for chaining
-	 * @throws NodeCloneException if this {@code Include} is eager. */
+	/** Copies this {@code Include} to the given task. A {@link TaskCloneException} is thrown if this {@code Include} is eager.
+	 * @param task the task to be filled
+	 * @return the given task for chaining
+	 * @throws TaskCloneException if this {@code Include} is eager. */
 	@Override
-	protected Node<E> copyTo (Node<E> node) {
-		if (!lazy) throw new NodeCloneException("A non-lazy " + getClass().getSimpleName() + " should never be copied.");
+	protected Task<E> copyTo (Task<E> task) {
+		if (!lazy) throw new TaskCloneException("A non-lazy " + getClass().getSimpleName() + " should never be copied.");
 
-		Include<E> include = (Include<E>)node;
+		Include<E> include = (Include<E>)task;
 		include.subtree = subtree;
 		include.lazy = lazy;
 
-		return node;
+		return task;
 	}
 
-	private Node<E> createSubtreeRootNode () {
-		return BehaviorTreeLibraryManager.getInstance().createRootNode(subtree);
+	private Task<E> createSubtreeRootTask () {
+		return BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
 	}
 }

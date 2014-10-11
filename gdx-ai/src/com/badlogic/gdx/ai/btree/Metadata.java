@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 /** A {@code Metadata} describes a task with information such as the minimum/maximum number of children and the set of its
- * attributes. Typically {@code Metadata} are used by behavior tree editors and loaders.
+ * attributes. Typically {@code Metadata} are used by behavior tree editors and parsers.
  * @author davebaol */
 public class Metadata {
 	int minChildren;
@@ -116,9 +116,9 @@ public class Metadata {
 		return attr;
 	}
 
-	public static Metadata findMetadata(@SuppressWarnings("rawtypes") Class<? extends Node> nodeClass) {
+	public static Metadata findMetadata(@SuppressWarnings("rawtypes") Class<? extends Task> actualTaskClass) {
 		try {
-			Field metadataField = ClassReflection.getField(nodeClass, "METADATA");
+			Field metadataField = ClassReflection.getField(actualTaskClass, "METADATA");
 			metadataField.setAccessible(true);
 			return (Metadata)metadataField.get(null);
 		} catch (ReflectionException e) {

@@ -17,11 +17,11 @@
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.Task;
 
-/** An Invert Decorator will succeed if the wrapped node fails and will fail if the wrapped node succeeds.
+/** An {@code Invert} decorator will succeed if the wrapped task fails and will fail if the wrapped task succeeds.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
 public class Invert<E> extends Decorator<E> {
@@ -29,17 +29,17 @@ public class Invert<E> extends Decorator<E> {
 	public Invert () {
 	}
 
-	public Invert (Node<E> node) {
-		super(node);
+	public Invert (Task<E> task) {
+		super(task);
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
+	public void childSuccess (Task<E> runningTask) {
 		control.childFail(this);
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
+	public void childFail (Task<E> runningTask) {
 		control.childSuccess(this);
 	}
 

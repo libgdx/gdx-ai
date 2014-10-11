@@ -16,12 +16,12 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Node;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.LeafTask;
 
 /** @author implicit-invocation
  * @author davebaol */
-public class MarkTask extends Task<Dog> {
+public class MarkTask extends LeafTask<Dog> {
 
 	@Override
 	public void run (Dog dog) {
@@ -35,8 +35,8 @@ public class MarkTask extends Task<Dog> {
 	}
 
 	@Override
-	protected Node<Dog> copyTo (Node<Dog> node) {
-		return node;
+	protected Task<Dog> copyTo (Task<Dog> task) {
+		return task;
 	}
 
 }

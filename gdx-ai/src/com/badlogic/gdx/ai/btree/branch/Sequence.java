@@ -16,33 +16,33 @@
 
 package com.badlogic.gdx.ai.btree.branch;
 
-import com.badlogic.gdx.ai.btree.BranchNode;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
 
-/** A sequence is a branch node that runs every children nodes until one of them fails. If a child node succeeds, the selector will
- * start and run the next child node.
+/** A {@code Sequence} is a branch task that runs every children until one of them fails. If a child task succeeds, the selector will
+ * start and run the next child task.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
-public class Sequence<E> extends BranchNode<E> {
+public class Sequence<E> extends BranchTask<E> {
 
 	public Sequence () {
-		super(new Array<Node<E>>());
+		super(new Array<Task<E>>());
 	}
 
-	public Sequence (Array<Node<E>> nodes) {
-		super(nodes);
+	public Sequence (Array<Task<E>> tasks) {
+		super(tasks);
 	}
 
-	public Sequence (Node<E>... nodes) {
-		super(new Array<Node<E>>(nodes));
+	public Sequence (Task<E>... tasks) {
+		super(new Array<Task<E>>(tasks));
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
-		super.childSuccess(runningNode);
+	public void childSuccess (Task<E> runningTask) {
+		super.childSuccess(runningTask);
 		if (++actualTask < children.size) {
 			run(this.object);
 		} else {
@@ -51,7 +51,7 @@ public class Sequence<E> extends BranchNode<E> {
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
+	public void childFail (Task<E> runningTask) {
 		fail();
 	}
 

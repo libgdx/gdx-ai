@@ -54,7 +54,7 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 			StreamUtils.closeQuietly(reader);
 		}
 		if (dogBehaviorTreeArchetype != null) {
-			dogBehaviorTree = (BehaviorTree<Dog>)dogBehaviorTreeArchetype.cloneNode();
+			dogBehaviorTree = (BehaviorTree<Dog>)dogBehaviorTreeArchetype.cloneTask();
 			dogBehaviorTree.setObject(new Dog("Cloned Buddy"));
 		}
 	}

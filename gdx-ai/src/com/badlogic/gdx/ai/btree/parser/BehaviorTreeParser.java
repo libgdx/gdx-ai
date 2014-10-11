@@ -21,7 +21,7 @@ import java.io.Reader;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Metadata;
-import com.badlogic.gdx.ai.btree.Node;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
@@ -29,7 +29,6 @@ import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
-import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
 import com.badlogic.gdx.files.FileHandle;
@@ -103,17 +102,17 @@ public class BehaviorTreeParser<E> {
 		return createBehaviorTree(btReader.root, object);
 	}
 
-	protected BehaviorTree<E> createBehaviorTree (Node<E> root, E object) {
+	protected BehaviorTree<E> createBehaviorTree (Task<E> root, E object) {
 		if (debug > BehaviorTreeParser.DEBUG_LOW) printTree(root, 0);
 		return new BehaviorTree<E>(root, object);
 	}
 
-	protected void printTree (Node<E> node, int indent) {
+	protected void printTree (Task<E> task, int indent) {
 		for (int i = 0; i < indent; i++)
 			System.out.print(' ');
-		System.out.println(node.getClass().getSimpleName());
-		for (int i = 0; i < node.getChildCount(); i++) {
-			printTree(node.getChild(i), indent + 2);
+		System.out.println(task.getClass().getSimpleName());
+		for (int i = 0; i < task.getChildCount(); i++) {
+			printTree(task.getChild(i), indent + 2);
 		}
 	}
 
@@ -128,7 +127,6 @@ public class BehaviorTreeParser<E> {
 				Invert.class,
 				Parallel.class,
 				Selector.class,
-				SemaphoreGuard.class,
 				Sequence.class,
 				UntilFail.class,
 				UntilSuccess.class
@@ -151,12 +149,12 @@ public class BehaviorTreeParser<E> {
 
 		ObjectMap<String, String> userImports = new ObjectMap<String, String>();
 
-		Node<E> root;
-		Array<StackedNode<E>> stack = new Array<StackedNode<E>>();
+		Task<E> root;
+		Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
 		int tagType;
 		boolean isTask;
 		int currentDepth;
-		StackedNode<E> prevNode;
+		StackedTask<E> prevTask;
 		int step;
 		int rootIndent;
 
@@ -171,16 +169,16 @@ public class BehaviorTreeParser<E> {
 			isTask = false;
 			userImports.clear();
 			root = null;
-			prevNode = null;
+			prevTask = null;
 			currentDepth = -1;
 			step = 1;
 			stack.clear();
 			super.parse(data, offset, length);
 
-			// Pop all node from the stack and check their minimum number of children
+			// Pop all task from the stack and check their minimum number of children
 			popAndCheckMinChildren(0);
 
-			if (root == null) throw new GdxRuntimeException("The tree must have at least the node");
+			if (root == null) throw new GdxRuntimeException("The tree must have at least the task");
 		}
 
 		@Override
@@ -212,7 +210,7 @@ public class BehaviorTreeParser<E> {
 			if (btParser.debug > BehaviorTreeParser.DEBUG_LOW)
 				System.out.println(lineNumber + ": attribute '" + name + " : " + value + "'");
 			if (isTask) {
-				if (!attributeTask(name, value)) throw new GdxRuntimeException(prevNode.name + ": unknown attribute '" + name + "'");
+				if (!attributeTask(name, value)) throw new GdxRuntimeException(prevTask.name + ": unknown attribute '" + name + "'");
 			} else {
 				if (!attributeTag(name, value))
 					throw new GdxRuntimeException(STATEMENTS[tagType] + ": unknown attribute '" + name + "'");
@@ -220,9 +218,9 @@ public class BehaviorTreeParser<E> {
 		}
 
 		private boolean attributeTask (String name, Object value) {
-			if (!prevNode.metadata.hasAttribute(name)) return false;
-			Field attributeField = getField(prevNode.node.getClass(), name);
-			setField(attributeField, prevNode.node, value);
+			if (!prevTask.metadata.hasAttribute(name)) return false;
+			Field attributeField = getField(prevTask.task.getClass(), name);
+			setField(attributeField, prevTask.task, value);
 			return true;
 		}
 
@@ -234,11 +232,11 @@ public class BehaviorTreeParser<E> {
 			}
 		}
 
-		private void setField (Field field, Node<E> node, Object value) {
+		private void setField (Field field, Task<E> task, Object value) {
 			field.setAccessible(true);
 			Object valueObject = castValue(field, value);
 			try {
-				field.set(node, valueObject);
+				field.set(task, valueObject);
 			} catch (ReflectionException e) {
 				throw new GdxRuntimeException(e);
 			}
@@ -271,7 +269,7 @@ public class BehaviorTreeParser<E> {
 					ret = Character.valueOf(stringValue.charAt(0));
 				}
 			}
-			if (ret == null) throwAttributeTypeException(prevNode.name, field.getName(), type.getSimpleName());
+			if (ret == null) throwAttributeTypeException(prevTask.name, field.getName(), type.getSimpleName());
 			return ret;
 		}
 
@@ -342,37 +340,37 @@ public class BehaviorTreeParser<E> {
 			if (className == null) className = name;
 			try {
 				@SuppressWarnings("unchecked")
-				Node<E> node = (Node<E>)ClassReflection.newInstance(ClassReflection.forName(className));
+				Task<E> task = (Task<E>)ClassReflection.newInstance(ClassReflection.forName(className));
 
-				if (prevNode == null) {
-					root = node;
+				if (prevTask == null) {
+					root = task;
 					rootIndent = indent;
 					indent = 0;
 				} else {
 					indent -= rootIndent;
-					if (prevNode.node == root) {
+					if (prevTask.task == root) {
 						step = indent;
 					}
 					if (indent > currentDepth) {
-						stack.add(prevNode); // push
+						stack.add(prevTask); // push
 					} else if (indent <= currentDepth) {
-						// Pop nodes from the stack based on indentation
+						// Pop tasks from the stack based on indentation
 						// and check their minimum number of children
 						int i = (currentDepth - indent) / step;
 						popAndCheckMinChildren(stack.size - i);
 					}
 
 					// Check the max number of children of the parent
-					StackedNode<E> stackedParent = stack.peek();
+					StackedTask<E> stackedParent = stack.peek();
 					int maxChildren = stackedParent.metadata.getMaxChildren();
-					if (stackedParent.node.getChildCount() >= maxChildren)
+					if (stackedParent.task.getChildCount() >= maxChildren)
 						throw new GdxRuntimeException(stackedParent.name + ": max number of children exceeded ("
-							+ (stackedParent.node.getChildCount() + 1) + " > " + maxChildren + ")");
+							+ (stackedParent.task.getChildCount() + 1) + " > " + maxChildren + ")");
 
 					// Add child task to the parent
-					stackedParent.node.addChild(node);
+					stackedParent.task.addChild(task);
 				}
-				prevNode = new StackedNode<E>(name, node);
+				prevTask = new StackedTask<E>(name, task);
 				currentDepth = indent;
 			} catch (ReflectionException e) {
 				throw new GdxRuntimeException("Cannot parse behavior tree!!!", e);
@@ -380,33 +378,33 @@ public class BehaviorTreeParser<E> {
 		}
 
 		private void popAndCheckMinChildren (int upToFloor) {
-			// Check the minimum number of children in prevNode
-			if (prevNode != null) checkMinChildren(prevNode);
+			// Check the minimum number of children in prevTask
+			if (prevTask != null) checkMinChildren(prevTask);
 
 			// Check the minimum number of children while popping up to the specified floor
 			while (stack.size > upToFloor) {
-				StackedNode<E> stackedNode = stack.pop();
-				checkMinChildren(stackedNode);
+				StackedTask<E> stackedTask = stack.pop();
+				checkMinChildren(stackedTask);
 			}
 		}
 
-		private void checkMinChildren (StackedNode<E> stackedNode) {
+		private void checkMinChildren (StackedTask<E> stackedTask) {
 			// Check the minimum number of children
-			int minChildren = stackedNode.metadata.getMinChildren();
-			if (stackedNode.node.getChildCount() < minChildren)
-				throw new GdxRuntimeException(stackedNode.name + ": not enough children (" + stackedNode.node.getChildCount() + " < "
+			int minChildren = stackedTask.metadata.getMinChildren();
+			if (stackedTask.task.getChildCount() < minChildren)
+				throw new GdxRuntimeException(stackedTask.name + ": not enough children (" + stackedTask.task.getChildCount() + " < "
 					+ minChildren + ")");
 		}
 
-		private static class StackedNode<E> {
+		private static class StackedTask<E> {
 			String name;
-			Node<E> node;
+			Task<E> task;
 			Metadata metadata;
 
-			StackedNode (String name, Node<E> node) {
+			StackedTask (String name, Task<E> task) {
 				this.name = name;
-				this.node = node;
-				this.metadata = node.getMetadata();
+				this.task = task;
+				this.metadata = task.getMetadata();
 			}
 		}
 	}

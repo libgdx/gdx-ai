@@ -16,9 +16,14 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.utils.SerializationException;
 
-/** @author davebaol */
+/** The {@code BehaviorTreeLibraryManager} is a singleton in charge of the creation of behavior trees using the underlying library.
+ * If no library is explicitly set (see the method {@link #setLibrary(BehaviorTreeLibrary)}), a default library using the
+ * {@link InternalFileHandleResolver} is used.
+ * 
+ * @author davebaol */
 public class BehaviorTreeLibraryManager {
 
 	private static BehaviorTreeLibraryManager instance = new BehaviorTreeLibraryManager();
@@ -26,34 +31,40 @@ public class BehaviorTreeLibraryManager {
 	protected BehaviorTreeLibrary library;
 
 	private BehaviorTreeLibraryManager () {
+		setLibrary(new BehaviorTreeLibrary());
 	}
 
+	/** Returns the singleton instance of the {@code BehaviorTreeLibraryManager}. */
 	public static BehaviorTreeLibraryManager getInstance () {
 		return instance;
 	}
 
+	/** Gets the the behavior tree library
+	 * @return the behavior tree library */
 	public BehaviorTreeLibrary getLibrary () {
 		return library;
 	}
 
+	/** Sets the the behavior tree library
+	 * @param library the behavior tree library to set */
 	public void setLibrary (BehaviorTreeLibrary library) {
 		this.library = library;
 	}
 
-	/** Creates the root node of {@link BehaviorTree} for the specified reference.
+	/** Creates the root task of {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
-	 * @return the root node of the tree cloned from the archetype.
+	 * @return the root task of the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
-	public <T> Node<T> createRootNode (String treeReference) {
-		return library.createRootNode(treeReference);
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
+	public <T> Task<T> createRootTask (String treeReference) {
+		return library.createRootTask(treeReference);
 	}
 
 	/** Creates the {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
 	 * @return the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference) {
 		return library.createBehaviorTree(treeReference);
 	}
@@ -63,7 +74,7 @@ public class BehaviorTreeLibraryManager {
 	 * @param blackboard the blackboard object (it can be {@code null}).
 	 * @return the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
 		return library.createBehaviorTree(treeReference, blackboard);
 	}

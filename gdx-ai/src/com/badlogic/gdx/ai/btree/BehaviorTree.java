@@ -16,38 +16,38 @@
 
 package com.badlogic.gdx.ai.btree;
 
-/** The behavior tree itself
+/** The behavior tree itself.
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation
  * @author davebaol */
-public class BehaviorTree<E> extends Node<E> {
+public class BehaviorTree<E> extends Task<E> {
 
-	private Node<E> rootNode;
+	private Task<E> rootTask;
 
-	/** Creates a behavior tree with no root node and no blackboard object. Both the root node and the blackboard object must be set
+	/** Creates a behavior tree with no root task and no blackboard object. Both the root task and the blackboard object must be set
 	 * before running this behavior tree.
 	 * 
-	 * @param rootNode the root node of this tree */
+	 * @param rootTask the root task of this tree */
 	public BehaviorTree () {
 		this(null, null);
 	}
 
-	/** Creates a behavior tree with a root node and no blackboard object. The blackboard object must be set before running this
+	/** Creates a behavior tree with a root task and no blackboard object. The blackboard object must be set before running this
 	 * behavior tree.
 	 * 
-	 * @param rootNode the root node of this tree */
-	public BehaviorTree (Node<E> rootNode) {
-		this(rootNode, null);
+	 * @param rootTask the root task of this tree */
+	public BehaviorTree (Task<E> rootTask) {
+		this(rootTask, null);
 	}
 
-	/** Creates a behavior tree with a root node and a blackboard object
+	/** Creates a behavior tree with a root task and a blackboard object
 	 * 
-	 * @param rootNode the root node of this tree
+	 * @param rootTask the root task of this tree
 	 * @param object the blackboard */
-	public BehaviorTree (Node<E> rootNode, E object) {
-		this.rootNode = rootNode;
+	public BehaviorTree (Task<E> rootTask, E object) {
+		this.rootTask = rootTask;
 		this.object = object;
 	}
 
@@ -61,24 +61,24 @@ public class BehaviorTree<E> extends Node<E> {
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
 	 * the game is realtime, or on entity's turn if the game is turn-based */
 	public void step () {
-		if (runningNode != null) {
-			runningNode.run(object);
+		if (runningTask != null) {
+			runningTask.run(object);
 		} else {
-			rootNode.setControl(this);
-			rootNode.object = object;
-			rootNode.start(object);
-			rootNode.run(object);
+			rootTask.setControl(this);
+			rootTask.object = object;
+			rootTask.start(object);
+			rootTask.run(object);
 		}
 	}
 
 	@Override
 	public int getChildCount () {
-		return rootNode == null ? 0 : 1;
+		return rootTask == null ? 0 : 1;
 	}
 
 	@Override
-	public Node<E> getChild (int i) {
-		return rootNode;
+	public Task<E> getChild (int i) {
+		return rootTask;
 	}
 
 	@Override
@@ -86,11 +86,11 @@ public class BehaviorTree<E> extends Node<E> {
 	}
 
 	@Override
-	protected Node<E> copyTo (Node<E> node) {
-		BehaviorTree<E> tree = (BehaviorTree<E>)node;
-		tree.rootNode = rootNode.cloneNode();
+	protected Task<E> copyTo (Task<E> task) {
+		BehaviorTree<E> tree = (BehaviorTree<E>)task;
+		tree.rootTask = rootTask.cloneTask();
 
-		return node;
+		return task;
 	}
 
 }

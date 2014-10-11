@@ -17,14 +17,14 @@
 package com.badlogic.gdx.ai.tests.btree.dog;
 
 import com.badlogic.gdx.ai.btree.Metadata;
-import com.badlogic.gdx.ai.btree.Node;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.LeafTask;
 
 /** @author implicit-invocation
  * @author davebaol */
-public class CareTask extends Task<Dog> {
+public class CareTask extends LeafTask<Dog> {
 
-	public static final Metadata METADATA = new Metadata(Task.METADATA, "urgentProb");
+	public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "urgentProb");
 
 	public float urgentProb = 0.8f;
 
@@ -40,11 +40,11 @@ public class CareTask extends Task<Dog> {
 	}
 
 	@Override
-	protected Node<Dog> copyTo (Node<Dog> node) {
-		CareTask care = (CareTask)node;
+	protected Task<Dog> copyTo (Task<Dog> task) {
+		CareTask care = (CareTask)task;
 		care.urgentProb = urgentProb;
 
-		return node;
+		return task;
 	}
 
 }

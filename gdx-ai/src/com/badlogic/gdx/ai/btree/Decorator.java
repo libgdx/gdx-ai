@@ -16,83 +16,84 @@
 
 package com.badlogic.gdx.ai.btree;
 
-/** Decorators are wrappers that provide custom behaviors for nodes of any kind (branch node and task).
+/** A {@code Decorator} is a wrapper that provides custom behavior for its child. The child can be of any kind (branch task, leaf
+ * task, or another decorator).
  * 
- * @param <E> type of the blackboard nodes use to read or modify game state
+ * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation
  * @author davebaol */
-public abstract class Decorator<E> extends Node<E> {
+public abstract class Decorator<E> extends Task<E> {
 
-	/** The node metadata specifying static information used by parsers and tools. */
+	/** The task metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata(1);
 
-	protected Node<E> node;
+	protected Task<E> child;
 
-	/** Creates a decorator with no child node. */
+	/** Creates a decorator with no child task. */
 	public Decorator () {
 	}
 
-	/** Creates a decorator that wraps a tree node
+	/** Creates a decorator that wraps a tree task
 	 * 
-	 * @param node the node that will be wrapped */
-	public Decorator (Node<E> node) {
-		this.node = node;
+	 * @param child the task that will be wrapped */
+	public Decorator (Task<E> child) {
+		this.child = child;
 	}
 
 	@Override
-	public void addChild (Node<E> node) {
-		this.node = node;
+	public void addChild (Task<E> child) {
+		this.child = child;
 	}
 
 	@Override
 	public int getChildCount () {
-		return node == null ? 0 : 1;
+		return child == null ? 0 : 1;
 	}
 
 	@Override
-	public Node<E> getChild (int i) {
-		return node;
+	public Task<E> getChild (int i) {
+		return child;
 	}
 
 	@Override
 	public void run (E object) {
 		this.object = object;
-		node.run(object);
+		child.run(object);
 	}
 
 	@Override
 	public void end (E object) {
-		node.end(object);
+		child.end(object);
 	}
 
 	@Override
 	public void start (E object) {
-		node.setControl(this);
-		node.start(object);
+		child.setControl(this);
+		child.start(object);
 	}
 
 	@Override
-	public void childRunning (Node<E> runningNode, Node<E> reporter) {
-		control.childRunning(runningNode, this);
+	public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		control.childRunning(runningTask, this);
 	}
 
 	@Override
-	public void childFail (Node<E> runningNode) {
+	public void childFail (Task<E> runningTask) {
 		control.childFail(this);
 	}
 
 	@Override
-	public void childSuccess (Node<E> runningNode) {
+	public void childSuccess (Task<E> runningTask) {
 		control.childSuccess(this);
 	}
 
 	@Override
-	protected Node<E> copyTo (Node<E> node) {
-		Decorator<E> decorator = (Decorator<E>)node;
-		decorator.node = this.node.cloneNode();
+	protected Task<E> copyTo (Task<E> task) {
+		Decorator<E> decorator = (Decorator<E>)task;
+		decorator.child = this.child.cloneTask();
 
-		return node;
+		return task;
 	}
 
 }

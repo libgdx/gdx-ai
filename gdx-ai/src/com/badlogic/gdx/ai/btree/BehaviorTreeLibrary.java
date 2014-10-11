@@ -31,57 +31,65 @@ public class BehaviorTreeLibrary {
 
 	protected ObjectMap<String, BehaviorTree<?>> repository;
 
-	protected AssetManager assetManager;
+//	protected AssetManager assetManager;
 	protected FileHandleResolver resolver;
 	protected BehaviorTreeParser<?> parser;
 
+	/** Creates a {@code BehaviorTreeLibrary} using an {@link InternalFileHandleResolver}. */
 	public BehaviorTreeLibrary () {
 		this(BehaviorTreeParser.DEBUG_NONE);
 	}
 
-	public BehaviorTreeLibrary (int parserDebugLevel) {
-		this(new InternalFileHandleResolver(), parserDebugLevel);
+	/** Creates a {@code BehaviorTreeLibrary} with the given debug level and using an {@link InternalFileHandleResolver}.
+	 * @param parseDebugLevel the debug level the parser will use */
+	public BehaviorTreeLibrary (int parseDebugLevel) {
+		this(new InternalFileHandleResolver(), parseDebugLevel);
 	}
 
+	/** Creates a {@code BehaviorTreeLibrary} with the given resolver.
+	 * @param resolver the {@link FileHandleResolver} */
 	public BehaviorTreeLibrary (FileHandleResolver resolver) {
 		this(resolver, BehaviorTreeParser.DEBUG_NONE);
 	}
 
-	public BehaviorTreeLibrary (FileHandleResolver resolver, int parserDebugLevel) {
-		this(resolver, null, parserDebugLevel);
+	/** Creates a {@code BehaviorTreeLibrary} with the given resolver and debug level.
+	 * @param resolver the {@link FileHandleResolver}
+	 * @param parseDebugLevel the debug level the parser will use */
+	public BehaviorTreeLibrary (FileHandleResolver resolver, int parseDebugLevel) {
+		this(resolver, null, parseDebugLevel);
 	}
 
-	public BehaviorTreeLibrary (AssetManager assetManager) {
-		this(assetManager, BehaviorTreeParser.DEBUG_NONE);
-	}
-
-	public BehaviorTreeLibrary (AssetManager assetManager, int parserDebugLevel) {
-		this(null, assetManager, parserDebugLevel);
-	}
+//	public BehaviorTreeLibrary (AssetManager assetManager) {
+//		this(assetManager, BehaviorTreeParser.DEBUG_NONE);
+//	}
+//
+//	public BehaviorTreeLibrary (AssetManager assetManager, int parserDebugLevel) {
+//		this(null, assetManager, parserDebugLevel);
+//	}
 
 	@SuppressWarnings("rawtypes")
-	private BehaviorTreeLibrary (FileHandleResolver resolver, AssetManager assetManager, int parserDebugLevel) {
+	private BehaviorTreeLibrary (FileHandleResolver resolver, AssetManager assetManager, int parseDebugLevel) {
 		this.resolver = resolver;
-		this.assetManager = assetManager;
+//		this.assetManager = assetManager;
 		this.repository = new ObjectMap<String, BehaviorTree<?>>();
-		this.parser = new BehaviorTreeParser(parserDebugLevel);
+		this.parser = new BehaviorTreeParser(parseDebugLevel);
 	}
 
-	/** Creates the root node of {@link BehaviorTree} for the specified reference.
+	/** Creates the root task of {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
-	 * @return the root node of the tree cloned from the archetype.
+	 * @return the root task of the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	@SuppressWarnings("unchecked")
-	public <T> Node<T> createRootNode (String treeReference) {
-		return (Node<T>)retrieveArchetypeTree(treeReference).getChild(0).cloneNode();
+	public <T> Task<T> createRootTask (String treeReference) {
+		return (Task<T>)retrieveArchetypeTree(treeReference).getChild(0).cloneTask();
 	}
 
 	/** Creates the {@link BehaviorTree} for the specified reference.
 	 * @param treeReference the tree identifier, typically a path
 	 * @return the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference) {
 		return createBehaviorTree(treeReference, null);
 	}
@@ -91,10 +99,10 @@ public class BehaviorTreeLibrary {
 	 * @param blackboard the blackboard object (it can be {@code null}).
 	 * @return the tree cloned from the archetype.
 	 * @throws SerializationException if the reference cannot be successfully parsed.
-	 * @throws NodeCloneException if the archetype cannot be successfully parsed. */
+	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	@SuppressWarnings("unchecked")
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
-		BehaviorTree<T> bt = (BehaviorTree<T>)retrieveArchetypeTree(treeReference).cloneNode();
+		BehaviorTree<T> bt = (BehaviorTree<T>)retrieveArchetypeTree(treeReference).cloneTask();
 		bt.setObject(blackboard);
 		return bt;
 	}
@@ -107,12 +115,12 @@ public class BehaviorTreeLibrary {
 	protected BehaviorTree<?> retrieveArchetypeTree (String treeReference) {
 		BehaviorTree<?> archetypeTree = repository.get(treeReference);
 		if (archetypeTree == null) {
-			if (assetManager != null) {
-				// TODO: fix me!!!
-// archetypeTree = assetManager.load(name, BehaviorTree.class, null);
-				repository.put(treeReference, archetypeTree);
-				return null;
-			}
+//			if (assetManager != null) {
+//				// TODO: fix me!!!
+//				// archetypeTree = assetManager.load(name, BehaviorTree.class, null);
+//				repository.put(treeReference, archetypeTree);
+//				return null;
+//			}
 			archetypeTree = parser.parse(resolver.resolve(treeReference), null);
 			repository.put(treeReference, archetypeTree);
 		}
