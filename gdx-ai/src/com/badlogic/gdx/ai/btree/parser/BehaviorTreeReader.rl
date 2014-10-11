@@ -234,7 +234,7 @@ public abstract class BehaviorTreeReader {
 					if (++p == eof) break;
 					c = data[p];
 				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '.'  || c == '_');
+							|| c == '.'  || c == '_'  || c == '?');
 				statementName = new String(data, s, p - s);
 				p--;
 				startStatement(indent, statementName);
@@ -246,7 +246,7 @@ public abstract class BehaviorTreeReader {
 					if (++p == eof) break;
 					c = data[p];
 				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '_' );
+							|| c == '_' || c == '?');
 				attrName = new String(data, s, p - s);
 				p--;
 			}
