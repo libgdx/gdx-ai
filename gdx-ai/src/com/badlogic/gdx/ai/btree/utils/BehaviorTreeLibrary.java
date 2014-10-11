@@ -14,9 +14,11 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.btree;
+package com.badlogic.gdx.ai.btree.utils;
 
-import com.badlogic.gdx.ai.btree.parser.BehaviorTreeParser;
+import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.TaskCloneException;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;

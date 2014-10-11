@@ -18,7 +18,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.btree.parser;
+package com.badlogic.gdx.ai.btree.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -16,11 +16,11 @@
 
 package com.badlogic.gdx.ai.btree.decorator;
 
-import com.badlogic.gdx.ai.btree.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.Decorator;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloneException;
+import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 
 /** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link #lazy} parameter:
  * at clone-time if is {@code false}, at run-time if is {@code true}.
