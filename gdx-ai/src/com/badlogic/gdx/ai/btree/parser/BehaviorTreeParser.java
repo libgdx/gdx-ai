@@ -393,7 +393,6 @@ public class BehaviorTreeParser<E> {
 		private void checkMinChildren (StackedNode<E> stackedNode) {
 			// Check the minimum number of children
 			int minChildren = stackedNode.metadata.getMinChildren();
-			System.out.println(stackedNode.name + ": PASSO");
 			if (stackedNode.node.getChildCount() < minChildren)
 				throw new GdxRuntimeException(stackedNode.name + ": not enough children (" + stackedNode.node.getChildCount() + " < "
 					+ minChildren + ")");
