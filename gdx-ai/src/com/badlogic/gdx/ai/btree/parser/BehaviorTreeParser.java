@@ -178,7 +178,7 @@ public class BehaviorTreeParser<E> {
 			super.parse(data, offset, length);
 
 			// Pop all node from the stack and check their minimum number of children
-			popAndcheckMinChildren(0);
+			popAndCheckMinChildren(0);
 
 			if (root == null) throw new GdxRuntimeException("The tree must have at least the node");
 		}
@@ -359,7 +359,7 @@ public class BehaviorTreeParser<E> {
 						// Pop nodes from the stack based on indentation
 						// and check their minimum number of children
 						int i = (currentDepth - indent) / step;
-						popAndcheckMinChildren(stack.size - i);
+						popAndCheckMinChildren(stack.size - i);
 					}
 
 					// Check the max number of children of the parent
@@ -379,7 +379,7 @@ public class BehaviorTreeParser<E> {
 			}
 		}
 
-		private void popAndcheckMinChildren (int upToFloor) {
+		private void popAndCheckMinChildren (int upToFloor) {
 			// Check the minimum number of children in prevNode
 			if (prevNode != null) checkMinChildren(prevNode);
 

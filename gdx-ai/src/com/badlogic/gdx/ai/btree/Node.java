@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * @author davebaol */
 public abstract class Node<E> {
 
+	/** The node metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata();
 
 	protected Node<E> control;

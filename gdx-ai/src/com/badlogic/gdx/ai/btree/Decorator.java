@@ -24,6 +24,7 @@ package com.badlogic.gdx.ai.btree;
  * @author davebaol */
 public abstract class Decorator<E> extends Node<E> {
 
+	/** The node metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata(1);
 
 	protected Node<E> node;

@@ -27,7 +27,8 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public abstract class BranchNode<E> extends Node<E> {
 
-	public static final Metadata METADATA = new Metadata(-1, "deterministic");
+	/** The node metadata specifying static information used by parsers and tools. */
+	public static final Metadata METADATA = new Metadata(1, -1, "deterministic");
 
 	public boolean deterministic = true;
 

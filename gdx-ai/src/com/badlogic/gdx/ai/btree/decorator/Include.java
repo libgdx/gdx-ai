@@ -31,6 +31,7 @@ import com.badlogic.gdx.ai.btree.NodeCloneException;
  * @author implicit-invocation */
 public class Include<E> extends Decorator<E> {
 
+	/** The node metadata specifying static information used by parsers and tools. */
 	public static final Metadata METADATA = new Metadata("subtree", "lazy");
 
 	/** The path of the subtree we're referencing to. */
