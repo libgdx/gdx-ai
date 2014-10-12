@@ -63,7 +63,7 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		shortestTime = Float.POSITIVE_INFINITY;
 		firstNeighbor = null;
 		firstMinSeparation = 0;

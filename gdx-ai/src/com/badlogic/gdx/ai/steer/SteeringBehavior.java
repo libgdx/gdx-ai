@@ -74,14 +74,16 @@ public abstract class SteeringBehavior<T extends Vector<T>> {
 	 * disabled the steering output is set to zero.
 	 * @param steering the steering acceleration to be calculated.
 	 * @return the calculated steering acceleration for chaining. */
-	public SteeringAcceleration<T> steer (SteeringAcceleration<T> steering) {
-		return isEnabled() ? calculateSteering(steering) : steering.setZero();
+	public SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+		return isEnabled() ? calculateRealSteering(steering) : steering.setZero();
 	}
 
 	/** Calculates the steering acceleration produced by this behavior and writes it to the given steering output.
+	 * <p>
+	 * This method is called by {@link #calculateSteering(SteeringAcceleration)} when this steering behavior is enabled.
 	 * @param steering the steering acceleration to be calculated.
 	 * @return the calculated steering acceleration for chaining. */
-	protected abstract SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering);
+	protected abstract SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering);
 
 	/** Returns the owner of this steering behavior. */
 	public Steerable<T> getOwner () {

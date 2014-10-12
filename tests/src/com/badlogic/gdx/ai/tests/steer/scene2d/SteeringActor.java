@@ -187,7 +187,7 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 		if (steeringBehavior != null) {
 
 			// Calculate steering acceleration
-			steeringBehavior.steer(steeringOutput);
+			steeringBehavior.calculateSteering(steeringOutput);
 
 			/*
 			 * Here you might want to add a motor control layer filtering steering accelerations.

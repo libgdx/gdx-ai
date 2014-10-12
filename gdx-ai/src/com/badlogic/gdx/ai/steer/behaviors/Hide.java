@@ -94,7 +94,7 @@ public class Hide<T extends Vector<T>> extends Arrive<T> implements ProximityCal
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Initialize member variables used by the callback
 		this.distance2ToClosest = Float.POSITIVE_INFINITY;
 		this.toObstacle = steering.linear;

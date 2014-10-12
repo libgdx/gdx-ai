@@ -81,7 +81,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 	}
 
 	@Override
-	public SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	public SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Check if we have a trajectory, and create one if not.
 		if (target == null) {
 			target = calculateTarget();
@@ -110,7 +110,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		}
 
 		// Delegate to MatchVelocity
-		return super.calculateSteering(steering);
+		return super.calculateRealSteering(steering);
 	}
 
 	/** Works out the trajectory calculation. */

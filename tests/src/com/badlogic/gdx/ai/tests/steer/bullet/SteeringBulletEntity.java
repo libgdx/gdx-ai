@@ -80,7 +80,7 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	public void update (float deltaTime) {
 		if (steeringBehavior != null) {
 			// Calculate steering acceleration
-			steeringBehavior.steer(steeringOutput);
+			steeringBehavior.calculateSteering(steeringOutput);
 
 			/*
 			 * Here you might want to add a motor control layer filtering steering accelerations.

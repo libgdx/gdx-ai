@@ -82,7 +82,7 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Update the wander orientation
 		// TODO it should be frame rate independent by interpreting wanderRate as a max distance per second.
 		wanderOrientation += MathUtils.randomTriangular(wanderRate);

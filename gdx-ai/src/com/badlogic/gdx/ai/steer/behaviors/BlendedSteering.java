@@ -86,7 +86,7 @@ public class BlendedSteering<T extends Vector<T>> extends SteeringBehavior<T> {
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> blendedSteering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> blendedSteering) {
 		// Clear the output to start with
 		blendedSteering.setZero();
 
@@ -96,7 +96,7 @@ public class BlendedSteering<T extends Vector<T>> extends SteeringBehavior<T> {
 			BehaviorAndWeight<T> bw = list.get(i);
 
 			// Calculate the behavior's steering
-			bw.behavior.steer(steering);
+			bw.behavior.calculateSteering(steering);
 
 			// Scale and add the steering to the accumulator
 			blendedSteering.mulAdd(steering, bw.weight);

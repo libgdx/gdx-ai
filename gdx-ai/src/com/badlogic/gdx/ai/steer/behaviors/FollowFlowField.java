@@ -68,7 +68,7 @@ public class FollowFlowField<T extends Vector<T>> extends SteeringBehavior<T> {
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Predictive or non-predictive behavior?
 		T location = (predictionTime == 0) ?
 		// Use the current position of the owner

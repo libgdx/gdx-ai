@@ -92,7 +92,7 @@ public class PrioritySteering<T extends Vector<T>> extends SteeringBehavior<T> {
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// We'll need epsilon squared later.
 		float epsilonSquared = epsilon * epsilon;
 
@@ -102,7 +102,7 @@ public class PrioritySteering<T extends Vector<T>> extends SteeringBehavior<T> {
 			SteeringBehavior<T> behavior = behaviors.get(i);
 
 			// Calculate the behavior's steering
-			behavior.steer(steering);
+			behavior.calculateSteering(steering);
 
 			// If we're above the threshold return the current steering
 			if (steering.calculateSquareMagnitude() > epsilonSquared) return steering;

@@ -43,7 +43,7 @@ public class Flee<T extends Vector<T>> extends Seek<T> {
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// We just do the opposite of seek, i.e. (owner.getPosition() - target.getPosition())
 		// instead of (target.getPosition() - owner.getPosition())
 		steering.linear.set(owner.getPosition()).sub(target.getPosition()).nor().scl(getActualLimiter().getMaxLinearAcceleration());

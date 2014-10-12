@@ -47,7 +47,7 @@ public class LookWhereYouAreGoing<T extends Vector<T>> extends ReachOrientation<
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Check for a zero direction, and return no steering if so
 		if (owner.getLinearVelocity().isZero(MathUtils.FLOAT_ROUNDING_ERROR)) return steering.setZero();
 

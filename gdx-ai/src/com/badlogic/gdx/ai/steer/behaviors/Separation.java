@@ -51,7 +51,7 @@ public class Separation<T extends Vector<T>> extends GroupBehavior<T> implements
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		steering.setZero();
 
 		linear = steering.linear;

@@ -46,7 +46,7 @@ public class Cohesion<T extends Vector<T>> extends GroupBehavior<T> implements P
 	}
 
 	@Override
-	protected SteeringAcceleration<T> calculateSteering (SteeringAcceleration<T> steering) {
+	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 
 		steering.setZero();
 
