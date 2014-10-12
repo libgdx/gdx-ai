@@ -1,4 +1,4 @@
-[1.3.2]
+[1.4.0]
 - API Addition: added behaviors trees (thanks implicit-invocation), see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees
 - API Addition: added steering behaviors, see https://github.com/libgdx/gdx-ai/wiki/Steering-Behaviors
 - API Addition: added support for telegram providers, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#telegram-providers
