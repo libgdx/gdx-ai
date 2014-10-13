@@ -37,7 +37,7 @@ public class Include<E> extends Decorator<E> {
 	/** The path of the subtree we're referencing to. */
 	public String subtree;
 
-	/** Whether the subtree should be included at clone-time (true) or at run-time (false, the default). */
+	/** Whether the subtree should be included at clone-time ({@code false}, the default) or at run-time ({@code true}). */
 	public boolean lazy;
 
 	/** Creates a non-lazy {@code Include} decorator without specifying the subtree. */
