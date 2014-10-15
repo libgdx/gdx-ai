@@ -29,83 +29,126 @@ public class Metadata {
 	int maxChildren;
 	ObjectSet<String> attributes;
 
+	/** Creates a {@code Metadata} for a leaf task with no attributes. */
 	public Metadata () {
 		this(0, 0, (ObjectSet<String>)null);
 	}
 
+	/** Creates a {@code Metadata} for a leaf task with the given attributes.
+	 * @param attributes the attribute names */
 	public Metadata (String... attributes) {
 		this(0, 0, newObjectSet(attributes));
 	}
 
+	/** Creates a {@code Metadata} for a leaf task with the given attributes.
+	 * @param attributes the attribute names */
 	public Metadata (ObjectSet<String> attributes) {
 		this(0, 0, attributes);
 	}
 
+	/** Creates a {@code Metadata} for a task having the given number of children and no attributes. If {@code numChildren} is
+	 * negative the task accepts from 0 to {@link Integer.MAX_VALUE} children.
+	 * @param numChildrean the number of children */
 	public Metadata (int numChildrean) {
 		this(numChildrean, numChildrean, (ObjectSet<String>)null);
 	}
 
+	/** Creates a {@code Metadata} for a task having the given number of children and the specified attributes. If
+	 * {@code numChildren} is negative the task accepts from 0 to {@link Integer.MAX_VALUE} children.
+	 * @param numChildrean the number of children
+	 * @param attributes the attribute names */
 	public Metadata (int numChildrean, String... attributes) {
 		this(numChildrean, numChildrean, newObjectSet(attributes));
 	}
 
+	/** Creates a {@code Metadata} for a task having the given number of children and the specified attributes. If
+	 * {@code numChildren} is negative the task accepts from 0 to {@link Integer.MAX_VALUE} children.
+	 * @param numChildrean the number of children
+	 * @param attributes the attribute names */
 	public Metadata (int numChildrean, ObjectSet<String> attributes) {
 		this(numChildrean, numChildrean, attributes);
 	}
 
+	/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and no attributes.
+	 * @param minChildren the minimum number of children (defaults to 0 if negative)
+	 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative) */
 	public Metadata (int minChildren, int maxChildren) {
 		this(minChildren, maxChildren, (ObjectSet<String>)null);
 	}
 
+	/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
+	 * attributes.
+	 * @param minChildren the minimum number of children (defaults to 0 if negative)
+	 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
+	 * @param attributes the attribute names */
 	public Metadata (int minChildren, int maxChildren, String... attributes) {
 		this(minChildren, maxChildren, newObjectSet(attributes));
 	}
 
+	/** Creates a {@code Metadata} from another one (copy constructor)
+	 * @param other the other metadata */
 	public Metadata (Metadata other) {
-		this.minChildren = other.getMaxChildren();
-		this.maxChildren = other.getMaxChildren();
-		this.attributes = other.getAttributes() == null ? new ObjectSet<String>() : new ObjectSet<String>(other.getAttributes());
+		this(other, (String[])null, (String[])null);
 	}
 
+	/** Creates a {@code Metadata} from another one adding the specified attributes.
+	 * @param other the other metadata
+	 * @param addAttributes the attribute names to add */
 	public Metadata (Metadata other, String... addAttributes) {
-		this(other);
-		for (int i = 0; i < addAttributes.length; i++)
-			getAttributes().add(addAttributes[i]);
+		this(other, addAttributes, (String[])null);
 	}
 
+	/** Creates a {@code Metadata} from another one adding the specified attributes.
+	 * @param other the other metadata
+	 * @param addAttributes the attribute names to add
+	 * @param removeAttributes the attribute names to remove */
 	public Metadata (Metadata other, String[] addAttributes, String... removeAttributes) {
-		this(other);
+		this(other.getMaxChildren(), other.getMaxChildren(), other.getAttributes() == null ? new ObjectSet<String>()
+			: new ObjectSet<String>(other.getAttributes()));
 		if (addAttributes != null) {
 			for (int i = 0; i < addAttributes.length; i++)
 				getAttributes().add(addAttributes[i]);
 		}
-		for (int i = 0; i < removeAttributes.length; i++)
-			getAttributes().remove(removeAttributes[i]);
+		if (removeAttributes != null) {
+			for (int i = 0; i < removeAttributes.length; i++)
+				getAttributes().remove(removeAttributes[i]);
+		}
 	}
 
+	/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
+	 * attributes.
+	 * @param minChildren the minimum number of children (defaults to 0 if negative)
+	 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
+	 * @param attributes the attribute names */
 	public Metadata (int minChildren, int maxChildren, ObjectSet<String> attributes) {
 		this.minChildren = minChildren < 0 ? 0 : minChildren;
 		this.maxChildren = maxChildren < 0 ? Integer.MAX_VALUE : maxChildren;
 		this.attributes = attributes;
 	}
 
+	/** @return the minimum number of children. */
 	public int getMinChildren () {
 		return minChildren;
 	}
 
+	/** @return the maximum number of children. */
 	public int getMaxChildren () {
 		return maxChildren;
 	}
 
+	/** @return the set of valid attributes. */
 	public ObjectSet<String> getAttributes () {
 		return attributes;
 	}
 
+	/** Returns {@true} if the given attribute name is valid; {@code false} otherwise.
+	 * @param name the attribute name */
 	public boolean hasAttribute (String name) {
 		ObjectSet<String> attr = attributes;
 		return attr != null && attr.contains(name);
 	}
 
+	/** @return {@true} if the task cannot have any children; {@code false} otherwise. */
 	public boolean isLeaf () {
 		return getMinChildren() == 0 && getMaxChildren() == 0;
 	}
@@ -116,7 +159,11 @@ public class Metadata {
 		return attr;
 	}
 
-	public static Metadata findMetadata(@SuppressWarnings("rawtypes") Class<? extends Task> actualTaskClass) {
+	/** Finds the {@code Metadata} of the task identified by the given class.
+	 * @param actualTaskClass the class of the task
+	 * @throws ReflectionException if no static field named {@code METADATA} is declared by the given class or one of its
+	 *            superclasses */
+	public static Metadata findMetadata (@SuppressWarnings("rawtypes") Class<? extends Task> actualTaskClass) {
 		try {
 			Field metadataField = ClassReflection.getField(actualTaskClass, "METADATA");
 			metadataField.setAccessible(true);
@@ -124,5 +171,5 @@ public class Metadata {
 		} catch (ReflectionException e) {
 			return null;
 		}
-	} 
+	}
 }
