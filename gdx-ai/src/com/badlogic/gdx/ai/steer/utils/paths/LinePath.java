@@ -209,10 +209,10 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		return segments;
 	}
 
-	/** A {@code LinePathParam} contains the status of a {@link LinePath}. 
+	/** A {@code LinePathParam} contains the status of a {@link LinePath}.
 	 * 
 	 * @author davebaol */
-	public static class LinePathParam implements PathParam {
+	public static class LinePathParam implements Path.PathParam {
 		int segmentIndex;
 		float distance;
 

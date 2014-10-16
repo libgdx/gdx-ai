@@ -62,7 +62,7 @@ public interface Path<T extends Vector<T>, P extends PathParam> {
 	/** A path parameter used by path following behaviors to keep the path status.
 	 * 
 	 * @author davebaol */
-	public interface PathParam {
+	public static interface PathParam {
 
 		/** Returns the distance from the start of the path */
 		public float getDistance ();
