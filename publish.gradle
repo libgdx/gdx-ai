@@ -94,6 +94,13 @@ uploadArchives {
                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                            distribution 'repo'
                        }
+                   }
+                   
+                   developers {
+                       developer {
+                           id 'davebaol'
+                           name 'davebaol'
+                       }
                    }                   
                }
             }
