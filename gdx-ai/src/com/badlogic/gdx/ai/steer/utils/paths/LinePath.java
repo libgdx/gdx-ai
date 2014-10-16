@@ -14,17 +14,16 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.steer.paths;
+package com.badlogic.gdx.ai.steer.utils.paths;
 
-import com.badlogic.gdx.ai.steer.behaviors.PathParam;
-import com.badlogic.gdx.ai.steer.behaviors.Path;
-import com.badlogic.gdx.ai.steer.paths.LinePath.LinePathParam;
+import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.utils.Array;
 
-/** A path for path following behaviors that is made up of a series of waypoints. Each waypoint is connected to the successor with
- * a segment.
+/** A {@code LinePath} is a path for path following behaviors that is made up of a series of waypoints. Each waypoint is connected
+ * to the successor with a {@link Segment}.
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
@@ -51,7 +50,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	/** Creates a {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path
 	 * @param isOpen a flag indicating whether the path is open or not
-	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or has less than two (2) waypoints.  */
+	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or has less than two (2) waypoints. */
 	public LinePath (Array<T> waypoints, boolean isOpen) {
 		this.isOpen = isOpen;
 		createPath(waypoints);
@@ -181,10 +180,11 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	}
 
 	/** Sets up this {@link Path} using the given way points.
-	 * @param waypoints The way points of this path. 
+	 * @param waypoints The way points of this path.
 	 * @throws IllegalArgumentException if {@code waypoints} is {@code null} or empty. */
 	public void createPath (Array<T> waypoints) {
-		if (waypoints == null || waypoints.size < 2) throw new IllegalArgumentException("waypoints cannot be null and must contain at least two (2) waypoints");
+		if (waypoints == null || waypoints.size < 2)
+			throw new IllegalArgumentException("waypoints cannot be null and must contain at least two (2) waypoints");
 
 		segments = new Array<Segment<T>>(waypoints.size);
 		pathLength = 0;
@@ -209,6 +209,9 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		return segments;
 	}
 
+	/** A {@code LinePathParam} contains the status of a {@link LinePath}. 
+	 * 
+	 * @author davebaol */
 	public static class LinePathParam implements PathParam {
 		int segmentIndex;
 		float distance;
@@ -225,30 +228,42 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 
 	}
 
+	/** A {@code Segment} connects two consecutive waypoints of a {@link LinePath}.
+	 * 
+	 * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
+	 * 
+	 * @author davebaol */
 	public static class Segment<T extends Vector<T>> {
 		T begin;
 		T end;
 		float length;
 		float cumulativeLength;
 
+		/** Creates a {@code Segment} for the 2 given points.
+		 * @param begin
+		 * @param end */
 		Segment (T begin, T end) {
 			this.begin = begin;
 			this.end = end;
 			this.length = begin.dst(end);
 		}
 
+		/** Returns the start point of this segment. */
 		public T getBegin () {
 			return begin;
 		}
 
+		/** Returns the end point of this segment. */
 		public T getEnd () {
 			return end;
 		}
 
+		/** Returns the length of this segment. */
 		public float getLength () {
 			return length;
 		}
 
+		/** Returns the cumulative length from the first waypoint of the {@line LinePath} this segment belongs to. */
 		public float getCumulativeLength () {
 			return cumulativeLength;
 		}

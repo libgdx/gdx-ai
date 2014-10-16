@@ -1,9 +1,26 @@
-package com.badlogic.gdx.ai.steer.behaviors;
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
+package com.badlogic.gdx.ai.steer.utils;
+
+import com.badlogic.gdx.ai.steer.utils.Path.PathParam;
 import com.badlogic.gdx.math.Vector;
 
-/** The path for an agent having path following behavior. A path can be shared by multiple path following behaviors because its
- * status is maintained in a {@link PathParam} local to each behavior.
+/** The {@code Path} for an agent having path following behavior. A path can be shared by multiple path following behaviors because
+ * its status is maintained in a {@link PathParam} local to each behavior.
  * <p>
  * The most common type of path is made up of straight line segments, which usually gives reasonably good results while keeping
  * the math simple. However, some driving games use splines to get smoother curved paths, which makes the math more complex.
@@ -41,4 +58,17 @@ public interface Path<T extends Vector<T>, P extends PathParam> {
 	 * @param param the path parameter
 	 * @param targetDistance the distance of the target position from the start of the path */
 	public void calculateTargetPosition (T out, P param, float targetDistance);
+
+	/** A path parameter used by path following behaviors to keep the path status.
+	 * 
+	 * @author davebaol */
+	public interface PathParam {
+
+		/** Returns the distance from the start of the path */
+		public float getDistance ();
+
+		/** Sets the distance from the start of the path
+		 * @param distance the distance to set */
+		public void setDistance (float distance);
+	}
 }

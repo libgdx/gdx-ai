@@ -14,10 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.steer.rays;
+package com.badlogic.gdx.ai.steer.utils.rays;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
+import com.badlogic.gdx.ai.steer.utils.Ray;
 import com.badlogic.gdx.math.Vector;
 
 /** As the name suggests, a {@code SingleRayConfiguration} uses just one ray cast.

@@ -14,11 +14,11 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.steer.rays;
+package com.badlogic.gdx.ai.steer.utils.rays;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
+import com.badlogic.gdx.ai.steer.utils.Ray;
+import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code RayConfigurationBase} is the base class for concrete ray configurations having a fixed number of rays.
@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector;
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
  * @author davebaol */
-public abstract class RayConfigurationBase<T extends Vector<T>> implements RaycastObstacleAvoidance.RayConfiguration<T> {
+public abstract class RayConfigurationBase<T extends Vector<T>> implements RayConfiguration<T> {
 
 	protected Steerable<T> owner;
 	protected Ray<T>[] rays;

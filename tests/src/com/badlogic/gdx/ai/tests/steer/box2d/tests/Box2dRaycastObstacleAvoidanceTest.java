@@ -19,14 +19,14 @@ package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.RaycastCollisionDetector;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
-import com.badlogic.gdx.ai.steer.rays.CentralRayWithWhiskersConfiguration;
-import com.badlogic.gdx.ai.steer.rays.ParallelSideRayConfiguration;
-import com.badlogic.gdx.ai.steer.rays.RayConfigurationBase;
-import com.badlogic.gdx.ai.steer.rays.SingleRayConfiguration;
+import com.badlogic.gdx.ai.steer.utils.Ray;
+import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
+import com.badlogic.gdx.ai.steer.utils.rays.ParallelSideRayConfiguration;
+import com.badlogic.gdx.ai.steer.utils.rays.RayConfigurationBase;
+import com.badlogic.gdx.ai.steer.utils.rays.SingleRayConfiguration;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dRaycastCollisionDetector;
 import com.badlogic.gdx.ai.tests.steer.box2d.Box2dSteeringEntity;
@@ -97,8 +97,10 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		@SuppressWarnings("unchecked")
 		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
 			new SingleRayConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100)),
-			new ParallelSideRayConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100), character.getBoundingRadius()),
-			new CentralRayWithWhiskersConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100), Box2dSteeringTest.pixelsToMeters(40), 35 * MathUtils.degreesToRadians)};
+			new ParallelSideRayConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100),
+				character.getBoundingRadius()),
+			new CentralRayWithWhiskersConfiguration<Vector2>(character, Box2dSteeringTest.pixelsToMeters(100),
+				Box2dSteeringTest.pixelsToMeters(40), 35 * MathUtils.degreesToRadians)};
 		rayConfigurations = localRayConfigurations;
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
@@ -232,7 +234,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		spriteBatch.dispose();
 	}
 
-	private void createRandomWalls(int n) {
+	private void createRandomWalls (int n) {
 		PolygonShape groundPoly = new PolygonShape();
 
 		BodyDef groundBodyDef = new BodyDef();
@@ -241,18 +243,19 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = groundPoly;
 		fixtureDef.filter.groupIndex = 0;
-		
+
 		walls = new Body[n];
 		walls_hw = new int[n];
 		walls_hh = new int[n];
 		for (int i = 0; i < n; i++) {
-			groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageWidth-50)), Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageHeight-50)));
+			groundBodyDef.position.set(Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageWidth - 50)),
+				Box2dSteeringTest.pixelsToMeters(MathUtils.random(50, (int)container.stageHeight - 50)));
 			walls[i] = world.createBody(groundBodyDef);
 			walls_hw[i] = (int)MathUtils.randomTriangular(20, 150);
 			walls_hh[i] = (int)MathUtils.randomTriangular(30, 80);
 			groundPoly.setAsBox(Box2dSteeringTest.pixelsToMeters(walls_hw[i]), Box2dSteeringTest.pixelsToMeters(walls_hh[i]));
 			walls[i].createFixture(fixtureDef);
-			
+
 		}
 		groundPoly.dispose();
 	}

@@ -19,6 +19,8 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.Path.PathParam;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code FollowPath} behavior produces a linear acceleration that moves the agent along the given path. First it calculates the
@@ -243,9 +245,5 @@ public class FollowPath<T extends Vector<T>, P extends PathParam> extends Arrive
 		this.timeToTarget = timeToTarget;
 		return this;
 	}
-
-	//
-	// Nested interfaces
-	//
 
 }

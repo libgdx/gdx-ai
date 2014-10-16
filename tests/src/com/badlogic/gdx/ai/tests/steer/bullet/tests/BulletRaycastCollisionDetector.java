@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Collision;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.steer.utils.Collision;
+import com.badlogic.gdx.ai.steer.utils.Ray;
+import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ClosestNotMeRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
@@ -45,14 +45,14 @@ public class BulletRaycastCollisionDetector implements RaycastCollisionDetector<
 	public boolean findCollision (Collision<Vector3> outputCollision, Ray<Vector3> inputRay) {
 		// reset because we reuse the callback
 		callback.setCollisionObject(null);
-		
+
 		rayFrom.set(inputRay.origin);
 		rayTo.set(rayFrom).add(inputRay.direction);
 		world.rayTest(rayFrom, rayTo, callback);
 
 		callback.getHitPointWorld(outputCollision.point);
 		callback.getHitNormalWorld(outputCollision.normal);
-		
+
 		return callback.hasHit();
 	}
 

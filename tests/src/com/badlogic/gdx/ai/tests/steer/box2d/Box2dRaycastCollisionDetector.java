@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.ai.tests.steer.box2d;
 
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Collision;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.Ray;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.steer.utils.Collision;
+import com.badlogic.gdx.ai.steer.utils.Ray;
+import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
