@@ -141,14 +141,14 @@ public class Metadata {
 		return attributes;
 	}
 
-	/** Returns {@true} if the given attribute name is valid; {@code false} otherwise.
+	/** Returns {@code true} if the given attribute name is valid; {@code false} otherwise.
 	 * @param name the attribute name */
 	public boolean hasAttribute (String name) {
 		ObjectSet<String> attr = attributes;
 		return attr != null && attr.contains(name);
 	}
 
-	/** @return {@true} if the task cannot have any children; {@code false} otherwise. */
+	/** @return {@code true} if the task cannot have any children; {@code false} otherwise. */
 	public boolean isLeaf () {
 		return getMinChildren() == 0 && getMaxChildren() == 0;
 	}

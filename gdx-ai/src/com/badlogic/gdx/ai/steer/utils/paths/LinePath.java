@@ -263,7 +263,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 			return length;
 		}
 
-		/** Returns the cumulative length from the first waypoint of the {@line LinePath} this segment belongs to. */
+		/** Returns the cumulative length from the first waypoint of the {@link LinePath} this segment belongs to. */
 		public float getCumulativeLength () {
 			return cumulativeLength;
 		}
