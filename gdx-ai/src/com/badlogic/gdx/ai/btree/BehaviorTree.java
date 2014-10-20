@@ -27,33 +27,63 @@ public class BehaviorTree<E> extends Task<E> {
 	private Task<E> rootTask;
 
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
-	 * be set before running this behavior tree. */
+	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
+	 * respectively. */
 	public BehaviorTree () {
 		this(null, null);
 	}
 
-	/** Creates a behavior tree with a root task and no blackboard object. The blackboard object must be set before running this
-	 * behavior tree.
+	/** Creates a behavior tree with a root task and no blackboard object. Both the root task and the blackboard object must be set
+	 * before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
+	 * respectively.
 	 * 
-	 * @param rootTask the root task of this tree */
+	 * @param rootTask the root task of this tree. It can be {@code null}. */
 	public BehaviorTree (Task<E> rootTask) {
 		this(rootTask, null);
 	}
 
-	/** Creates a behavior tree with a root task and a blackboard object
+	/** Creates a behavior tree with a root task and a blackboard object. Both the root task and the blackboard object must be set
+	 * before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
+	 * respectively.
 	 * 
-	 * @param rootTask the root task of this tree
-	 * @param object the blackboard */
+	 * @param rootTask the root task of this tree. It can be {@code null}.
+	 * @param object the blackboard. It can be {@code null}. */
 	public BehaviorTree (Task<E> rootTask, E object) {
 		this.rootTask = rootTask;
 		this.object = object;
 	}
 
-	/** Sets the blackboard object.
+	/** Returns the blackboard object of this behavior tree. */
+	public E getObject () {
+		return object;
+	}
+
+	/** Sets the blackboard object of this behavior tree.
 	 * 
 	 * @param object the new blackboard */
 	public void setObject (E object) {
 		this.object = object;
+	}
+
+	/** This method will add a child to the list of this task's children
+	 * 
+	 * @param child the child task which will be added
+	 * @exception IllegalStateException if the root task is already set. */
+	@Override
+	public void addChild (Task<E> child) {
+		if (this.rootTask != null) throw new IllegalStateException("A behavior tree cannot have more than one root task");
+		this.rootTask = child;
+	}
+
+	@Override
+	public int getChildCount () {
+		return rootTask == null ? 0 : 1;
+	}
+
+	@Override
+	public Task<E> getChild (int i) {
+		if (i == 0 && rootTask != null) return rootTask;
+		throw new IndexOutOfBoundsException("index can't be >= size: " + i + " >= " + getChildCount());
 	}
 
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
@@ -67,16 +97,6 @@ public class BehaviorTree<E> extends Task<E> {
 			rootTask.start(object);
 			rootTask.run(object);
 		}
-	}
-
-	@Override
-	public int getChildCount () {
-		return rootTask == null ? 0 : 1;
-	}
-
-	@Override
-	public Task<E> getChild (int i) {
-		return rootTask;
 	}
 
 	@Override
