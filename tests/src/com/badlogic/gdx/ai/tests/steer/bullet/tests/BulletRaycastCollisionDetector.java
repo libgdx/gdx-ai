@@ -42,6 +42,11 @@ public class BulletRaycastCollisionDetector implements RaycastCollisionDetector<
 	}
 
 	@Override
+	public boolean collides (Ray<Vector3> ray) {
+		return findCollision(null, ray);
+	}
+
+	@Override
 	public boolean findCollision (Collision<Vector3> outputCollision, Ray<Vector3> inputRay) {
 		// reset because we reuse the callback
 		callback.setCollisionObject(null);
@@ -50,8 +55,10 @@ public class BulletRaycastCollisionDetector implements RaycastCollisionDetector<
 		rayTo.set(rayFrom).add(inputRay.direction);
 		world.rayTest(rayFrom, rayTo, callback);
 
-		callback.getHitPointWorld(outputCollision.point);
-		callback.getHitNormalWorld(outputCollision.normal);
+		if (outputCollision != null) {
+			callback.getHitPointWorld(outputCollision.point);
+			callback.getHitNormalWorld(outputCollision.normal);
+		}
 
 		return callback.hasHit();
 	}
