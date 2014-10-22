@@ -1,3 +1,6 @@
+[1.4.1]
+- API Addition: added collides method tho RaycastCollisionDetector.
+
 [1.4.0]
 - API Addition: added behaviors trees (thanks implicit-invocation), see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees
 - API Addition: added steering behaviors, see https://github.com/libgdx/gdx-ai/wiki/Steering-Behaviors
