@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.steer.utils;
 
 import com.badlogic.gdx.math.Vector;
 
-/** A {@code Ray} is made up of a starting position and a vector whose direction and length define the end point of the ray.
+/** A {@code Ray} is made up of a starting point and an ending point.
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
@@ -26,35 +26,35 @@ import com.badlogic.gdx.math.Vector;
 public class Ray<T extends Vector<T>> {
 
 	/** The starting point of this ray. */
-	public T origin;
+	public T start;
 
-	/** The direction of this ray. */
-	public T direction;
+	/** The ending point of this ray. */
+	public T end;
 
-	/** Creates a {@code Ray} with the given {@code origin} and {@code direction}.
-	 * @param origin the starting point of this ray
-	 * @param direction the direction of this ray */
-	public Ray (T origin, T direction) {
-		this.origin = origin;
-		this.direction = direction;
+	/** Creates a {@code Ray} with the given {@code start} and {@code end} points.
+	 * @param start the starting point of this ray
+	 * @param end the starting point of this ray */
+	public Ray (T start, T end) {
+		this.start = start;
+		this.end = end;
 	}
 
 	/** Sets this ray from the given ray.
 	 * @param ray The ray
 	 * @return this ray for chaining. */
 	public Ray<T> set (Ray<T> ray) {
-		origin.set(ray.origin);
-		direction.set(ray.direction);
+		start.set(ray.start);
+		end.set(ray.end);
 		return this;
 	}
 
-	/** Sets this Ray from the given origin and direction.
-	 * @param origin the origin
-	 * @param direction the direction
+	/** Sets this Ray from the given start and end points.
+	 * @param start the starting point of this ray
+	 * @param end the starting point of this ray
 	 * @return this ray for chaining. */
-	public Ray<T> set (T origin, T direction) {
-		this.origin.set(origin);
-		this.direction.set(direction);
+	public Ray<T> set (T start, T end) {
+		this.start.set(start);
+		this.end.set(end);
 		return this;
 	}
 }

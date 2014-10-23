@@ -53,12 +53,15 @@ public class ParallelSideRayConfiguration<T extends Vector<T>> extends RayConfig
 		float velocityAngle = owner.vectorToAngle(owner.getLinearVelocity());
 
 		// Update ray 0
-		owner.angleToVector(rays[0].origin, velocityAngle - HALF_PI).scl(sideOffset).add(owner.getPosition());
-		rays[0].direction.set(owner.getLinearVelocity()).nor().scl(length);
+		owner.angleToVector(rays[0].start, velocityAngle - HALF_PI).scl(sideOffset).add(owner.getPosition());
+		rays[0].end.set(owner.getLinearVelocity()).nor().scl(length); // later we'll add rays[0].start;
 
 		// Update ray 1
-		owner.angleToVector(rays[1].origin, velocityAngle + HALF_PI).scl(sideOffset).add(owner.getPosition());
-		rays[1].direction.set(rays[0].direction);
+		owner.angleToVector(rays[1].start, velocityAngle + HALF_PI).scl(sideOffset).add(owner.getPosition());
+		rays[1].end.set(rays[0].end).add(rays[1].start);
+		
+		// add start position to ray 0
+		rays[0].end.add(rays[0].start);
 
 		return rays;
 	}

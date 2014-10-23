@@ -209,10 +209,10 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			shapeRenderer.setTransformMatrix(transform);
 			for (int i = 0; i < rays.length; i++) {
 				Ray<Vector2> ray = rays[i];
-				tmp.set(ray.origin);
+				tmp.set(ray.start);
 				tmp.x = Box2dSteeringTest.metersToPixels(tmp.x);
 				tmp.y = Box2dSteeringTest.metersToPixels(tmp.y);
-				tmp2.set(ray.origin).add(ray.direction);
+				tmp2.set(ray.end);
 				tmp2.x = Box2dSteeringTest.metersToPixels(tmp2.x);
 				tmp2.y = Box2dSteeringTest.metersToPixels(tmp2.y);
 				shapeRenderer.line(tmp, tmp2);

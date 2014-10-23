@@ -56,16 +56,16 @@ public class CentralRayWithWhiskersConfiguration<T extends Vector<T>> extends Ra
 		float velocityAngle = owner.vectorToAngle(ownerVelocity);
 
 		// Update central ray
-		rays[0].origin.set(ownerPosition);
-		rays[0].direction.set(ownerVelocity).nor().scl(rayLength);
+		rays[0].start.set(ownerPosition);
+		rays[0].end.set(ownerVelocity).nor().scl(rayLength).add(ownerPosition);
 
 		// Update left ray
-		rays[1].origin.set(ownerPosition);
-		owner.angleToVector(rays[1].direction, velocityAngle - whiskerAngle).scl(whiskerLength);
+		rays[1].start.set(ownerPosition);
+		owner.angleToVector(rays[1].end, velocityAngle - whiskerAngle).scl(whiskerLength).add(ownerPosition);
 
 		// Update right ray
-		rays[2].origin.set(ownerPosition);
-		owner.angleToVector(rays[2].direction, velocityAngle + whiskerAngle).scl(whiskerLength);
+		rays[2].start.set(ownerPosition);
+		owner.angleToVector(rays[2].end, velocityAngle + whiskerAngle).scl(whiskerLength).add(ownerPosition);
 
 		return rays;
 	}

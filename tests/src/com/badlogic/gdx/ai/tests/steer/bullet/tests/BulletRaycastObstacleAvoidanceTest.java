@@ -48,7 +48,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /** A class to test and experiment with the {@link RaycastObstacleAvoidance} behavior.
- * @author Daniel Holderbaum */
+ * @author Daniel Holderbaum
+ * @author davebaol */
 public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	SteeringBulletEntity character;
@@ -58,8 +59,6 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
-
-	private Vector3 tmp = new Vector3();
 
 	public BulletRaycastObstacleAvoidanceTest (SteeringBehaviorsTest container) {
 		super(container, "Raycast Obstacle Avoidance");
@@ -205,7 +204,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 			shapeRenderer.setProjectionMatrix(camera.combined);
 			for (int i = 0; i < rays.length; i++) {
 				Ray<Vector3> ray = rays[i];
-				shapeRenderer.line(ray.origin, tmp.set(ray.origin).add(ray.direction));
+				shapeRenderer.line(ray.start, ray.end);
 			}
 			shapeRenderer.end();
 			Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);

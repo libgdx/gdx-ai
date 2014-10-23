@@ -1,5 +1,6 @@
 [1.4.1]
 - API Addition: added collides method tho RaycastCollisionDetector.
+- API Change: now Ray has start and end points instead of an origin and a direction.
 
 [1.4.0]
 - API Addition: added behaviors trees (thanks implicit-invocation), see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees

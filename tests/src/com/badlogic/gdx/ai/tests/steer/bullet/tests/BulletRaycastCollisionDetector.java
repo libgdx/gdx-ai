@@ -27,13 +27,12 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionWorld;
 
 /** A 3D {@link RaycastCollisionDetector} to be used with bullet physics. It reports the closest collision which is not the
  * supplied "me" collision object.
- * @author Daniel Holderbaum */
+ * @author Daniel Holderbaum
+ * @author davebaol */
 public class BulletRaycastCollisionDetector implements RaycastCollisionDetector<Vector3> {
 
 	btCollisionWorld world;
 
-	Vector3 rayFrom = new Vector3();
-	Vector3 rayTo = new Vector3();
 	ClosestRayResultCallback callback;
 
 	public BulletRaycastCollisionDetector (btCollisionWorld world, btCollisionObject me) {
@@ -51,9 +50,7 @@ public class BulletRaycastCollisionDetector implements RaycastCollisionDetector<
 		// reset because we reuse the callback
 		callback.setCollisionObject(null);
 
-		rayFrom.set(inputRay.origin);
-		rayTo.set(rayFrom).add(inputRay.direction);
-		world.rayTest(rayFrom, rayTo, callback);
+		world.rayTest(inputRay.start, inputRay.end, callback);
 
 		if (outputCollision != null) {
 			callback.getHitPointWorld(outputCollision.point);

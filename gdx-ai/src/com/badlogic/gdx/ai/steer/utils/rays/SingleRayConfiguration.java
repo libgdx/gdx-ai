@@ -42,8 +42,8 @@ public class SingleRayConfiguration<T extends Vector<T>> extends RayConfiguratio
 
 	@Override
 	public Ray<T>[] updateRays () {
-		rays[0].origin.set(owner.getPosition());
-		rays[0].direction.set(owner.getLinearVelocity()).nor().scl(length);
+		rays[0].start.set(owner.getPosition());
+		rays[0].end.set(owner.getLinearVelocity()).nor().scl(length).add(rays[0].start);
 		return rays;
 	}
 

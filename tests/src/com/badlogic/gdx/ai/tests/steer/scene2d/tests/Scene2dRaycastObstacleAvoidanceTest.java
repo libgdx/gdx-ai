@@ -187,8 +187,6 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 		detailWindow = createDetailWindow(detailTable);
 	}
 
-	private Vector2 tmp = new Vector2();
-
 	@Override
 	public void render () {
 		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
@@ -206,7 +204,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 			shapeRenderer.setTransformMatrix(transform);
 			for (int i = 0; i < rays.length; i++) {
 				Ray<Vector2> ray = rays[i];
-				shapeRenderer.line(ray.origin, tmp.set(ray.origin).add(ray.direction));
+				shapeRenderer.line(ray.start, ray.end);
 			}
 			shapeRenderer.end();
 		}
