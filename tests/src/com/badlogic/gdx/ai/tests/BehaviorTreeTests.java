@@ -68,7 +68,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 	public float stageWidth;
 	public float stageHeight;
 	public Skin skin;
-	String behaviorNames[][];
 
 	@Override
 	public void create () {
