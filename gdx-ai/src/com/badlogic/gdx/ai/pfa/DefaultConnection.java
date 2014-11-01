@@ -23,8 +23,8 @@ package com.badlogic.gdx.ai.pfa;
  * @author davebaol */
 public class DefaultConnection<N> implements Connection<N> {
 
-	N fromNode;
-	N toNode;
+	protected N fromNode;
+	protected N toNode;
 
 	public DefaultConnection (N fromNode, N toNode) {
 		this.fromNode = fromNode;
@@ -33,7 +33,7 @@ public class DefaultConnection<N> implements Connection<N> {
 
 	@Override
 	public float getCost () {
-		return 1;
+		return 1f;
 	}
 
 	@Override
