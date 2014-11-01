@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
-import com.badlogic.gdx.ai.steer.utils.Collision;
-import com.badlogic.gdx.ai.steer.utils.Ray;
-import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector2;
 
 /** A raycast collision detector used for path smoothing against a {@link TiledGraph}.

@@ -19,7 +19,7 @@ package com.badlogic.gdx.ai.tests.steer.bullet;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.ai.steer.utils.Collision;
+import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.steer.utils;
+package com.badlogic.gdx.ai.utils;
 
 import com.badlogic.gdx.math.Vector;
 

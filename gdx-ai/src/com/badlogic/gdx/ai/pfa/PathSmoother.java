@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.ai.pfa;
 
-import com.badlogic.gdx.ai.steer.utils.Ray;
-import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector;
 
 /** A {@code PathSmoother} takes a {@link SmoothableGraphPath} and transforms it by linking directly the nodes that are in line of
@@ -97,7 +97,7 @@ public class PathSmoother<N, V extends Vector<V>> {
 			inputIndex++;
 		}
 
-		// Reached the the last input node, always add it to the smoothed path.
+		// Reached the last input node, always add it to the smoothed path.
 		path.swapNodes(outputIndex, inputIndex - 1);
 		path.truncatePath(outputIndex + 1);
 

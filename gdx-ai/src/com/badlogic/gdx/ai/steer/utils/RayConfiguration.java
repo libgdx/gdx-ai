@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.steer.utils;
 
+import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.Vector;
 
 /** A {@code RayConfiguration} is a collection of rays typically used for collision avoidance.

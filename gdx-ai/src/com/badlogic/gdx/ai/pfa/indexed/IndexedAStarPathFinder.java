@@ -17,8 +17,8 @@
 package com.badlogic.gdx.ai.pfa.indexed;
 
 import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.GraphPath;
+import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BinaryHeap;
@@ -225,6 +225,9 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	private static final int CLOSED = 2;
 
 	/** This nested class is used to keep track of the information we need for each node during the search.
+	 * 
+	 * @param <N> Type of node
+	 * 
 	 * @author davebaol */
 	static class NodeRecord<N extends IndexedNode<N>> extends BinaryHeap.Node {
 		/** The reference to the node. */
@@ -242,15 +245,20 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		/** ID of the current search. */
 		int searchId;
 
+		/** Creates a {@code NodeRecord}. */
 		public NodeRecord () {
 			super(0);
 		}
 
+		/** Returns the estimated total cost. */
 		public float getEstimatedTotalCost () {
 			return getValue();
 		}
 	}
 
+	/** A class used by {@link IndexedAStarPathFinder} to collect search metrics.
+	 * 
+	 * @author davebaol */
 	public static class Metrics {
 		public int visitedNodes;
 		public int openListAdditions;

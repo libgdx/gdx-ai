@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.steer.utils.rays;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.utils.Ray;
+import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.Vector;
 
 /** A {@code CentralRayWithWhiskersConfiguration} uses a long central ray and two shorter whiskers.

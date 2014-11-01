@@ -20,13 +20,13 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.steer.utils.Collision;
-import com.badlogic.gdx.ai.steer.utils.Ray;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
-import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.ParallelSideRayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.SingleRayConfiguration;
+import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector;
 
 /** With the {@code RaycastObstacleAvoidance} the moving agent (the owner) casts one or more rays out in the direction of its

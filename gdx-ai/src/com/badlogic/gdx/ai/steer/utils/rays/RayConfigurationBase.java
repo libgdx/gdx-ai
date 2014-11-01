@@ -17,8 +17,8 @@
 package com.badlogic.gdx.ai.steer.utils.rays;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.utils.Ray;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
+import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code RayConfigurationBase} is the base class for concrete ray configurations having a fixed number of rays.

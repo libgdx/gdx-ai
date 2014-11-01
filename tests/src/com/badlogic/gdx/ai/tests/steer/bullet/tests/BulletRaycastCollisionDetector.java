@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.ai.steer.utils.Collision;
-import com.badlogic.gdx.ai.steer.utils.Ray;
-import com.badlogic.gdx.ai.steer.utils.RaycastCollisionDetector;
+import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ClosestNotMeRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
