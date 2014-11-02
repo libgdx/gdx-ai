@@ -27,10 +27,17 @@ public class IndexedGraph<N extends IndexedNode<N>> implements Graph<N> {
 
 	protected Array<N> nodes;
 
+	/** Creates an {@code IndexedGraph} with no nodes. */
 	public IndexedGraph () {
-		this(null);
+		this(new Array<N>());
 	}
 
+	/** Creates an {@code IndexedGraph} with the capacity. */
+	public IndexedGraph (int capacity) {
+		this(new Array<N>(capacity));
+	}
+
+	/** Creates an {@code IndexedGraph} with the given nodes. */
 	public IndexedGraph (Array<N> nodes) {
 		this.nodes = nodes;
 	}
@@ -40,6 +47,7 @@ public class IndexedGraph<N extends IndexedNode<N>> implements Graph<N> {
 		return nodes.get(fromNode.getIndex()).getConnections();
 	}
 
+	/** Returns the number of nodes. */
 	public int getNodeCount () {
 		return nodes.size;
 	}

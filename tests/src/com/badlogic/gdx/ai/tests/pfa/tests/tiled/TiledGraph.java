@@ -18,7 +18,6 @@ package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 
 /** A random generated graph representing a tiled map.
  * 
@@ -31,8 +30,8 @@ public class TiledGraph extends IndexedGraph<TiledNode> {
 	public TiledNode startNode;
 
 	public TiledGraph () {
+		super(sizeX * sizeY);
 		diagonal = false;
-		nodes = new Array<TiledNode>(sizeX * sizeY);
 		int roomCount = MathUtils.random(80, 150);// 100, 260);//70, 120);
 		int roomMinSize = 3;
 		int roomMaxSize = 15;
@@ -48,10 +47,10 @@ public class TiledGraph extends IndexedGraph<TiledNode> {
 			int idx = x * sizeY;
 			for (int y = 0; y < sizeY; y++) {
 				TiledNode n = nodes.get(idx + y);
-				if (x > 0) setConnection(n, -1, 0);
-				if (y > 0) setConnection(n, 0, -1);
-				if (x < sizeX - 1) setConnection(n, 1, 0);
-				if (y < sizeY - 1) setConnection(n, 0, 1);
+				if (x > 0) addConnection(n, -1, 0);
+				if (y > 0) addConnection(n, 0, -1);
+				if (x < sizeX - 1) addConnection(n, 1, 0);
+				if (y < sizeY - 1) addConnection(n, 0, 1);
 			}
 		}
 	}
@@ -64,7 +63,7 @@ public class TiledGraph extends IndexedGraph<TiledNode> {
 		return nodes.get(index);
 	}
 
-	private void setConnection (TiledNode n, int xOffset, int yOffset) {
+	private void addConnection (TiledNode n, int xOffset, int yOffset) {
 		TiledNode target = getNode(n.x + xOffset, n.y + yOffset);
 		if (target.type == TiledNode.TILE_FLOOR) n.getConnections().add(new TiledConnection(this, n, target));
 	}
