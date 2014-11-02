@@ -19,12 +19,16 @@ package com.badlogic.gdx.ai.pfa.indexed;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.utils.Array;
 
-/** @param <N> Type of node
+/** Interface for a node used by the {@link IndexedAStarPathFinder}.
+ * 
+ * @param <N> Type of node
  * 
  * @author davebaol */
 public interface IndexedNode<N extends IndexedNode<N>> {
 
+	/** Returns the index of this {@code IndexedNode}. */
 	public int getIndex ();
 
+	/** Returns an array of {@link Connection connections} outgoing from this {@code IndexedNode}. */
 	public Array<Connection<N>> getConnections ();
 }

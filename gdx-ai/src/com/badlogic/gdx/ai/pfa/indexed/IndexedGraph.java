@@ -20,7 +20,9 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.Graph;
 import com.badlogic.gdx.utils.Array;
 
-/** @param <N> Type of node
+/** A graph for the {@link IndexedAStarPathFinder} that uses an internal {@link Array} to store nodes.
+ * 
+ * @param <N> Type of node
  * 
  * @author davebaol */
 public class IndexedGraph<N extends IndexedNode<N>> implements Graph<N> {
@@ -32,7 +34,7 @@ public class IndexedGraph<N extends IndexedNode<N>> implements Graph<N> {
 		this(new Array<N>());
 	}
 
-	/** Creates an {@code IndexedGraph} with the capacity. */
+	/** Creates an {@code IndexedGraph} with the given capacity and no nodes. */
 	public IndexedGraph (int capacity) {
 		this(new Array<N>(capacity));
 	}
