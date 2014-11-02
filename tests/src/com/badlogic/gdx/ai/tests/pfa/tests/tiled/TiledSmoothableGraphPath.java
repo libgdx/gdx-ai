@@ -16,25 +16,14 @@
 
 package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
+import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 
 /** A smoothable path for a {@link TiledGraph}. It holds a list of {@link TiledNode tiled nodes} that are part of the path.
  * 
  * @author davebaol */
-public class TiledSmoothableGraphPath implements SmoothableGraphPath<TiledNode, Vector2> {
-	public final Array<TiledNode> nodes = new Array<TiledNode>();
-
-	@Override
-	public void clear () {
-		nodes.clear();
-	}
-
-	@Override
-	public int getCount () {
-		return nodes.size;
-	}
+public class TiledSmoothableGraphPath extends DefaultGraphPath<TiledNode> implements SmoothableGraphPath<TiledNode, Vector2> {
 
 	private Vector2 tmpPosition = new Vector2();
 
@@ -60,18 +49,4 @@ public class TiledSmoothableGraphPath implements SmoothableGraphPath<TiledNode, 
 		nodes.truncate(newLength);
 	}
 
-	@Override
-	public void add (TiledNode node) {
-		nodes.add(node);
-	}
-
-	@Override
-	public void reverse () {
-		nodes.reverse();
-	}
-
-	@Override
-	public TiledNode get (int index) {
-		return nodes.get(index);
-	}
 }
