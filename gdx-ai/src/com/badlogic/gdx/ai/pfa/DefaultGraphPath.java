@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.utils.Array;
 
 /** Default implementation of a {@link GraphPath} that uses an internal {@link Array} to store nodes or connections.
@@ -64,5 +66,10 @@ public class DefaultGraphPath<N> implements GraphPath<N> {
 	@Override
 	public void reverse () {
 		nodes.reverse();
+	}
+
+	@Override
+	public Iterator<N> iterator () {
+		return nodes.iterator();
 	}
 }

@@ -22,7 +22,7 @@ package com.badlogic.gdx.ai.pfa;
  * @param <N> Type of node
  * 
  * @author davebaol */
-public interface GraphPath<N> {
+public interface GraphPath<N> extends Iterable<N> {
 
 	/** Returns the number of items of this path. */
 	public int getCount ();
