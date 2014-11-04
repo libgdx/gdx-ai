@@ -16,41 +16,16 @@
 
 package com.badlogic.gdx.ai.pfa.indexed;
 
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.Graph;
-import com.badlogic.gdx.utils.Array;
 
-/** A graph for the {@link IndexedAStarPathFinder} that uses an internal {@link Array} to store nodes.
+/** A graph for the {@link IndexedAStarPathFinder}.
  * 
  * @param <N> Type of node
  * 
  * @author davebaol */
-public class IndexedGraph<N extends IndexedNode<N>> implements Graph<N> {
-
-	protected Array<N> nodes;
-
-	/** Creates an {@code IndexedGraph} with no nodes. */
-	public IndexedGraph () {
-		this(new Array<N>());
-	}
-
-	/** Creates an {@code IndexedGraph} with the given capacity and no nodes. */
-	public IndexedGraph (int capacity) {
-		this(new Array<N>(capacity));
-	}
-
-	/** Creates an {@code IndexedGraph} with the given nodes. */
-	public IndexedGraph (Array<N> nodes) {
-		this.nodes = nodes;
-	}
-
-	@Override
-	public Array<Connection<N>> getConnections (N fromNode) {
-		return nodes.get(fromNode.getIndex()).getConnections();
-	}
+public interface IndexedGraph<N extends IndexedNode<N>> extends Graph<N> {
 
 	/** Returns the number of nodes. */
-	public int getNodeCount () {
-		return nodes.size;
-	}
+	public int getNodeCount ();
+
 }

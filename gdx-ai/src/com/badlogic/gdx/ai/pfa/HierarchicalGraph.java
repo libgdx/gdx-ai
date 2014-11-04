@@ -25,17 +25,17 @@ package com.badlogic.gdx.ai.pfa;
 public interface HierarchicalGraph<N> extends Graph<N> {
 
 	/** Returns the number of levels in this hierarchical graph. */
-	public int getLevels ();
+	public int getLevelCount ();
 
-	/** Switches the graph into the given level so all future calls to the methods of this {@code HierarchicalGraph} act as if the
-	 * graph was just a simple, non-hierarchical graph at that level.
+	/** Switches the graph into the given level so all future calls to the {@link #getConnections(Object) getConnections} methods
+	 * act as if the graph was just a simple, non-hierarchical graph at that level.
 	 * @param level the level to set */
 	public void setLevel (int level);
 
 	/** Converts the node at the input level into a node at the output level.
-	 * @param inputLevel
-	 * @param node
-	 * @param outputLevel
-	 * @return */
-	public N getNodeAtLevel (int inputLevel, N node, int outputLevel);
+	 * @param inputLevel the input level
+	 * @param node the node to convert
+	 * @param outputLevel the output level
+	 * @return the node converted at the output level. */
+	public N convertNodeBetweenLevels (int inputLevel, N node, int outputLevel);
 }

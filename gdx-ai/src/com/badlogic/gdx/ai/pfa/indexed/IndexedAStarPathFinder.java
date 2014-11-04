@@ -75,6 +75,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		}
 
 		// Work back along the path, accumulating connections
+		//outPath.clear();
 		while (current.node != startNode) {
 			outPath.add(current.connection);
 			current = nodeRecords[current.connection.getFromNode().getIndex()];
@@ -99,6 +100,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		}
 
 		// Work back along the path, accumulating nodes
+		//outPath.clear();
 		while (current.connection != null) {
 			outPath.add(current.node);
 			current = nodeRecords[current.connection.getFromNode().getIndex()];
