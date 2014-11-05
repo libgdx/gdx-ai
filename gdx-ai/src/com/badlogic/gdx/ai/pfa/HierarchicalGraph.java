@@ -34,8 +34,8 @@ public interface HierarchicalGraph<N> extends Graph<N> {
 
 	/** Converts the node at the input level into a node at the output level.
 	 * @param inputLevel the input level
-	 * @param node the node to convert
+	 * @param node the node at the input level
 	 * @param outputLevel the output level
-	 * @return the node converted at the output level. */
+	 * @return the node at the output level. */
 	public N convertNodeBetweenLevels (int inputLevel, N node, int outputLevel);
 }

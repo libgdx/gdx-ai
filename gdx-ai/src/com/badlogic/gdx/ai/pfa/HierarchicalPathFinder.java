@@ -95,8 +95,10 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 		if (levelCount > 1) {
 			// If start and end nodes have the same parent at level 1
 			// we can perform non-hierarchical pathfinding at level 0 directly
-			if (graph.convertNodeBetweenLevels(0, startNode, 1) == graph.convertNodeBetweenLevels(0, endNode, 1))
+			if (graph.convertNodeBetweenLevels(0, startNode, 1) == graph.convertNodeBetweenLevels(0, endNode, 1)) {
+				graph.setLevel(0);
 				return levelPathFinder.searchConnectionPath(startNode, endNode, heuristic, outPath);
+			}
 		}
 
 		// Set up our initial pair of nodes
