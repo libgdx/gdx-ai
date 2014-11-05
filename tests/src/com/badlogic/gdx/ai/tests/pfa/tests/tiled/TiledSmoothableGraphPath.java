@@ -20,10 +20,13 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
 import com.badlogic.gdx.math.Vector2;
 
-/** A smoothable path for a {@link TiledGraph}. It holds a list of {@link TiledNode tiled nodes} that are part of the path.
+/** A smoothable path for a generic tiled graph.
+ * 
+ * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
  * 
  * @author davebaol */
-public class TiledSmoothableGraphPath extends DefaultGraphPath<TiledNode> implements SmoothableGraphPath<TiledNode, Vector2> {
+public class TiledSmoothableGraphPath<N extends TiledNode<N>> extends DefaultGraphPath<N> implements
+	SmoothableGraphPath<N, Vector2> {
 
 	private Vector2 tmpPosition = new Vector2();
 
@@ -33,7 +36,7 @@ public class TiledSmoothableGraphPath extends DefaultGraphPath<TiledNode> implem
 	 * @param index the index of the node you want to know the position */
 	@Override
 	public Vector2 getNodePosition (int index) {
-		TiledNode node = nodes.get(index);
+		N node = nodes.get(index);
 		return tmpPosition.set(node.x, node.y);
 	}
 

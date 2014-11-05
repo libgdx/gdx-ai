@@ -14,20 +14,20 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
+package com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat;
 
 import com.badlogic.gdx.ai.pfa.DefaultConnection;
 
-/** A connection for a {@link TiledGraph}.
+/** A connection for a {@link FlatTiledGraph}.
  * 
  * @author davebaol */
-public class TiledConnection extends DefaultConnection<TiledNode> {
+public class FlatTiledConnection extends DefaultConnection<FlatTiledNode> {
 
 	static final float NON_DIAGONAL_COST = (float)Math.sqrt(2);
 
-	TiledGraph worldMap;
+	FlatTiledGraph worldMap;
 
-	public TiledConnection (TiledGraph worldMap, TiledNode fromNode, TiledNode toNode) {
+	public FlatTiledConnection (FlatTiledGraph worldMap, FlatTiledNode fromNode, FlatTiledNode toNode) {
 		super(fromNode, toNode);
 		this.worldMap = worldMap;
 	}

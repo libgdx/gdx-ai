@@ -14,21 +14,27 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
+package com.badlogic.gdx.ai.tests.pfa.tests.tiled.hrchy;
 
-import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.ai.pfa.DefaultConnection;
 
-/** Graph interface representing a generic tiled map.
- * 
- * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
+/** A connection for a {@link HierarchicalTiledGraph}.
  * 
  * @author davebaol */
-public interface TiledGraph<N extends TiledNode<N>> extends IndexedGraph<N> {
+public class HierarchicalTiledConnection extends DefaultConnection<HierarchicalTiledNode> {
 
-	public void init (int roomCount, int roomMinSize, int roomMaxSize, int squashIterations);
+	static final float NON_DIAGONAL_COST = (float)Math.sqrt(2);
 
-	public N getNode (int x, int y);
+	HierarchicalTiledGraph worldMap;
 
-	public N getNode (int index);
+	public HierarchicalTiledConnection (HierarchicalTiledGraph worldMap, HierarchicalTiledNode fromNode, HierarchicalTiledNode toNode) {
+		super(fromNode, toNode);
+		this.worldMap = worldMap;
+	}
 
+	@Override
+	public float getCost () {
+		if (worldMap.diagonal) return 1;
+		return getToNode().x != worldMap.startNode.x && getToNode().y != worldMap.startNode.y ? NON_DIAGONAL_COST : 1;
+	}
 }

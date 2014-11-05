@@ -23,11 +23,13 @@ import com.badlogic.gdx.math.Vector2;
 
 /** A raycast collision detector used for path smoothing against a {@link TiledGraph}.
  * 
+ * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
+ * 
  * @author davebaol */
-public class TiledRaycastCollisionDetector implements RaycastCollisionDetector<Vector2> {
-	TiledGraph worldMap;
+public class TiledRaycastCollisionDetector<N extends TiledNode<N>> implements RaycastCollisionDetector<Vector2> {
+	TiledGraph<N> worldMap;
 
-	public TiledRaycastCollisionDetector (TiledGraph worldMap) {
+	public TiledRaycastCollisionDetector (TiledGraph<N> worldMap) {
 		this.worldMap = worldMap;
 	}
 
@@ -68,7 +70,7 @@ public class TiledRaycastCollisionDetector implements RaycastCollisionDetector<V
 		int y = y0;
 		int ystep = (y0 < y1 ? 1 : -1);
 		for (int x = x0; x <= x1; x++) {
-			TiledNode tile = steep ? worldMap.getNode(y, x) : worldMap.getNode(x, y);
+			N tile = steep ? worldMap.getNode(y, x) : worldMap.getNode(x, y);
 			if (tile.type != TiledNode.TILE_FLOOR) return true; // We've hit a wall
 			error += deltay;
 			if (error + error >= deltax) {

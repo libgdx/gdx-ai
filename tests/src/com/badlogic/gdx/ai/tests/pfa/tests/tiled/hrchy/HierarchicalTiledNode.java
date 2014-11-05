@@ -14,21 +14,31 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
+package com.badlogic.gdx.ai.tests.pfa.tests.tiled.hrchy;
 
-import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledNode;
+import com.badlogic.gdx.utils.Array;
 
-/** Graph interface representing a generic tiled map.
- * 
- * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
+/** A node for a {@link HierarchicalTiledGraph}.
  * 
  * @author davebaol */
-public interface TiledGraph<N extends TiledNode<N>> extends IndexedGraph<N> {
+public class HierarchicalTiledNode extends TiledNode<HierarchicalTiledNode> {
+	/** The index of this tile. */
+	public final int index;
 
-	public void init (int roomCount, int roomMinSize, int roomMaxSize, int squashIterations);
+	public HierarchicalTiledNode (int x, int y, int type, int index, int connectionCapacity) {
+		super(x, y, type, new Array<Connection<HierarchicalTiledNode>>(connectionCapacity));
+		this.index = index;
+	}
 
-	public N getNode (int x, int y);
+	@Override
+	public int getIndex () {
+		return index;
+	}
 
-	public N getNode (int index);
+	public HierarchicalTiledNode getLowerLevelNode() {
+		return null;
+	}
 
 }

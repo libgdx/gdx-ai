@@ -23,15 +23,16 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder.Metrics;
 import com.badlogic.gdx.ai.tests.PathFinderTests;
 import com.badlogic.gdx.ai.tests.pfa.PathFinderTestBase;
-import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledGraph;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledManhattanDistance;
-import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledNode;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledRaycastCollisionDetector;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledSmoothableGraphPath;
+import com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat.FlatTiledGraph;
+import com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat.FlatTiledNode;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -44,7 +45,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * to use a {@link PathSmoother} on the found path to reduce the zigzag.
  * 
  * @author davebaol */
-public class TiledAStarTest extends PathFinderTestBase {
+public class FlatTiledAStarTest extends PathFinderTestBase {
 
 	final static float width = 8; // 5; // 10;
 
@@ -58,11 +59,11 @@ public class TiledAStarTest extends PathFinderTestBase {
 	int startTileX;
 	int startTileY;
 
-	TiledGraph worldMap;
-	TiledSmoothableGraphPath path;
-	TiledManhattanDistance heuristic;
-	IndexedAStarPathFinder<TiledNode> pathfinder;
-	PathSmoother<TiledNode, Vector2> pathSmoother;
+	FlatTiledGraph worldMap;
+	TiledSmoothableGraphPath<FlatTiledNode> path;
+	TiledManhattanDistance<FlatTiledNode> heuristic;
+	IndexedAStarPathFinder<FlatTiledNode> pathfinder;
+	PathSmoother<FlatTiledNode, Vector2> pathSmoother;
 
 	boolean smooth = false;
 
@@ -70,8 +71,8 @@ public class TiledAStarTest extends PathFinderTestBase {
 	CheckBox checkSmooth;
 	CheckBox checkMetrics;
 
-	public TiledAStarTest (PathFinderTests container) {
-		super(container, "Tiled A*");
+	public FlatTiledAStarTest (PathFinderTests container) {
+		super(container, "Flat Tiled A*");
 	}
 
 	@Override
@@ -81,11 +82,18 @@ public class TiledAStarTest extends PathFinderTestBase {
 		startTileX = 1;
 		startTileY = 1;
 
-		worldMap = new TiledGraph();
-		path = new TiledSmoothableGraphPath();
-		heuristic = new TiledManhattanDistance();
-		pathfinder = new IndexedAStarPathFinder<TiledNode>(worldMap, true);
-		pathSmoother = new PathSmoother<TiledNode, Vector2>(new TiledRaycastCollisionDetector(worldMap));
+		// Create the map
+		worldMap = new FlatTiledGraph();
+		int roomCount = MathUtils.random(80, 150);// 100, 260);//70, 120);
+		int roomMinSize = 3;
+		int roomMaxSize = 15;
+		int squashIterations = 100;
+		worldMap.init(roomCount, roomMinSize, roomMaxSize, squashIterations);
+		
+		path = new TiledSmoothableGraphPath<FlatTiledNode>();
+		heuristic = new TiledManhattanDistance<FlatTiledNode>();
+		pathfinder = new IndexedAStarPathFinder<FlatTiledNode>(worldMap, true);
+		pathSmoother = new PathSmoother<FlatTiledNode, Vector2>(new TiledRaycastCollisionDetector<FlatTiledNode>(worldMap));
 
 		renderer = new ShapeRenderer();
 		inputProcessor = new TiledAStarInputProcessor(this);
@@ -140,13 +148,13 @@ public class TiledAStarTest extends PathFinderTestBase {
 	@Override
 	public void render () {
 		renderer.begin(ShapeType.Filled);
-		for (int x = 0; x < TiledGraph.sizeX; x++) {
-			for (int y = 0; y < TiledGraph.sizeY; y++) {
+		for (int x = 0; x < FlatTiledGraph.sizeX; x++) {
+			for (int y = 0; y < FlatTiledGraph.sizeY; y++) {
 				switch (worldMap.getNode(x, y).type) {
-				case TiledNode.TILE_FLOOR:
+				case FlatTiledNode.TILE_FLOOR:
 					renderer.setColor(Color.WHITE);
 					break;
-				case TiledNode.TILE_WALL:
+				case FlatTiledNode.TILE_WALL:
 					renderer.setColor(Color.GRAY);
 					break;
 				default:
@@ -160,7 +168,7 @@ public class TiledAStarTest extends PathFinderTestBase {
 		renderer.setColor(Color.RED);
 		int nodeCount = path.getCount();
 		for (int i = 0; i < nodeCount; i++) {
-			TiledNode node = path.nodes.get(i);
+			FlatTiledNode node = path.nodes.get(i);
 			renderer.rect(node.x * width, node.y * width, width, width);
 		}
 		if (smooth) {
@@ -168,9 +176,9 @@ public class TiledAStarTest extends PathFinderTestBase {
 			renderer.begin(ShapeType.Line);
 			float hw = width / 2f;
 			if (nodeCount > 0) {
-				TiledNode prevNode = path.nodes.get(0);
+				FlatTiledNode prevNode = path.nodes.get(0);
 				for (int i = 1; i < nodeCount; i++) {
-					TiledNode node = path.nodes.get(i);
+					FlatTiledNode node = path.nodes.get(i);
 					renderer.line(node.x * width + hw, node.y * width + hw, prevNode.x * width + hw, prevNode.y * width + hw);
 					prevNode = node;
 				}
@@ -199,10 +207,10 @@ public class TiledAStarTest extends PathFinderTestBase {
 		int tileX = (int)(tmpUnprojection.x / width);
 		int tileY = (int)(tmpUnprojection.y / width);
 		if (forceUpdate || tileX != lastEndTileX || tileY != lastEndTileY) {
-			TiledNode startNode = worldMap.getNode(startTileX, startTileY);
-			TiledNode endNode = worldMap.getNode(tileX, tileY);
-			if (forceUpdate || endNode.type == TiledNode.TILE_FLOOR) {
-				if (endNode.type == TiledNode.TILE_FLOOR) {
+			FlatTiledNode startNode = worldMap.getNode(startTileX, startTileY);
+			FlatTiledNode endNode = worldMap.getNode(tileX, tileY);
+			if (forceUpdate || endNode.type == FlatTiledNode.TILE_FLOOR) {
+				if (endNode.type == FlatTiledNode.TILE_FLOOR) {
 					lastEndTileX = tileX;
 					lastEndTileY = tileY;
 				} else {
@@ -240,9 +248,9 @@ public class TiledAStarTest extends PathFinderTestBase {
 	 * 
 	 * @autor davebaol */
 	static class TiledAStarInputProcessor extends InputAdapter {
-		TiledAStarTest test;
+		FlatTiledAStarTest test;
 
-		public TiledAStarInputProcessor (TiledAStarTest test) {
+		public TiledAStarInputProcessor (FlatTiledAStarTest test) {
 			this.test = test;
 		}
 
@@ -270,8 +278,8 @@ public class TiledAStarTest extends PathFinderTestBase {
 			test.getCamera().unproject(test.tmpUnprojection.set(screenX, screenY, 0));
 			int tileX = (int)(test.tmpUnprojection.x / width);
 			int tileY = (int)(test.tmpUnprojection.y / width);
-			TiledNode startNode = test.worldMap.getNode(tileX, tileY);
-			if (startNode.type == TiledNode.TILE_FLOOR) {
+			FlatTiledNode startNode = test.worldMap.getNode(tileX, tileY);
+			if (startNode.type == FlatTiledNode.TILE_FLOOR) {
 				test.startTileX = tileX;
 				test.startTileY = tileY;
 				test.updatePath(true);

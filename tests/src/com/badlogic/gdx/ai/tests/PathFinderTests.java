@@ -19,7 +19,8 @@ package com.badlogic.gdx.ai.tests;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.pfa.PathFinderTestBase;
-import com.badlogic.gdx.ai.tests.pfa.tests.TiledAStarTest;
+import com.badlogic.gdx.ai.tests.pfa.tests.FlatTiledAStarTest;
+import com.badlogic.gdx.ai.tests.pfa.tests.HierarchicalTiledAStarTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.graphics.GL20;
@@ -52,7 +53,8 @@ public class PathFinderTests extends GdxAiTest {
 
 	// @off - disable libgdx formatter
 	PathFinderTestBase [] tests = {
-		new TiledAStarTest(this)
+		new FlatTiledAStarTest(this),
+		new HierarchicalTiledAStarTest(this)
 	};
 	// @on - enable libgdx formatter
 

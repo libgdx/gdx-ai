@@ -22,8 +22,10 @@ import com.badlogic.gdx.utils.Array;
 
 /** A node for a {@link TiledGraph}.
  * 
+ * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
+ * 
  * @author davebaol */
-public class TiledNode implements IndexedNode<TiledNode> {
+public abstract class TiledNode<N extends TiledNode<N>> implements IndexedNode<N> {
 
 	/** A constant representing an empty tile */
 	public static final int TILE_EMPTY = 0;
@@ -43,22 +45,20 @@ public class TiledNode implements IndexedNode<TiledNode> {
 	/** The type of this tile, see {@link #TILE_EMPTY}, {@link #TILE_FLOOR} and {@link #TILE_WALL} */
 	public final int type;
 
-	Array<Connection<TiledNode>> connections;
+	protected Array<Connection<N>> connections;
 
-	public TiledNode (int x, int y, int type) {
+	public TiledNode (int x, int y, int type, Array<Connection<N>> connections) {
 		this.x = x;
 		this.y = y;
 		this.type = type;
-		this.connections = new Array<Connection<TiledNode>>(4);
+		this.connections = connections;
 	}
 
 	@Override
-	public int getIndex () {
-		return x * TiledGraph.sizeY + y;
-	}
+	public abstract int getIndex ();
 
 	@Override
-	public Array<Connection<TiledNode>> getConnections () {
+	public Array<Connection<N>> getConnections () {
 		return this.connections;
 	}
 
