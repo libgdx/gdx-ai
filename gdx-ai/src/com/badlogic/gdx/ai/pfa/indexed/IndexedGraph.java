@@ -20,7 +20,7 @@ import com.badlogic.gdx.ai.pfa.Graph;
 
 /** A graph for the {@link IndexedAStarPathFinder}.
  * 
- * @param <N> Type of node
+ * @param <N> Type of node extending {@link IndexedNode}
  * 
  * @author davebaol */
 public interface IndexedGraph<N extends IndexedNode<N>> extends Graph<N> {

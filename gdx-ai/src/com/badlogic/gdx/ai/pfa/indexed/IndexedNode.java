@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Array;
 
 /** Interface for a node used by the {@link IndexedAStarPathFinder}.
  * 
- * @param <N> Type of node
+ * @param <N> Type of node extending {@link IndexedNode}
  * 
  * @author davebaol */
 public interface IndexedNode<N extends IndexedNode<N>> {

@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.TimeUtils;
 
 /** This test shows how the {@link HierarchicalPathFinder} can be used on a hierarchical tiled map with two levels. It also shows
  * how to use a {@link PathSmoother} on the found path to reduce the zigzag.
@@ -67,6 +68,7 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 	PathSmoother<HierarchicalTiledNode, Vector2> pathSmoother;
 
 	boolean smooth = false;
+	boolean metrics = false;
 
 	CheckBox checkDiagonal;
 	CheckBox checkSmooth;
@@ -139,12 +141,12 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 
 		detailTable.row();
 		checkMetrics = new CheckBox("Calculate [RED]M[]etrics", container.skin);
-// checkMetrics.setChecked(pathfinder.metrics != null);
+		checkMetrics.setChecked(metrics);
 		checkMetrics.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				CheckBox checkBox = (CheckBox)event.getListenerActor();
-// pathfinder.metrics = checkBox.isChecked() ? new Metrics() : null;
+				metrics = checkBox.isChecked();
 				updatePath(true);
 			}
 		});
@@ -259,37 +261,63 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 					endNode = worldMap.getNode(lastEndTileX, lastEndTileY);
 				}
 
+				if (metrics)
+					System.out.println("------------ Hierarchical Indexed A* Path Finder Metrics ------------");
+
 				OUTER:
 				for (int p = 0; p < NUM_PATHS; p++) {
 					TiledSmoothableGraphPath<HierarchicalTiledNode> path = paths[p];
 					path.clear();
 					worldMap.startNode = startNode;
+					long startTime = nanoTime();
+					boolean found = pathfinder.searchNodePath(startNode, endNode, heuristic, path);
+					if (metrics) {
+						float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
+						System.out.println("<<<Subpath " + p + ">>>");
+//						System.out.println("Visited nodes................... = " + pathfinder.metrics.visitedNodes);
+//						System.out.println("Open list additions............. = " + pathfinder.metrics.openListAdditions);
+//						System.out.println("Open list peak.................. = " + pathfinder.metrics.openListPeak);
+						System.out.println("Path finding elapsed time (ms).. = " + elapsed);
+					}
+					
+					if (!found) break;
 
-					boolean b = pathfinder.searchNodePath(startNode, endNode, heuristic, path);
-					if (b) {
-						HierarchicalTiledNode n = worldMap.convertNodeBetweenLevels(0, startNode, 1);
-						int nodeCount = path.getCount();
-						if (nodeCount > 0 && endNode == path.get(nodeCount - 1)) {
-							if (smooth) {
-								pathSmoother.smoothPath(path);
+					HierarchicalTiledNode n = worldMap.convertNodeBetweenLevels(0, startNode, 1);
+					int nodeCount = path.getCount();
+					if (nodeCount > 0 && endNode == path.get(nodeCount - 1)) {
+						if (smooth) {
+							startTime = nanoTime();
+							pathSmoother.smoothPath(path);
+							if (metrics) {
+								float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
+								System.out.println("Path smoothing elapsed time (ms) = " + elapsed);
 							}
-							paths[p + 1].clear();
-							break;
 						}
-						for (int i = 1; i < nodeCount; i++) {
-							if (worldMap.convertNodeBetweenLevels(0, path.get(i), 1) != n) {
-								startNode = path.get(i);
-								path.truncatePath(i);
-								if (smooth) {
-									pathSmoother.smoothPath(path);
+						paths[p + 1].clear();
+						break;
+					}
+					for (int i = 1; i < nodeCount; i++) {
+						if (worldMap.convertNodeBetweenLevels(0, path.get(i), 1) != n) {
+							startNode = path.get(i);
+							path.truncatePath(i);
+							if (smooth) {
+								startTime = nanoTime();
+								pathSmoother.smoothPath(path);
+								if (metrics) {
+									float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
+									System.out.println("Path smoothing elapsed time (ms) = " + elapsed);
 								}
-								continue OUTER;
 							}
+							continue OUTER;
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private long nanoTime () {
+		return metrics? TimeUtils.nanoTime() : 0;
 	}
 
 	/** An {@link InputProcessor} that allows you to define a path to find.

@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.Array;
 /** The default implementation of a graph for the {@link IndexedAStarPathFinder} that uses an internal {@link Array} to store
  * nodes.
  * 
- * @param <N> Type of node
+ * @param <N> Type of node extending {@link IndexedNode}
  * 
  * @author davebaol */
 public class DefaultIndexedGraph<N extends IndexedNode<N>> implements IndexedGraph<N> {

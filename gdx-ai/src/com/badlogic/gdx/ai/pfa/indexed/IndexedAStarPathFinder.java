@@ -38,7 +38,7 @@ import com.badlogic.gdx.utils.BinaryHeap;
  * Unfortunately, we can't get rid of the open list because we still need to be able to retrieve the element with the lowest cost.
  * However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as possible.
  * 
- * @param <N> Type of node
+ * @param <N> Type of node extending {@link IndexedNode}
  * 
  * @author davebaol */
 public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFinder<N> {

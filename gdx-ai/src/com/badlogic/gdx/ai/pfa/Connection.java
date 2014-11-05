@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.pfa;
 
-/** A connection between two nodes of the {@link Graph}. The connection has a non-negative cost that often represent time or
+/** A connection between two nodes of the {@link Graph}. The connection has a non-negative cost that often represents time or
  * distance. However, the cost can be anything you want, for instance a combination of time, distance, and other factors.
  * 
  * @param <N> Type of node

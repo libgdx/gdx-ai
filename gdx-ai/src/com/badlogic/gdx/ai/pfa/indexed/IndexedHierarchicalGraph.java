@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Array;
 
 /** A graph for the {@link IndexedAStarPathFinder} that uses an internal {@link Array} to store nodes.
  * 
- * @param <N> Type of node
+ * @param <N> Type of node extending {@link IndexedNode}
  * 
  * @author davebaol */
 public abstract class IndexedHierarchicalGraph<N extends IndexedNode<N>> extends DefaultIndexedGraph<N> implements HierarchicalGraph<N> {
