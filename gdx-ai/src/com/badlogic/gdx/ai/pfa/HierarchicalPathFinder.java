@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+
 /** A {@code HierarchicalPathFinder} can find a path in an arbitrary {@link HierarchicalGraph} using the given {@link PathFinder},
  * known as level path finder, on each level of the hierarchy.
  * <p>
@@ -34,10 +35,12 @@ package com.badlogic.gdx.ai.pfa;
 public class HierarchicalPathFinder<N> implements PathFinder<N> {
 	HierarchicalGraph<N> graph;
 	PathFinder<N> levelPathFinder;
+	InterruptibleSearchStatus<N> searchStatus;
 
 	public HierarchicalPathFinder (HierarchicalGraph<N> graph, PathFinder<N> levelPathFinder) {
 		this.graph = graph;
 		this.levelPathFinder = levelPathFinder;
+		this.searchStatus = null;
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 			if (graph.convertNodeBetweenLevels(0, startNode, 1) == graph.convertNodeBetweenLevels(0, endNode, 1))
 				return levelPathFinder.searchNodePath(startNode, endNode, heuristic, outPath);
 		}
-			
+
 		// Set up our initial pair of nodes
 		N currentStartNode = startNode;
 		N currentEndNode = endNode;
@@ -134,4 +137,16 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 		return true;
 	}
 
+	@Override
+	public boolean search (PathFinderRequest<N> request, long timeToRun) {
+		throw new UnsupportedOperationException("HierarchicalPathFinder does not support interruptible pathfinding.");
+	}
+
+	static class InterruptibleSearchStatus<N> {
+		N currentStartNode;
+		N currentEndNode;
+		int levelOfNodes;
+		int currentLevel;
+		boolean flatSearch;
+	}
 }

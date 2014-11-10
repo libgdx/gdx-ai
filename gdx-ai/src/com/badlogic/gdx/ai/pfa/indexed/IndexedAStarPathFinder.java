@@ -20,23 +20,29 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
+import com.badlogic.gdx.ai.pfa.PathFinderQueue;
+import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BinaryHeap;
+import com.badlogic.gdx.utils.TimeUtils;
 
-/** A common implementation of the A* algorithm that is faster than the general A*.
+/** A fully implemented {@link PathFinder} that can perform both interruptible and non-interruptible pathfinding.
+ * <p>
+ * This implementation is a common variation of the A* algorithm that is faster than the general A*.
  * <p>
  * In the general A* implementation, data are held for each node in the open or closed lists, and these data are held as a
  * NodeRecord instance. Records are created when a node is first considered and then moved between the open and closed lists, as
  * required. There is a key step in the algorithm where the lists are searched for a node record corresponding to a particular
  * node. This operation is something time-consuming.
  * <p>
- * The indexed A* algorithm improves execution speed by using an array of all the node records for every node in the graph. If
- * nodes are numbered using sequential integers, we don't need to search for a node in the two lists at all. We can simply use the
- * node index to look up its record in the array (creating it if it is missing). This means that the close list is no longer
- * needed. To know whether a node is open or closed, we use the {@link NodeRecord#category category} of the node record. This makes
- * the search step very fast indeed (in fact, there is no search, and we can go straight to the information we need).
- * Unfortunately, we can't get rid of the open list because we still need to be able to retrieve the element with the lowest cost.
- * However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as possible.
+ * The indexed A* algorithm improves execution speed by using an array of all the node records for every node in the graph. Nodes
+ * must be numbered using sequential integers (see {@link IndexedNode#getIndex()}), so we don't need to search for a node in the
+ * two lists at all. We can simply use the node index to look up its record in the array (creating it if it is missing). This
+ * means that the close list is no longer needed. To know whether a node is open or closed, we use the {@link NodeRecord#category
+ * category} of the node record. This makes the search step very fast indeed (in fact, there is no search, and we can go straight
+ * to the information we need). Unfortunately, we can't get rid of the open list because we still need to be able to retrieve the
+ * element with the lowest cost. However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as
+ * possible.
  * 
  * @param <N> Type of node extending {@link IndexedNode}
  * 
@@ -45,6 +51,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	IndexedGraph<N> graph;
 	NodeRecord<N>[] nodeRecords;
 	BinaryHeap<NodeRecord<N>> openList;
+	NodeRecord<N> current;
 	public Metrics metrics;
 
 	/** The unique ID for each search run. Used to mark nodes. */
@@ -66,7 +73,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	public boolean searchConnectionPath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
 
 		// Perform AStar
-		NodeRecord<N> current = search(startNode, endNode, heuristic);
+		search(startNode, endNode, heuristic);
 
 		// We're here if we've either found the goal, or if we've no more nodes to search, find which
 		if (current.node != endNode) {
@@ -74,15 +81,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 			return false;
 		}
 
-		// Work back along the path, accumulating connections
-		//outPath.clear();
-		while (current.node != startNode) {
-			outPath.add(current.connection);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
-		}
-
-		// Reverse the path
-		outPath.reverse();
+		generateConnectionPath(startNode, outPath);
 
 		return true;
 	}
@@ -91,7 +90,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	public boolean searchNodePath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
 
 		// Perform AStar
-		NodeRecord<N> current = search(startNode, endNode, heuristic);
+		search(startNode, endNode, heuristic);
 
 		// We're here if we've either found the goal, or if we've no more nodes to search, find which
 		if (current.node != endNode) {
@@ -99,22 +98,74 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 			return false;
 		}
 
-		// Work back along the path, accumulating nodes
-		//outPath.clear();
-		while (current.connection != null) {
-			outPath.add(current.node);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
-		}
-		outPath.add(startNode);
-
-		// Reverse the path
-		outPath.reverse();
+		generateNodePath(startNode, outPath);
 
 		return true;
 	}
 
-	protected NodeRecord<N> search (N start, N endNode, Heuristic<N> heuristic) {
+	protected void search (N startNode, N endNode, Heuristic<N> heuristic) {
 
+		initSearch(startNode, endNode, heuristic);
+
+		// Iterate through processing each node
+		do {
+			// Retrieve the node with smallest estimated total cost from the open list
+			current = openList.pop();
+			current.category = CLOSED;
+
+			// Terminate if we reached the goal node
+			if (current.node == endNode) return;
+
+			visitChildren(endNode, heuristic);
+
+		} while (openList.size > 0);
+	}
+
+	@Override
+	public boolean search (PathFinderRequest<N> request, long timeToRun) {
+
+		long lastTime = TimeUtils.nanoTime();
+
+		// We have to initialize the search if the status has just changed
+		if (request.statusChanged) {
+			initSearch(request.startNode, request.endNode, request.heuristic);
+		}
+
+		// Iterate through processing each node
+		do {
+
+			// Check the available time
+			long currentTime = TimeUtils.nanoTime();
+			timeToRun -= currentTime - lastTime;
+			if (timeToRun <= PathFinderQueue.TIME_TOLERANCE) return false;
+
+			// Retrieve the node with smallest estimated total cost from the open list
+			current = openList.pop();
+			current.category = CLOSED;
+
+			// Terminate if we reached the goal node; we've found a path.
+			if (current.node == request.endNode) {
+				request.pathFound = true;
+
+				generateNodePath(request.startNode, request.resultPath);
+
+				return true;
+			}
+
+			// Visit current node's children
+			visitChildren(request.endNode, request.heuristic);
+
+			// Store the current time
+			lastTime = currentTime;
+
+		} while (openList.size > 0);
+
+		// The open list is empty and we've not found a path.
+		request.pathFound = false;
+		return true;
+	}
+
+	protected void initSearch (N startNode, N endNode, Heuristic<N> heuristic) {
 		if (metrics != null) metrics.reset();
 
 		// Increment the search id
@@ -124,77 +175,92 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		openList.clear();
 
 		// Initialize the record for the start node and add it to the open list
-		NodeRecord<N> startRecord = getNodeRecord(start);
-		startRecord.node = start;
+		NodeRecord<N> startRecord = getNodeRecord(startNode);
+		startRecord.node = startNode;
 		startRecord.connection = null;
 		startRecord.costSoFar = 0;
-		addToOpenList(startRecord, heuristic.estimate(start, endNode));
+		addToOpenList(startRecord, heuristic.estimate(startNode, endNode));
 
-		NodeRecord<N> current = null;
+		current = null;
+	}
 
-		// Iterate through processing each node
-		do {
-			// Retrieve the node with smallest estimated total cost from the open list
-			current = openList.pop();
-			current.category = CLOSED;
+	protected void visitChildren (N endNode, Heuristic<N> heuristic) {
+		// Get current node's outgoing connections
+		Array<Connection<N>> connections = graph.getConnections(current.node);
 
-			// Terminate if we reached the goal node
-			if (current.node == endNode) break;
+		// Loop through each connection in turn
+		for (int i = 0; i < connections.size; i++) {
+			if (metrics != null) metrics.visitedNodes++;
 
-			// Otherwise get its outgoing connections
-			Array<Connection<N>> connections = graph.getConnections(current.node);
+			Connection<N> connection = connections.get(i);
 
-			// Loop through each connection in turn
-			for (int i = 0; i < connections.size; i++) {
-				if (metrics != null) metrics.visitedNodes++;
+			// Get the cost estimate for the node
+			N node = connection.getToNode();
+			float nodeCost = current.costSoFar + connection.getCost();
 
-				Connection<N> connection = connections.get(i);
+			float nodeHeuristic;
+			NodeRecord<N> nodeRecord = getNodeRecord(node);
+			if (nodeRecord.category == CLOSED) { // The node is closed
 
-				// Get the cost estimate for the node
-				N node = connection.getToNode();
-				float nodeCost = current.costSoFar + connection.getCost();
+				// If we didn't find a shorter route, skip
+				if (nodeRecord.costSoFar <= nodeCost) continue;
 
-				float nodeHeuristic;
-				NodeRecord<N> nodeRecord = getNodeRecord(node);
-				if (nodeRecord.category == CLOSED) { // The node is closed
+				// We can use the node's old cost values to calculate its heuristic
+				// without calling the possibly expensive heuristic function
+				nodeHeuristic = nodeRecord.getEstimatedTotalCost() - nodeRecord.costSoFar;
+			} else if (nodeRecord.category == OPEN) { // The node is open
 
-					// If we didn't find a shorter route, skip
-					if (nodeRecord.costSoFar <= nodeCost) continue;
+				// If our route is no better, then skip
+				if (nodeRecord.costSoFar <= nodeCost) continue;
 
-					// We can use the node's old cost values to calculate its heuristic
-					// without calling the possibly expensive heuristic function
-					nodeHeuristic = nodeRecord.getEstimatedTotalCost() - nodeRecord.costSoFar;
-				} else if (nodeRecord.category == OPEN) { // The node is open
+				// Remove it from the open list (it will be re-added with the new cost)
+				openList.remove(nodeRecord);
 
-					// If our route is no better, then skip
-					if (nodeRecord.costSoFar <= nodeCost) continue;
+				// We can use the node's old cost values to calculate its heuristic
+				// without calling the possibly expensive heuristic function
+				nodeHeuristic = nodeRecord.getEstimatedTotalCost() - nodeRecord.costSoFar;
+			} else { // the node is unvisited
 
-					// Remove it from the open list (it will be re-added with the new cost)
-					openList.remove(nodeRecord);
-
-					// We can use the node's old cost values to calculate its heuristic
-					// without calling the possibly expensive heuristic function
-					nodeHeuristic = nodeRecord.getEstimatedTotalCost() - nodeRecord.costSoFar;
-				} else { // the node is unvisited
-
-					// We'll need to calculate the heuristic value using the function,
-					// since we don't have a node record with a previously calculated value
-					nodeHeuristic = heuristic.estimate(node, endNode);
-				}
-
-				// Update node record's cost and connection
-				nodeRecord.costSoFar = nodeCost;
-				nodeRecord.connection = connection;
-
-				// Add it to the open list with the estimated total cost
-				addToOpenList(nodeRecord, nodeCost + nodeHeuristic);
+				// We'll need to calculate the heuristic value using the function,
+				// since we don't have a node record with a previously calculated value
+				nodeHeuristic = heuristic.estimate(node, endNode);
 			}
 
-		} while (openList.size > 0);
+			// Update node record's cost and connection
+			nodeRecord.costSoFar = nodeCost;
+			nodeRecord.connection = connection;
 
-		// We're here if we've either found the goal, or if we've no more nodes to search.
-		// In any case we just return the current node record.
-		return current;
+			// Add it to the open list with the estimated total cost
+			addToOpenList(nodeRecord, nodeCost + nodeHeuristic);
+		}
+
+	}
+
+	protected void generateConnectionPath (N startNode, GraphPath<Connection<N>> outPath) {
+
+		// Work back along the path, accumulating connections
+		// outPath.clear();
+		while (current.node != startNode) {
+			outPath.add(current.connection);
+			current = nodeRecords[current.connection.getFromNode().getIndex()];
+		}
+
+		// Reverse the path
+		outPath.reverse();
+	}
+
+	protected void generateNodePath (N startNode, GraphPath<N> outPath) {
+
+		// Work back along the path, accumulating nodes
+		// outPath.clear();
+		while (current.connection != null) {
+			outPath.add(current.node);
+			current = nodeRecords[current.connection.getFromNode().getIndex()];
+		}
+		outPath.add(startNode);
+
+		// Reverse the path
+		outPath.reverse();
 	}
 
 	protected void addToOpenList (NodeRecord<N> nodeRecord, float estimatedTotalCost) {
