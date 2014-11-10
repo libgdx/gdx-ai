@@ -64,7 +64,7 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 	HierarchicalTiledGraph worldMap;
 	TiledSmoothableGraphPath<HierarchicalTiledNode>[] paths;
 	TiledManhattanDistance<HierarchicalTiledNode> heuristic;
-	HierarchicalPathFinder<HierarchicalTiledNode> pathfinder;
+	HierarchicalPathFinder<HierarchicalTiledNode> pathFinder;
 	PathSmoother<HierarchicalTiledNode, Vector2> pathSmoother;
 
 	boolean smooth = false;
@@ -101,7 +101,7 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 		heuristic = new TiledManhattanDistance<HierarchicalTiledNode>();
 		IndexedAStarPathFinder<HierarchicalTiledNode> levelPathFinder = new IndexedAStarPathFinder<HierarchicalTiledNode>(worldMap,
 			true);
-		pathfinder = new HierarchicalPathFinder<HierarchicalTiledNode>(worldMap, levelPathFinder);
+		pathFinder = new HierarchicalPathFinder<HierarchicalTiledNode>(worldMap, levelPathFinder);
 		pathSmoother = new PathSmoother<HierarchicalTiledNode, Vector2>(new TiledRaycastCollisionDetector<HierarchicalTiledNode>(
 			worldMap));
 
@@ -237,7 +237,7 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 		worldMap = null;
 		paths = null;
 		heuristic = null;
-		pathfinder = null;
+		pathFinder = null;
 		pathSmoother = null;
 	}
 
@@ -270,7 +270,7 @@ public class HierarchicalTiledAStarTest extends PathFinderTestBase {
 					path.clear();
 					worldMap.startNode = startNode;
 					long startTime = nanoTime();
-					boolean found = pathfinder.searchNodePath(startNode, endNode, heuristic, path);
+					boolean found = pathFinder.searchNodePath(startNode, endNode, heuristic, path);
 					if (metrics) {
 						float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
 						System.out.println("<<<Subpath " + p + ">>>");

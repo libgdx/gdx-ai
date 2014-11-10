@@ -26,7 +26,8 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public interface IndexedNode<N extends IndexedNode<N>> {
 
-	/** Returns the index of this {@code IndexedNode}. */
+	/** Returns the index of this {@code IndexedNode}. The indexes of the nodes of an {@link IndexedGraph} must be a sequence
+	 * starting from index 0. */
 	public int getIndex ();
 
 	/** Returns an array of {@link Connection connections} outgoing from this {@code IndexedNode}. */

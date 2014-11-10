@@ -62,7 +62,7 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 	FlatTiledGraph worldMap;
 	TiledSmoothableGraphPath<FlatTiledNode> path;
 	TiledManhattanDistance<FlatTiledNode> heuristic;
-	IndexedAStarPathFinder<FlatTiledNode> pathfinder;
+	IndexedAStarPathFinder<FlatTiledNode> pathFinder;
 	PathSmoother<FlatTiledNode, Vector2> pathSmoother;
 
 	boolean smooth = false;
@@ -92,7 +92,7 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 		
 		path = new TiledSmoothableGraphPath<FlatTiledNode>();
 		heuristic = new TiledManhattanDistance<FlatTiledNode>();
-		pathfinder = new IndexedAStarPathFinder<FlatTiledNode>(worldMap, true);
+		pathFinder = new IndexedAStarPathFinder<FlatTiledNode>(worldMap, true);
 		pathSmoother = new PathSmoother<FlatTiledNode, Vector2>(new TiledRaycastCollisionDetector<FlatTiledNode>(worldMap));
 
 		renderer = new ShapeRenderer();
@@ -131,12 +131,12 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 
 		detailTable.row();
 		checkMetrics = new CheckBox("Calculate [RED]M[]etrics", container.skin);
-		checkMetrics.setChecked(pathfinder.metrics != null);
+		checkMetrics.setChecked(pathFinder.metrics != null);
 		checkMetrics.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				CheckBox checkBox = (CheckBox)event.getListenerActor();
-				pathfinder.metrics = checkBox.isChecked() ? new Metrics() : null;
+				pathFinder.metrics = checkBox.isChecked() ? new Metrics() : null;
 				updatePath(true);
 			}
 		});
@@ -194,7 +194,7 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 		worldMap = null;
 		path = null;
 		heuristic = null;
-		pathfinder = null;
+		pathFinder = null;
 		pathSmoother = null;
 	}
 
@@ -219,19 +219,19 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 				path.clear();
 				worldMap.startNode = startNode;
 				long startTime = nanoTime();
-				pathfinder.searchNodePath(startNode, endNode, heuristic, path);
-				if (pathfinder.metrics != null) {
+				pathFinder.searchNodePath(startNode, endNode, heuristic, path);
+				if (pathFinder.metrics != null) {
 					float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
 					System.out.println("----------------- Indexed A* Path Finder Metrics -----------------");
-					System.out.println("Visited nodes................... = " + pathfinder.metrics.visitedNodes);
-					System.out.println("Open list additions............. = " + pathfinder.metrics.openListAdditions);
-					System.out.println("Open list peak.................. = " + pathfinder.metrics.openListPeak);
+					System.out.println("Visited nodes................... = " + pathFinder.metrics.visitedNodes);
+					System.out.println("Open list additions............. = " + pathFinder.metrics.openListAdditions);
+					System.out.println("Open list peak.................. = " + pathFinder.metrics.openListPeak);
 					System.out.println("Path finding elapsed time (ms).. = " + elapsed);
 				}
 				if (smooth) {
 					startTime = nanoTime();
 					pathSmoother.smoothPath(path);
-					if (pathfinder.metrics != null) {
+					if (pathFinder.metrics != null) {
 						float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
 						System.out.println("Path smoothing elapsed time (ms) = " + elapsed);
 					}
@@ -241,7 +241,7 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 	}
 
 	private long nanoTime () {
-		return pathfinder.metrics == null ? 0 : TimeUtils.nanoTime();
+		return pathFinder.metrics == null ? 0 : TimeUtils.nanoTime();
 	}
 
 	/** An {@link InputProcessor} that allows you to define a path to find.
