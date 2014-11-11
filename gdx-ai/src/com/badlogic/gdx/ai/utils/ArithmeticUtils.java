@@ -95,7 +95,7 @@ public final class ArithmeticUtils {
 	/** Returns the greatest common divisor of the given absolute values. This implementation uses {@link #gcdPositive(int, int)}
 	 * and has the same special cases.
 	 * 
-	 * @param a non-negative numbers
+	 * @param args non-negative numbers
 	 * @return the greatest common divisor. */
 	public static int gcdPositive (int... args) {
 		if (args == null || args.length < 2) throw new IllegalArgumentException("gcdPositive requires at least two arguments");
@@ -110,7 +110,7 @@ public final class ArithmeticUtils {
 	/** Returns the least common multiple of the given absolute values. This implementation uses {@link #lcmPositive(int, int)} and
 	 * has the same special cases.
 	 * 
-	 * @param a non-negative numbers
+	 * @param args non-negative numbers
 	 * @return the least common multiple, never negative.
 	 * @throws ArithmeticException if the result cannot be represented as a non-negative {@code int} value. */
 	public static int lcmPositive (int... args) {

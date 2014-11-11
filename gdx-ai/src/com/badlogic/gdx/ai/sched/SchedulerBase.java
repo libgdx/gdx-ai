@@ -34,7 +34,7 @@ public abstract class SchedulerBase<T extends SchedulerBase.SchedulableRecord> i
 
 	/** Creates a {@code SchedulerBase}.
 	 * @param dryRunFrames number of frames simulated by the dry run to calculate the phase when adding a schedulable via
-	 *           {@link #add(Schedulable, int)} */
+	 *           {@link #addWithAutomaticPhasing(Schedulable, int)} */
 	public SchedulerBase (int dryRunFrames) {
 		this.schedulableRecords = new Array<T>();
 		this.runList = new Array<T>();
@@ -42,10 +42,10 @@ public abstract class SchedulerBase<T extends SchedulerBase.SchedulableRecord> i
 		this.dryRunFrames = dryRunFrames;
 	}
 
-	/** This method is invoked by {@link #add(Schedulable, int)} and calculates the best phase based on the number of frames of the
-	 * dry run. The optimal phase is guaranteed if the number of simulated frames is at least as large as the size of the least
-	 * common multiple (LCM, see {@link ArithmeticUtils#lcmPositive(int, int)}) of all the frequency values used in the scheduler
-	 * so far.
+	/** This method is invoked by {@link #addWithAutomaticPhasing(Schedulable, int)} and calculates the best phase based on the
+	 * number of frames of the dry run. The optimal phase is guaranteed if the number of simulated frames is at least as large as
+	 * the size of the least common multiple (LCM, see {@link ArithmeticUtils#lcmPositive(int, int)}) of all the frequency values
+	 * used in the scheduler so far.
 	 * @param frequency the frequency of the skedulable task to add
 	 * @return the best phase based on the length of the dry run. */
 	protected int calculatePhase (int frequency) {

@@ -93,7 +93,7 @@ public class PriorityScheduler extends SchedulerBase<PrioritySchedulableRecord> 
 	 * calculated by a dry run of the scheduler.
 	 * @param schedulable the task to schedule
 	 * @param frequency the frequency
-	 * @param frequency the priority */
+	 * @param priority the priority */
 	public void addWithAutomaticPhasing (Schedulable schedulable, int frequency, float priority) {
 		// Calculate the phase and add the schedulable to the list
 		add(schedulable, frequency, calculatePhase(frequency), priority);
