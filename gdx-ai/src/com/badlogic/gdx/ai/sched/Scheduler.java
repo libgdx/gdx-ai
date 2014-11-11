@@ -44,7 +44,7 @@ public interface Scheduler extends Schedulable {
 	/** Adds the {@code schedulable} to the list using the given {@code frequency} and a phase calculated by this scheduler.
 	 * @param schedulable the task to schedule
 	 * @param frequency the frequency */
-	public void add (Schedulable schedulable, int frequency);
+	public void addWithAutomaticPhasing (Schedulable schedulable, int frequency);
 
 	/** Adds the {@code schedulable} to the list using the given {@code frequency} and {@code phase}
 	 * @param schedulable the task to schedule
