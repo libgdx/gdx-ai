@@ -222,7 +222,7 @@ public abstract class BehaviorTreeReader {
 				taskProcessed = true;
 				if (statementName != null)
 					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "]" + data[p]);
+				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 			action comment {
 				if (debug) System.out.println("# Comment");

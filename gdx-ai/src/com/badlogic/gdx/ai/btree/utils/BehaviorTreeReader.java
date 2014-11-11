@@ -324,7 +324,7 @@ case 1:
 				taskProcessed = true;
 				if (statementName != null)
 					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "]" + data[p]);
+				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
@@ -432,7 +432,7 @@ case 4:
 				taskProcessed = true;
 				if (statementName != null)
 					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "]" + data[p]);
+				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
