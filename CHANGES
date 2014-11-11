@@ -1,5 +1,6 @@
 [1.4.1]
 - API Addition: added pathfinding and path smoothing, see https://github.com/libgdx/gdx-ai/wiki/Pathfinding
+- API Addition: added scheduling API supporting task time slicing over several frames, see https://github.com/libgdx/gdx-ai/wiki/Scheduling
 - API Change: moved raycast classes to the common package com.badlogic.gdx.ai.utils
 - API Addition: added collides method tho RaycastCollisionDetector.
 - API Change: now Ray has start and end points instead of an origin and a direction.
