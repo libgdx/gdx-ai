@@ -18,19 +18,24 @@ package com.badlogic.gdx.ai.utils;
 
 import com.badlogic.gdx.utils.reflect.ArrayReflection;
 
-/** A circular buffer.
+/** A circular buffer, possibly resizable.
  * 
  * @author davebaol */
 public class CircularBuffer<T> {
 	private T[] items;
-	public boolean resizable;
+	private boolean resizable;
 	private int head;
 	private int tail;
 
+	/** Creates a resizable {@code CircularBuffer} with the given initial capacity.
+	 * @param initialCapacity the initial capacity of this circular buffer */
 	public CircularBuffer (int initialCapacity) {
 		this(initialCapacity, true);
 	}
 
+	/** Creates a {@code CircularBuffer} with the given initial capacity.
+	 * @param initialCapacity the initial capacity of this circular buffer
+	 * @param resizable whether this buffer is resizable or has fixed capacity */
 	@SuppressWarnings("unchecked")
 	public CircularBuffer (int initialCapacity, boolean resizable) {
 		this.items = (T[])new Object[initialCapacity];
@@ -39,40 +44,59 @@ public class CircularBuffer<T> {
 		this.tail = 0;
 	}
 
-	public boolean store (T value) {
+	/** Adds the given item to the tail of this circular buffer.
+	 * @param item the item to add
+	 * @return {@code true} if the item has been successfully added to this circular buffer; {@code false} otherwise. */
+	public boolean store (T item) {
 		if (isFull()) {
 			if (!resizable) return false;
 
 			// Resize this queue
 			resize(Math.max(8, (int)(items.length * 1.75f)));
 		}
-		items[tail++] = value;
+		items[tail++] = item;
 		if (tail == items.length) tail = 0;
 		return true;
 	}
 
+	/** Removes and returns the item at the head of this circular buffer (if any).
+	 * @return the item just removed or {@code null} if this circular buffer is empty. */
 	public T read () {
 		if (head != tail) {
-			T value = items[head++];
+			T item = items[head++];
 			if (head == items.length) head = 0;
-			return value;
+			return item;
 		}
 
 		return null;
 	}
 
+	/** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
 	public boolean isEmpty () {
 		return head == tail;
 	}
 
+	/** Returns the number of items in this circular buffer. */
 	public int size () {
 		return tail >= head ? tail - head : items.length - head + tail;
 	}
 
+	/** Returns {@code true} if this circular buffer contains as many items as its capacity; {@code false} otherwise. */
 	private boolean isFull () {
 		if (tail + 1 == head) return true;
 		if (tail == items.length - 1 && head == 0) return true;
 		return false;
+	}
+
+	/** Returns {@code true} if this circular buffer can be resized; {@code false} otherwise. */
+	public boolean isResizable () {
+		return resizable;
+	}
+
+	/** Sets the flag specifying whether this circular buffer can be resized or not.
+	 * @param resizable the flag */
+	public void setResizable (boolean resizable) {
+		this.resizable = resizable;
 	}
 
 	/** Creates a new backing array with the specified size containing the current items. */
