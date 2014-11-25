@@ -401,4 +401,18 @@ public class MessageDispatcher {
 		pool.free(telegram);
 	}
 
+    /** Return an array of message snapshots or null if there is no pending messages **/
+    public Array<Snapshot> getMessageSnapshots(){
+        int queueSize = queue.size();
+        if(queueSize > 0){
+            Array<Snapshot> snapshots = new Array<Snapshot>(queueSize);
+            for(int i = 0; i < queueSize; i++){
+                Telegram telegram = queue.get(i);
+                Snapshot snapshot = new Snapshot(telegram, currentTime);
+                snapshots.add(snapshot);
+            }
+            return snapshots;
+        }
+        return null;
+    }
 }
