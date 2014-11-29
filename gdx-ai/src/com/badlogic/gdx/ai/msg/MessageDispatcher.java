@@ -371,6 +371,20 @@ public class MessageDispatcher {
 
 	}
 
+	/** Scans the queue and passes pending messages to the given callback in any particular order.
+	 * <p>
+	 * Typically this method is used to save (serialize) pending messages and restore (deserialize and schedule) them back on game
+	 * loading.
+	 * @param callback The callback used to report pending messages individually. **/
+	public void scanQueue (PendingMessageCallback callback) {
+		int queueSize = queue.size();
+		for (int i = 0; i < queueSize; i++) {
+			Telegram telegram = queue.get(i);
+			callback.report(telegram.getTimestamp() - currentTime, telegram.sender, telegram.receiver, telegram.message,
+				telegram.extraInfo);
+		}
+	}
+
 	/** This method is used by {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage} for immediate
 	 * telegrams and {@link #update(float) update} for delayed telegrams. It first calls the message handling method of the
 	 * receiving agents with the specified telegram then returns the telegram to the pool.
@@ -399,6 +413,20 @@ public class MessageDispatcher {
 
 		// Release the telegram to the pool
 		pool.free(telegram);
+	}
+
+	/** A {@code PendingMessageCallback} is used by the {@link MessageDispatcher#scanQueue(PendingMessageCallback) scanQueue} method
+	 * of the {@link MessageDispatcher} to report its pending messages individually.
+	 * @author davebaol */
+	public interface PendingMessageCallback {
+
+		/** Reports a pending message.
+		 * @param delay The remaining delay in seconds
+		 * @param sender The message sender
+		 * @param receiver The message receiver
+		 * @param message The message code
+		 * @param extraInfo Any additional information that may accompany the message */
+		public void report (float delay, Telegraph sender, Telegraph receiver, int message, Object extraInfo);
 	}
 
 }
