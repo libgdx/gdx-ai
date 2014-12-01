@@ -212,7 +212,7 @@ public final class DungeonUtils {
 				// Generates 1 or 2 corridors per building
 				boolean corridor1 = y < buildingsY - 1;
 				boolean corridor2 = x < buildingsX - 1;
-				if (corridor1 && corridor2 && MathUtils.randomBoolean(.4f)) {
+				if (corridor1 && corridor2 && MathUtils.randomBoolean(.5f)) {
 					if (MathUtils.randomBoolean())
 						corridor1 = false;
 					else
