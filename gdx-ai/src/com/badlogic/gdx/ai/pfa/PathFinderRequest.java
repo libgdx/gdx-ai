@@ -27,9 +27,9 @@ import com.badlogic.gdx.ai.msg.Telegraph;
 public class PathFinderRequest<N> {
 
 	public static final int SEARCH_NEW = 0;
-	public static final int SEARCH_BEGIN_COMPLETE = 100;
-	public static final int SEARCH_PATH_COMPLETE = 200;
-	public static final int SEARCH_END_COMPLETE = 300;
+	public static final int SEARCH_INITIALIZED = 1;
+	public static final int SEARCH_DONE = 2;
+	public static final int SEARCH_FINALIZED = 3;
 
 	public N startNode;
 	public N endNode;
@@ -58,19 +58,31 @@ public class PathFinderRequest<N> {
 		this.status = SEARCH_NEW;
 		this.statusChanged = false;
 	}
+	
+	public void changeStatus(int newStatus) {
+		this.status = newStatus;
+		this.statusChanged = true;
+	}
 
-	/** Interruptible method called by the {@link PathFinderQueue} as soon as this request starts to be served.
+	/** Interruptible method called by the {@link PathFinderRequestControl} as soon as this request starts to be served.
 	 * @param timeToRun the time in nanoseconds that this call can use on the current frame
-	 * @return {@code true} if this operation has completed; {@code false} if more time is needed to complete. */
-	public boolean onSearchBegin (long timeToRun) {
+	 * @return {@code true} if initialization has completed; {@code false} if more time is needed to complete. */
+	public boolean initializeSearch (long timeToRun) {
 		return true;
+	}
+
+	/** @param pathFinder the path finder
+	 * @param timeToRun the time in nanoseconds that this call can use on the current frame
+	 * @return {@code true} if the search has completed; {@code false} if more time is needed to complete. */
+	public boolean search (PathFinder<N> pathFinder, long timeToRun) {
+		return pathFinder.search(this, timeToRun);
 	}
 
 	/** Interruptible method called by {@link PathFinderQueue} when the path finder has completed the search. You have to check the
 	 * {@link #pathFound} field of this request to know if a path has been found.
 	 * @param timeToRun the time in nanoseconds that this call can use on the current frame
-	 * @return {@code true} if this operation has completed; {@code false} if more time is needed to complete. */
-	public boolean onSearchEnd (long timeToRun) {
+	 * @return {@code true} if finalization has completed; {@code false} if more time is needed to complete. */
+	public boolean finalizeSearch (long timeToRun) {
 		return true;
 	}
 }

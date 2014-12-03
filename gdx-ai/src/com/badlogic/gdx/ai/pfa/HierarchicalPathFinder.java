@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+import com.badlogic.gdx.utils.TimeUtils;
+
 
 /** A {@code HierarchicalPathFinder} can find a path in an arbitrary {@link HierarchicalGraph} using the given {@link PathFinder},
  * known as level path finder, on each level of the hierarchy.
@@ -33,14 +35,19 @@ package com.badlogic.gdx.ai.pfa;
  * 
  * @author davebaol */
 public class HierarchicalPathFinder<N> implements PathFinder<N> {
+	public static boolean DEBUG = false;
+	
 	HierarchicalGraph<N> graph;
 	PathFinder<N> levelPathFinder;
-	InterruptibleSearchStatus<N> searchStatus;
+	LevelPathFinderRequest<N> levelRequest;
+	PathFinderRequestControl<N> levelRequestControl;
+
 
 	public HierarchicalPathFinder (HierarchicalGraph<N> graph, PathFinder<N> levelPathFinder) {
 		this.graph = graph;
 		this.levelPathFinder = levelPathFinder;
-		this.searchStatus = null;
+		this.levelRequest = null;
+		this.levelRequestControl = null;
 	}
 
 	@Override
@@ -48,29 +55,32 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 		// Check if we have no path to find
 		if (startNode == endNode) return true;
 
-		int levelCount = graph.getLevelCount();
-		if (levelCount > 1) {
-			// If start and end nodes have the same parent at level 1
-			// we can perform non-hierarchical pathfinding at level 0 directly
-			if (graph.convertNodeBetweenLevels(0, startNode, 1) == graph.convertNodeBetweenLevels(0, endNode, 1))
-				return levelPathFinder.searchNodePath(startNode, endNode, heuristic, outPath);
-		}
-
 		// Set up our initial pair of nodes
 		N currentStartNode = startNode;
 		N currentEndNode = endNode;
 		int levelOfNodes = 0;
 
 		// Descend through levels of the graph
-		int currentLevel = levelCount - 1;
+		int currentLevel = graph.getLevelCount() - 1;
 		while (currentLevel >= 0) {
-			// Find the start and end nodes at this level
+			// Find the start node at current level
 			currentStartNode = graph.convertNodeBetweenLevels(0, startNode, currentLevel);
+
+			// Find the end node at current level
+			// Note that if we're examining level 0 and the current end node, the end node and the
+			// start node have the same parent at level 1 then we can use the end node directly.
 			currentEndNode = graph.convertNodeBetweenLevels(levelOfNodes, currentEndNode, currentLevel);
+			if (currentLevel == 0) {
+				N currentEndNodeParent = graph.convertNodeBetweenLevels(0, currentEndNode, 1);
+				if (currentEndNodeParent == graph.convertNodeBetweenLevels(0, endNode, 1)
+					&& currentEndNodeParent == graph.convertNodeBetweenLevels(0, startNode, 1)) {
+					currentEndNode = endNode;
+				}
+			}
+
+			// Decrease current level and skip it if start and end node are the same
 			levelOfNodes = currentLevel;
 			currentLevel--;
-
-			// Skip this level if start and end node are the same
 			if (currentStartNode == currentEndNode) continue;
 
 			// Otherwise we can perform the plan
@@ -94,31 +104,32 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 		// Check if we have no path to find
 		if (startNode == endNode) return true;
 
-		int levelCount = graph.getLevelCount();
-		if (levelCount > 1) {
-			// If start and end nodes have the same parent at level 1
-			// we can perform non-hierarchical pathfinding at level 0 directly
-			if (graph.convertNodeBetweenLevels(0, startNode, 1) == graph.convertNodeBetweenLevels(0, endNode, 1)) {
-				graph.setLevel(0);
-				return levelPathFinder.searchConnectionPath(startNode, endNode, heuristic, outPath);
-			}
-		}
-
 		// Set up our initial pair of nodes
 		N currentStartNode = startNode;
 		N currentEndNode = endNode;
 		int levelOfNodes = 0;
 
 		// Descend through levels of the graph
-		int currentLevel = levelCount - 1;
+		int currentLevel = graph.getLevelCount() - 1;
 		while (currentLevel >= 0) {
-			// Find the start and end nodes at this level
+			// Find the start node at current level
 			currentStartNode = graph.convertNodeBetweenLevels(0, startNode, currentLevel);
+
+			// Find the end node at current level
+			// Note that if we're examining level 0 and the current end node, the end node and the
+			// start node have the same parent at level 1 then we can use the end node directly.
 			currentEndNode = graph.convertNodeBetweenLevels(levelOfNodes, currentEndNode, currentLevel);
+			if (currentLevel == 0) {
+				N currentEndNodeParent = graph.convertNodeBetweenLevels(0, currentEndNode, 1);
+				if (currentEndNodeParent == graph.convertNodeBetweenLevels(0, endNode, 1)
+					&& currentEndNodeParent == graph.convertNodeBetweenLevels(0, startNode, 1)) {
+					currentEndNode = endNode;
+				}
+			}
+
+			// Decrease current level and skip it if start and end node are the same
 			levelOfNodes = currentLevel;
 			currentLevel--;
-
-			// Skip this level if start and end node are the same
 			if (currentStartNode == currentEndNode) continue;
 
 			// Otherwise we can perform the plan
@@ -139,14 +150,130 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 	@Override
 	public boolean search (PathFinderRequest<N> request, long timeToRun) {
-		throw new UnsupportedOperationException("HierarchicalPathFinder does not support interruptible pathfinding.");
+		if (DEBUG) System.out.println("Enter interruptible HPF; request.status = " + request.status);
+
+		// Make sure the level request and its control are instantiated
+		if (levelRequest == null) {
+			levelRequest = new LevelPathFinderRequest<N>();
+			levelRequestControl = new PathFinderRequestControl<N>();
+		}
+
+		// We have to initialize the search if the status has just changed
+		if (request.statusChanged) {
+			if (DEBUG) System.out.println("-- statusChanged");
+
+			// Check if we have no path to find
+			if (request.startNode == request.endNode) return true;
+
+			// Prepare the the level request control
+			levelRequestControl.lastTime = TimeUtils.nanoTime(); // Keep track of the current time
+			levelRequestControl.timeToRun = timeToRun; 
+			levelRequestControl.timeTolerance = PathFinderQueue.TIME_TOLERANCE;
+			levelRequestControl.server = null;
+			levelRequestControl.pathFinder = levelPathFinder;
+
+			// Prepare the level request
+			levelRequest.hpf = this;
+			levelRequest.hpfRequest = request;
+			levelRequest.status = PathFinderRequest.SEARCH_NEW;
+			levelRequest.statusChanged = true;
+			levelRequest.heuristic = request.heuristic;
+			levelRequest.resultPath = request.resultPath;
+			levelRequest.startNode = request.startNode;
+			levelRequest.endNode = request.endNode;
+			levelRequest.levelOfNodes = 0;
+			levelRequest.currentLevel = graph.getLevelCount() - 1;
+		}
+
+		while (levelRequest.currentLevel >= 0) {
+//			if (DEBUG) System.out.println("currentLevel = "+levelRequest.currentLevel);
+			
+			boolean finished = levelRequestControl.execute(levelRequest);
+//			if (DEBUG) System.out.println("finished = "+finished);
+//			if (DEBUG) System.out.println("pathFound = "+levelRequest.pathFound);
+
+//			if (finished && !levelRequest.pathFound) return true;
+			if (!finished) return false;
+			else {
+				levelRequest.executionFrames = 0;
+//				levelRequest.pathFound = false;
+				levelRequest.status = PathFinderRequest.SEARCH_NEW;
+				levelRequest.statusChanged = true;
+			
+				if (!levelRequest.pathFound) return true;
+			}
+		}
+
+		if (DEBUG) System.out.println("-- before exit");
+		// If we're here we have finished
+		return true;
 	}
 
-	static class InterruptibleSearchStatus<N> {
-		N currentStartNode;
-		N currentEndNode;
+	static class LevelPathFinderRequest<N> extends PathFinderRequest<N> {
+		HierarchicalPathFinder<N> hpf;
+		PathFinderRequest<N> hpfRequest;
+		
 		int levelOfNodes;
 		int currentLevel;
-		boolean flatSearch;
+
+		@Override
+		public boolean initializeSearch (long timeToRun) {
+
+			// Reset the status
+			// We can do it here because we know this method completes during this frame,
+			// meaning that it is executed once per request
+			this.executionFrames = 0;
+			this.pathFound = false;
+			this.status = SEARCH_NEW;
+			this.statusChanged = false;
+
+			do {
+				// Find the start node at current level
+				startNode = hpf.graph.convertNodeBetweenLevels(0, hpfRequest.startNode, currentLevel);
+
+				// Find the end node at current level
+				// Note that if we're examining level 0 and the current end node, the end node and the
+				// start node have the same parent at level 1 then we can use the end node directly.
+				endNode = hpf.graph.convertNodeBetweenLevels(levelOfNodes, endNode, currentLevel);
+				if (currentLevel == 0) {
+					N currentEndNodeParent = hpf.graph.convertNodeBetweenLevels(0, endNode, 1);
+					if (currentEndNodeParent == hpf.graph.convertNodeBetweenLevels(0, hpfRequest.endNode, 1)
+						&& currentEndNodeParent == hpf.graph.convertNodeBetweenLevels(0, hpfRequest.startNode, 1)) {
+						endNode = hpfRequest.endNode;
+					}
+				}
+
+				// Decrease current level and skip it if start and end node are the same
+				// FIXME the break below is wrong
+				if (DEBUG) System.out.println("LevelPathFinder initializeSearch");
+				levelOfNodes = currentLevel;
+				currentLevel--;
+				if (startNode != endNode) break;
+
+			} while (currentLevel >= 0);
+
+			// Otherwise we can perform the plan
+			hpf.graph.setLevel(levelOfNodes);
+			resultPath.clear();
+			return true;
+		}
+
+		@Override
+		public boolean search (PathFinder<N> pathFinder, long timeToRun) {
+			if (DEBUG) System.out.println("LevelPathFinder search; status: " + status);
+			return super.search(pathFinder, timeToRun);
+		}
+
+		@Override
+		public boolean finalizeSearch (long timeToRun) {
+			hpfRequest.pathFound = pathFound;
+			if (pathFound) {
+				// Take the first move of this plan and use it for the next run through
+				endNode = resultPath.get(1);
+			}
+			if (DEBUG) System.out.println("LevelPathFinder finalizeSearch; status: " + status);
+			return true;
+		}
+
 	}
 }

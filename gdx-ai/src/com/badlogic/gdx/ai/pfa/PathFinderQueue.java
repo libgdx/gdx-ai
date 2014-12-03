@@ -16,17 +16,16 @@
 
 package com.badlogic.gdx.ai.pfa;
 
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.sched.Schedulable;
 import com.badlogic.gdx.ai.utils.CircularBuffer;
 import com.badlogic.gdx.utils.TimeUtils;
 
-/** @author davebaol */
+/** @param <N> Type of node
+ * 
+ * @author davebaol */
 public class PathFinderQueue<N> implements Schedulable, Telegraph {
-
-	public static final boolean DEBUG = false;
 
 	public static final long TIME_TOLERANCE = 100L;
 
@@ -36,69 +35,36 @@ public class PathFinderQueue<N> implements Schedulable, Telegraph {
 
 	PathFinderRequest<N> currentRequest;
 
+	PathFinderRequestControl<N> requestControl;
+
 	public PathFinderQueue (PathFinder<N> pathFinder) {
 		this.pathFinder = pathFinder;
 		this.requestQueue = new CircularBuffer<PathFinderRequest<N>>(16);
 		this.currentRequest = null;
+		this.requestControl = new PathFinderRequestControl<N>();
 	}
 
 	@Override
 	public void run (long timeToRun) {
 		// Keep track of the current time
-		long lastTime = TimeUtils.nanoTime();
+		requestControl.lastTime = TimeUtils.nanoTime();
+		requestControl.timeToRun = timeToRun;
+
+		requestControl.timeTolerance = TIME_TOLERANCE;
+		requestControl.pathFinder = pathFinder;
+		requestControl.server = this;
 
 		// If no search in progress, take the next from the queue
 		if (currentRequest == null) currentRequest = requestQueue.read();
 
 		while (currentRequest != null) {
 
-			currentRequest.executionFrames++;
+			boolean finished = requestControl.execute(currentRequest);
 
-			// Should perform search begin?
-			if (currentRequest.status < PathFinderRequest.SEARCH_BEGIN_COMPLETE) {
-				long currentTime = TimeUtils.nanoTime();
-				timeToRun -= currentTime - lastTime;
-				if (timeToRun <= TIME_TOLERANCE) return;
-				if (DEBUG) System.out.println("search begin");
-				currentRequest.statusChanged = currentRequest.onSearchBegin(timeToRun);
-				if (!currentRequest.statusChanged) return; 
-				currentRequest.status = PathFinderRequest.SEARCH_BEGIN_COMPLETE;
-				lastTime = currentTime;
-			}
-
-			// Should perform search path?
-			if (currentRequest.status < PathFinderRequest.SEARCH_PATH_COMPLETE) {
-				long currentTime = TimeUtils.nanoTime();
-				timeToRun -= currentTime - lastTime;
-				if (timeToRun <= TIME_TOLERANCE) return;
-				if (DEBUG) System.out.println("search path");
-				currentRequest.statusChanged = pathFinder.search(currentRequest, timeToRun);
-				if (!currentRequest.statusChanged) return;
-				currentRequest.status = PathFinderRequest.SEARCH_PATH_COMPLETE;
-				lastTime = currentTime;
-			}
-
-			// Should perform search end?
-			if (currentRequest.status < PathFinderRequest.SEARCH_END_COMPLETE) {
-				long currentTime = TimeUtils.nanoTime();
-				timeToRun -= currentTime - lastTime;
-				if (timeToRun <= TIME_TOLERANCE) return;
-				if (DEBUG) System.out.println("search end");
-				currentRequest.statusChanged = currentRequest.onSearchEnd(timeToRun);
-				if (!currentRequest.statusChanged) return; 
-				currentRequest.status = PathFinderRequest.SEARCH_END_COMPLETE;
-
-				// Search finished, send result to the client
-				MessageDispatcher.getInstance().dispatchMessage(this, currentRequest.client, currentRequest.responseMessageCode,
-						currentRequest);
-				lastTime = currentTime;
-			}
+			if (!finished) return;
 
 			// Read next request from the queue
 			currentRequest = requestQueue.read();
-
-			// Store the current time
-//			lastTime = currentTime;
 		}
 	}
 

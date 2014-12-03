@@ -23,6 +23,7 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.pfa.PathFinderQueue;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
+import com.badlogic.gdx.ai.pfa.PathFinderRequestControl;
 import com.badlogic.gdx.ai.pfa.PathSmoother;
 import com.badlogic.gdx.ai.pfa.PathSmootherRequest;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
@@ -31,6 +32,7 @@ import com.badlogic.gdx.ai.sched.LoadBalancingScheduler;
 import com.badlogic.gdx.ai.tests.PathFinderTests;
 import com.badlogic.gdx.ai.tests.pfa.PathFinderTestBase;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledManhattanDistance;
+import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledNode;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledRaycastCollisionDetector;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledSmoothableGraphPath;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat.FlatTiledGraph;
@@ -50,7 +52,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /** This test shows interruptible flat pathfinding through a {@link PathFinderQueue}.
  * 
@@ -85,7 +86,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	CheckBox checkDiagonal;
 	CheckBox checkSmooth;
 	CheckBox checkMetrics;
-	Slider sliderDelayedFrames;
+	Slider sliderMillisAvailablePerFrame;
 
 	public InterruptibleFlatTiledAStarTest (PathFinderTests container) {
 		super(container, "Interruptible Flat Tiled A*");
@@ -175,39 +176,39 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		addSeparator(detailTable);
 
 		detailTable.row();
-		sliderDelayedFrames = new Slider(0, 20, 1, false, container.skin);
-		sliderDelayedFrames.setValue(0);
-		final Label labelFrameDelay = new Label("Delayed Frames [[" + ((int)sliderDelayedFrames.getValue()) + "]", container.skin);
-		detailTable.add(labelFrameDelay);
+		sliderMillisAvailablePerFrame = new Slider(0.1f, 40f, 0.1f, false, container.skin);
+		sliderMillisAvailablePerFrame.setValue(16);
+		final Label labelMillisAvailablePerFrame = new Label("Millis Available per Frame [[" + sliderMillisAvailablePerFrame.getValue() + "]", container.skin);
+		detailTable.add(labelMillisAvailablePerFrame);
 		detailTable.row();
-		sliderDelayedFrames.addListener(new ChangeListener() {
+		sliderMillisAvailablePerFrame.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				labelFrameDelay.setText("Delayed Frames [[" + ((int)sliderDelayedFrames.getValue()) + "]");
+				labelMillisAvailablePerFrame.setText("Millis Available per Frame [[" + sliderMillisAvailablePerFrame.getValue() + "]");
 			}
 		});
-		detailTable.add(sliderDelayedFrames);
+		Table sliderMapfTable = new Table();
+		sliderMapfTable.add(new Label("[RED]-[]  ", container.skin));
+		sliderMapfTable.add(sliderMillisAvailablePerFrame);
+		sliderMapfTable.add(new Label("  [RED]+[]", container.skin));
+		detailTable.add(sliderMapfTable);
 
 		detailWindow = createDetailWindow(detailTable);
 	}
 
-	private static long nanosecsPerFrame = 16000000L;
-	private long nanosecsSpentForRendering = 5000000L;
-
 	@Override
 	public void render () {
-		scheduler.run(nanosecsPerFrame - nanosecsSpentForRendering);
-
-		nanosecsSpentForRendering = TimeUtils.nanoTime();
+		long timeToRun = (long)(sliderMillisAvailablePerFrame.getValue() * 1000000f);
+		scheduler.run(timeToRun);
 
 		renderer.begin(ShapeType.Filled);
 		for (int x = 0; x < FlatTiledGraph.sizeX; x++) {
 			for (int y = 0; y < FlatTiledGraph.sizeY; y++) {
 				switch (worldMap.getNode(x, y).type) {
-				case FlatTiledNode.TILE_FLOOR:
+				case TiledNode.TILE_FLOOR:
 					renderer.setColor(Color.WHITE);
 					break;
-				case FlatTiledNode.TILE_WALL:
+				case TiledNode.TILE_WALL:
 					renderer.setColor(Color.GRAY);
 					break;
 				default:
@@ -238,8 +239,6 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			}
 		}
 		renderer.end();
-
-		nanosecsSpentForRendering = TimeUtils.nanoTime() - nanosecsSpentForRendering;
 	}
 
 	@Override
@@ -264,10 +263,10 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	public boolean handleMessage (Telegram telegram) {
 		if (telegram.extraInfo instanceof MyPathFinderRequest) {
 			MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
-			requestPool.free(pfr);
 			@SuppressWarnings("unchecked")
 			PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
-			if (PathFinderQueue.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size());
+			if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
+			requestPool.free(pfr);
 		}
 		return true;
 	}
@@ -279,8 +278,8 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		if (forceUpdate || tileX != lastEndTileX || tileY != lastEndTileY) {
 			final FlatTiledNode startNode = worldMap.getNode(startTileX, startTileY);
 			FlatTiledNode endNode = worldMap.getNode(tileX, tileY);
-			if (forceUpdate || endNode.type == FlatTiledNode.TILE_FLOOR) {
-				if (endNode.type == FlatTiledNode.TILE_FLOOR) {
+			if (forceUpdate || endNode.type == TiledNode.TILE_FLOOR) {
+				if (endNode.type == TiledNode.TILE_FLOOR) {
 					lastEndTileX = tileX;
 					lastEndTileY = tileY;
 				} else {
@@ -316,10 +315,6 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		}
 	}
 
-	private long nanoTime () {
-		return pathFinder.metrics == null ? 0 : TimeUtils.nanoTime();
-	}
-
 	/** An {@link InputProcessor} that allows you to define a path to find.
 	 * 
 	 * @autor davebaol */
@@ -345,6 +340,14 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			case 'S':
 				test.checkSmooth.toggle();
 				break;
+			case '-':
+				test.sliderMillisAvailablePerFrame.setValue(test.sliderMillisAvailablePerFrame.getValue()
+					- test.sliderMillisAvailablePerFrame.getStepSize());
+				break;
+			case '+':
+				test.sliderMillisAvailablePerFrame.setValue(test.sliderMillisAvailablePerFrame.getValue()
+					+ test.sliderMillisAvailablePerFrame.getStepSize());
+				break;
 			}
 			return true;
 		}
@@ -355,7 +358,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			int tileX = (int)(test.tmpUnprojection.x / width);
 			int tileY = (int)(test.tmpUnprojection.y / width);
 			FlatTiledNode startNode = test.worldMap.getNode(tileX, tileY);
-			if (startNode.type == FlatTiledNode.TILE_FLOOR) {
+			if (startNode.type == TiledNode.TILE_FLOOR) {
 				test.startTileX = tileX;
 				test.startTileY = tileY;
 				test.updatePath(true);
@@ -373,31 +376,28 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	}
 	
 	class MyPathFinderRequest extends PathFinderRequest<FlatTiledNode> implements Poolable {
-		int frameDelay;
 		boolean smoothFinished;
 
 		public MyPathFinderRequest () {
 		}
 
 		@Override
-		public boolean onSearchBegin (long timeToRun) {
+		public boolean initializeSearch (long timeToRun) {
 			resultPath.clear();
 			worldMap.startNode = startNode;
 			return true;
 		}
 
 		@Override
-		public boolean onSearchEnd (long timeToRun) {
+		public boolean finalizeSearch (long timeToRun) {
 			if (statusChanged) {
 				pathSmootherRequest.refresh(path);
 				smoothFinished = false;
-				frameDelay = (int)sliderDelayedFrames.getValue();
 			}
 			if (pathFound && smooth && !smoothFinished) {
 				smoothFinished = pathSmoother.smoothPath(pathSmootherRequest, timeToRun);
 				if (!smoothFinished) return false;
 			}
-			if (frameDelay-- > 0) return false;
 			return true;
 		}
 
