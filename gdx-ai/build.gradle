@@ -3,25 +3,25 @@ apply plugin: "java"
 sourceCompatibility = 1.7
 
 sourceSets {
-	main {
-		java {
-			srcDirs = [ "src/" ]
-		}
+    main {
+        java {
+            srcDirs = [ "src/" ]
+        }
 
-		resources {
-			srcDirs = [ "src/" ]
-		}
-	}
+        resources {
+            srcDirs = [ "src/" ]
+        }
+    }
 
-	test {
-		java {
-			srcDirs = [ "tests/" ]
-		}
-	}
+    test {
+        java {
+            srcDirs = [ "tests/" ]
+        }
+    }
 }
 
 javadoc {
-	title = 'libGDX AI'
+    title = 'libGDX AI'
 }
 
 dependencies {

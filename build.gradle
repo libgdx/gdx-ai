@@ -35,7 +35,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 project(":gdx-ai") {
     apply from : '../publish.gradle'
 
-	dependencies {
+    dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
 }
