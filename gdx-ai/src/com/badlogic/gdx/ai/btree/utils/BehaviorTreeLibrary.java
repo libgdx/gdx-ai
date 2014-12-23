@@ -135,11 +135,10 @@ public class BehaviorTreeLibrary {
 	 * @param archetypeTree the archetype tree.
 	 * @throws IllegalArgumentException if the archetypeTree is null
 	 */
-	protected void registerArchetypeTree(String treeReference, BehaviorTree<?> archetypeTree){
+	public void registerArchetypeTree(String treeReference, BehaviorTree<?> archetypeTree){
 	    if(archetypeTree == null){
-		throw new IllegalArgumentException("The registered archetype must not be null.");
+	    	throw new IllegalArgumentException("The registered archetype must not be null.");
 	    }
-	    
 	    repository.put(treeReference, archetypeTree);
 	}
 
