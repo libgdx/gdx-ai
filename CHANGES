@@ -1,5 +1,6 @@
 [1.4.1]
-- API Addition: added possibility to scan pending telegrams, so they can be saved and subsequently restored on game loading, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#saving-and-restoring-pending-messages
+- API Addition: added capability to register programmatically created behavior tree archetypes in BehaviorTreeLibrary.
+- API Addition: added capability to scan pending telegrams, so they can be saved and subsequently restored on game loading, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#saving-and-restoring-pending-messages
 - API Addition: added pathfinding and path smoothing, see https://github.com/libgdx/gdx-ai/wiki/Pathfinding
 - API Addition: added scheduling API supporting task time slicing over several frames, see https://github.com/libgdx/gdx-ai/wiki/Scheduling
 - API Change: moved raycast classes to the common package com.badlogic.gdx.ai.utils

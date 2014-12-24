@@ -26,7 +26,7 @@ import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-/** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (non run-time).
+/** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time).
  * 
  * @author davebaol */
 public class IncludeSubtreeTest extends BehaviorTreeTestBase {

@@ -124,22 +124,21 @@ public class BehaviorTreeLibrary {
 //				return null;
 //			}
 			archetypeTree = parser.parse(resolver.resolve(treeReference), null);
-			repository.put(treeReference, archetypeTree);
+			registerArchetypeTree(treeReference, archetypeTree);
 		}
 		return archetypeTree;
 	}
-	
-	/** Registers the {@link BehaviorTree} archetypeTree with the specified reference. Existing archetypes in the repository
-	 * with the same treeReference will be replaced.
+
+	/** Registers the {@link BehaviorTree} archetypeTree with the specified reference. Existing archetypes in the repository with
+	 * the same treeReference will be replaced.
 	 * @param treeReference the tree identifier, typically a path.
 	 * @param archetypeTree the archetype tree.
-	 * @throws IllegalArgumentException if the archetypeTree is null
-	 */
-	public void registerArchetypeTree(String treeReference, BehaviorTree<?> archetypeTree){
-	    if(archetypeTree == null){
-	    	throw new IllegalArgumentException("The registered archetype must not be null.");
-	    }
-	    repository.put(treeReference, archetypeTree);
+	 * @throws IllegalArgumentException if the archetypeTree is null */
+	public void registerArchetypeTree (String treeReference, BehaviorTree<?> archetypeTree) {
+		if (archetypeTree == null) {
+			throw new IllegalArgumentException("The registered archetype must not be null.");
+		}
+		repository.put(treeReference, archetypeTree);
 	}
 
 }
