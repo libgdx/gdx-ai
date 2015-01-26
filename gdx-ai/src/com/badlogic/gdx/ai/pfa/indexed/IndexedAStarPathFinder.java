@@ -129,6 +129,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		// We have to initialize the search if the status has just changed
 		if (request.statusChanged) {
 			initSearch(request.startNode, request.endNode, request.heuristic);
+			request.statusChanged = false;
 		}
 
 		// Iterate through processing each node
