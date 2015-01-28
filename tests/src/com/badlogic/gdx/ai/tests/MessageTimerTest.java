@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
@@ -93,7 +93,7 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 		float deltaTime = Gdx.graphics.getRawDeltaTime();
 
 		// Dispatch any delayed messages
-		MessageDispatcher.getInstance().update(deltaTime);
+		MessageManager.getInstance().update(deltaTime);
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -111,7 +111,7 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 		this.msgTimeStamp = msg.getTimestamp();
 		System.out.println("Counter: " + msgCounter + "; timestamp: " + msgTimeStamp);
 		if (timerEnabled) {
-			float lag = MessageDispatcher.getInstance().getCurrentTime() - msg.getTimestamp();
+			float lag = MessageManager.getInstance().getCurrentTime() - msg.getTimestamp();
 			lag -= (int)lag; // take the decimal part only (in case the lag is > 1)
 			float delay = 1f - lag;
 			sendMessage(delay, msgCounter + 1);
@@ -120,7 +120,7 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 	}
 
 	private void sendMessage (float delay, int counter) {
-		MessageDispatcher.getInstance().dispatchMessage(delay, this, this, 1, counter);
+		MessageManager.getInstance().dispatchMessage(delay, this, this, 1, counter);
 	}
 
 }

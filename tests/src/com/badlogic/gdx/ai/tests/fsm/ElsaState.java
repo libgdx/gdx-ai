@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.fsm;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -70,7 +70,7 @@ public enum ElsaState implements State<Elsa> {
 
 				// Send a delayed message myself so that I know when to take the
 				// stew out of the oven
-				MessageDispatcher.getInstance().dispatchMessage( //
+				MessageManager.getInstance().dispatchMessage( //
 					1.5f, // time delay
 					elsa, // sender ID
 					elsa, // receiver ID
@@ -96,12 +96,12 @@ public enum ElsaState implements State<Elsa> {
 			if (telegram.message == MessageType.STEW_READY) {
 
 				System.out.println("Message received by " + elsa.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getInstance().getCurrentTime());
+					+ MessageManager.getInstance().getCurrentTime());
 
 				talk(elsa, "StewReady! Lets eat");
 
 				// let hubby know the stew is ready
-				MessageDispatcher.getInstance().dispatchMessage( //
+				MessageManager.getInstance().dispatchMessage( //
 					0.0f, // no delay
 					elsa, elsa.bob, MessageType.STEW_READY, null);
 
@@ -134,7 +134,7 @@ public enum ElsaState implements State<Elsa> {
 			if (telegram.message == MessageType.HI_HONEY_I_M_HOME) {
 
 				System.out.println("Message handled by " + elsa.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getInstance().getCurrentTime());
+					+ MessageManager.getInstance().getCurrentTime());
 
 				talk(elsa, "Hi honey. Let me make you some of mah fine country stew");
 

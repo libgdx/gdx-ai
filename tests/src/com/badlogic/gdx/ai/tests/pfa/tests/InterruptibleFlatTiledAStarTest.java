@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.pfa.tests;
 
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.pfa.PathFinderQueue;
@@ -120,7 +120,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			}
 		};
 		PathFinderQueue<FlatTiledNode> pathFinderQueue = new PathFinderQueue<FlatTiledNode>(pathFinder);
-		MessageDispatcher.getInstance().addListener(pathFinderQueue, 1);
+		MessageManager.getInstance().addListener(pathFinderQueue, 1);
 
 		scheduler = new LoadBalancingScheduler(100);
 		scheduler.add(pathFinderQueue, 1, 0);
@@ -252,7 +252,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		pathSmoother = null;
 		scheduler = null;
 
-		MessageDispatcher.getInstance().clear();
+		MessageManager.getInstance().clear();
 	}
 
 	public Camera getCamera () {
@@ -291,7 +291,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 				pfRequest.endNode = endNode;
 				pfRequest.heuristic = heuristic;
 				pfRequest.resultPath = path;
-				MessageDispatcher.getInstance().dispatchMessage(this, 1, pfRequest);
+				MessageManager.getInstance().dispatchMessage(this, 1, pfRequest);
 // worldMap.startNode = startNode;
 // long startTime = nanoTime();
 // pathFinder.searchNodePath(startNode, endNode, heuristic, path);

@@ -22,39 +22,34 @@ import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 
-/** The MessageDispatcher is a singleton in charge of the creation, dispatch, and management of telegrams.
+/** A {@code MessageDispatcher} is in charge of the creation, dispatch, and management of telegrams.
  * 
  * @author davebaol */
 public class MessageDispatcher {
 
 	private static final String LOG_TAG = MessageDispatcher.class.getSimpleName();
 
-	private static final MessageDispatcher instance = new MessageDispatcher();
+	private static final Pool<Telegram> pool = new Pool<Telegram>(16) {
+		protected Telegram newObject () {
+			return new Telegram();
+		}
+	};
 
-	private PriorityQueue<Telegram> queue = new PriorityQueue<Telegram>();
+	private PriorityQueue<Telegram> queue;
 
-	private final Pool<Telegram> pool;
+	private IntMap<Array<Telegraph>> msgListeners;
 
-	private IntMap<Array<Telegraph>> msgListeners = new IntMap<Array<Telegraph>>();
-
-	private IntMap<Array<TelegramProvider>> msgProviders = new IntMap<Array<TelegramProvider>>();
+	private IntMap<Array<TelegramProvider>> msgProviders;
 
 	private float currentTime;
 
 	private boolean debugEnabled;
 
-	/** Don't let anyone else instantiate this class */
-	private MessageDispatcher () {
-		this.pool = new Pool<Telegram>(64) {
-			protected Telegram newObject () {
-				return new Telegram();
-			}
-		};
-	}
-
-	/** Returns the singleton instance of the message dispatcher. */
-	public static MessageDispatcher getInstance () {
-		return instance;
+	/** Creates a {@code MessageDispatcher} */
+	public MessageDispatcher () {
+		this.queue = new PriorityQueue<Telegram>();
+		this.msgListeners = new IntMap<Array<Telegraph>>();
+		this.msgProviders = new IntMap<Array<TelegramProvider>>();
 	}
 
 	/** Returns the current time. */
@@ -417,6 +412,7 @@ public class MessageDispatcher {
 
 	/** A {@code PendingMessageCallback} is used by the {@link MessageDispatcher#scanQueue(PendingMessageCallback) scanQueue} method
 	 * of the {@link MessageDispatcher} to report its pending messages individually.
+	 * 
 	 * @author davebaol */
 	public interface PendingMessageCallback {
 

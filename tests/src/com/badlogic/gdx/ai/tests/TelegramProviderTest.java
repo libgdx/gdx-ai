@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.tests.msg.City;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 
@@ -48,7 +48,7 @@ public class TelegramProviderTest extends GdxAiTest {
 	public void render () {
 		elapsedTime += Gdx.graphics.getRawDeltaTime();
 		if (elapsedTime > 0.8f) {
-			MessageDispatcher.getInstance().dispatchMessage(null, MSG_TIME_TO_ACT);
+			MessageManager.getInstance().dispatchMessage(null, MSG_TIME_TO_ACT);
 			elapsedTime = 0;
 		}
 	}

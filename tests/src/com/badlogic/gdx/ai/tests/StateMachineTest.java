@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.tests.fsm.Bob;
 import com.badlogic.gdx.ai.tests.fsm.Elsa;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
@@ -56,7 +56,7 @@ public class StateMachineTest extends GdxAiTest {
 			elsa.update(elapsedTime);
 
 			// Dispatch any delayed messages
-			MessageDispatcher.getInstance().update(elapsedTime);
+			MessageManager.getInstance().update(elapsedTime);
 
 			elapsedTime = 0;
 		}

@@ -1,10 +1,11 @@
 [1.4.1]
+- API Change: moved singleton capability of the MessageDispatcher to MessageManager, meaning that you can now use multiple message dispatchers if needed.
 - API Addition: added capability to register programmatically created behavior tree archetypes in BehaviorTreeLibrary.
 - API Addition: added capability to scan pending telegrams, so they can be saved and subsequently restored on game loading, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#saving-and-restoring-pending-messages
 - API Addition: added pathfinding and path smoothing, see https://github.com/libgdx/gdx-ai/wiki/Pathfinding
 - API Addition: added scheduling API supporting task time slicing over several frames, see https://github.com/libgdx/gdx-ai/wiki/Scheduling
 - API Change: moved raycast classes to the common package com.badlogic.gdx.ai.utils
-- API Addition: added collides method tho RaycastCollisionDetector.
+- API Addition: added collides method to RaycastCollisionDetector.
 - API Change: now Ray has start and end points instead of an origin and a direction.
 
 [1.4.0]

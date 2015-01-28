@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.fsm;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 
 /** @author davebaol */
@@ -71,7 +71,7 @@ public enum BobState implements State<Bob> {
 				bob.setLocation(Location.SHACK);
 
 				// Let Elsa know I'm home
-				MessageDispatcher.getInstance().dispatchMessage( //
+				MessageManager.getInstance().dispatchMessage( //
 					0.0f, // time delay
 					bob, // ID of sender
 					bob.elsa, // ID of recipient
@@ -103,7 +103,7 @@ public enum BobState implements State<Bob> {
 			if (telegram.message == MessageType.STEW_READY) {
 
 				System.out.println("Message handled by " + bob.getClass().getSimpleName() + " at time: "
-					+ MessageDispatcher.getInstance().getCurrentTime());
+					+ MessageManager.getInstance().getCurrentTime());
 
 				talk(bob, "Okay Hun, ahm a comin'!");
 

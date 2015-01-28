@@ -17,7 +17,7 @@
 package com.badlogic.gdx.ai.tests.msg;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.TelegramProvider;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -35,8 +35,8 @@ public class Citizen implements Telegraph, TelegramProvider {
 		this.num = NUM++;
 		this.house = house;
 		Gdx.app.log(Citizen.class.getSimpleName() + " " + num, "Hi there, I'm new in town and I live in house number " + house.num);
-		MessageDispatcher.getInstance().addListener(this, TelegramProviderTest.MSG_EXISTING_CITIZEN);
-		MessageDispatcher.getInstance().addProvider(this, TelegramProviderTest.MSG_EXISTING_CITIZEN);
+		MessageManager.getInstance().addListener(this, TelegramProviderTest.MSG_EXISTING_CITIZEN);
+		MessageManager.getInstance().addProvider(this, TelegramProviderTest.MSG_EXISTING_CITIZEN);
 	}
 
 	@Override

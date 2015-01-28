@@ -18,7 +18,7 @@ package com.badlogic.gdx.ai.tests.pfa.tests;
 
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.pfa.HierarchicalPathFinder;
@@ -132,7 +132,7 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 			}
 		};
 		PathFinderQueue<HierarchicalTiledNode> pathFinderQueue = new PathFinderQueue<HierarchicalTiledNode>(pathFinder);
-		MessageDispatcher.getInstance().addListener(pathFinderQueue, 1);
+		MessageManager.getInstance().addListener(pathFinderQueue, 1);
 
 		scheduler = new LoadBalancingScheduler(100);
 		scheduler.add(pathFinderQueue, 1, 0);
@@ -297,7 +297,7 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 		pathSmoother = null;
 		scheduler = null;
 
-		MessageDispatcher.getInstance().clear();
+		MessageManager.getInstance().clear();
 	}
 
 	public Camera getCamera () {
@@ -363,7 +363,7 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 		pfRequest.heuristic = heuristic;
 		pfRequest.resultPath = path;
 		pfRequest.pathIndex = pathIndex;
-		MessageDispatcher.getInstance().dispatchMessage(this, 1, pfRequest);
+		MessageManager.getInstance().dispatchMessage(this, 1, pfRequest);
 	}
 
 	/** An {@link InputProcessor} that allows you to define a path to find.

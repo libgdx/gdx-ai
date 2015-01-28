@@ -17,11 +17,12 @@
 package com.badlogic.gdx.ai.pfa;
 
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /** A {@code PathFinderRequestControl} manages execution and resume of any interruptible 
- * {@link PathFinderRequest}...
+ * {@link PathFinderRequest}.
  * 
  * @param <N> Type of node
  * 
@@ -81,7 +82,8 @@ public class PathFinderRequestControl<N> {
 	
 				// Search finished, send result to the client
 				if (server != null) {
-					MessageDispatcher.getInstance().dispatchMessage(server, request.client, request.responseMessageCode, request);
+					MessageDispatcher dispatcher = request.dispatcher != null ? request.dispatcher : MessageManager.getInstance();
+					dispatcher.dispatchMessage(server, request.client, request.responseMessageCode, request);
 				}
 	
 				lastTime = currentTime;

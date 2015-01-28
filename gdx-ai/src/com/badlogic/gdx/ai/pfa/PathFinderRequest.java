@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 
@@ -41,17 +43,24 @@ public class PathFinderRequest<N> {
 	public boolean statusChanged;
 	public Telegraph client;
 	public int responseMessageCode;
+	public MessageDispatcher dispatcher;
 
 	/** Creates an empty {@code PathFinderRequest} */
 	public PathFinderRequest () {
 	}
 
-	/** Creates a {@code PathFinderRequest} with the given arguments. */
+	/** Creates a {@code PathFinderRequest} with the given arguments that uses the singleton message dispatcher provided by {@link MessageManager}. */
 	public PathFinderRequest (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> resultPath) {
+		this(startNode, endNode, heuristic, resultPath, MessageManager.getInstance());
+	}
+
+	/** Creates a {@code PathFinderRequest} with the given arguments. */
+	public PathFinderRequest (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> resultPath, MessageDispatcher dispatcher) {
 		this.startNode = startNode;
 		this.endNode = endNode;
 		this.heuristic = heuristic;
 		this.resultPath = resultPath;
+		this.dispatcher = dispatcher;
 
 		this.executionFrames = 0;
 		this.pathFound = false;
