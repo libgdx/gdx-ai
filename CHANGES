@@ -1,4 +1,7 @@
-[1.4.1]
+[1.5.1]
+
+
+[1.5.0]
 - API Change: moved singleton capability of the MessageDispatcher to MessageManager, meaning that you can now use multiple message dispatchers if needed.
 - API Addition: added capability to register programmatically created behavior tree archetypes in BehaviorTreeLibrary.
 - API Addition: added capability to scan pending telegrams, so they can be saved and subsequently restored on game loading, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#saving-and-restoring-pending-messages
