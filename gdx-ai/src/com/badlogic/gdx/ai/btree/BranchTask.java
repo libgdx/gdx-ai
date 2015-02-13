@@ -77,6 +77,12 @@ public abstract class BranchTask<E> extends Task<E> {
 	}
 
 	@Override
+	public void reset () {
+		super.reset();
+		this.actualTask = 0;
+	}
+
+	@Override
 	protected Task<E> copyTo (Task<E> task) {
 		BranchTask<E> branch = (BranchTask<E>)task;
 		branch.deterministic = deterministic;

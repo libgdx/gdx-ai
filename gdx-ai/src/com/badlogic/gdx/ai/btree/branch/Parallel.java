@@ -94,6 +94,13 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	@Override
+	public void reset () {
+		super.reset();
+		runningTasks.clear();
+		success = true;
+	}
+
+	@Override
 	public void childFail (Task<E> runningTask) {
 		runningTasks.removeValue(runningTask, true);
 		success = false;

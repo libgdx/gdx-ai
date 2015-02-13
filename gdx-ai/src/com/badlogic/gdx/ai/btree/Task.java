@@ -55,6 +55,15 @@ public abstract class Task<E> {
 		return children.get(i);
 	}
 
+	/** Resets this task to make it restart from scratch on next run. */
+	public void reset () {
+		runningTask = null;
+		int n = getChildCount();
+		for (int i = 0; i < n; i++) {
+			getChild(i).reset();
+		}
+	}
+
 	/** This method will set a task as this task's control (parent)
 	 * 
 	 * @param control the parent task */
