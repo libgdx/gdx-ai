@@ -1,5 +1,6 @@
 [1.5.1]
-
+- API Addition: added shortcut methods to send telegrams without specifying a sender.
+- API Addition: added capability to reset behavior trees.
 
 [1.5.0]
 - API Change: moved singleton capability of the MessageDispatcher to MessageManager, meaning that you can now use multiple message dispatchers if needed.
