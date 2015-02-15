@@ -200,13 +200,34 @@ public class MessageDispatcher {
 
 	/** Sends an immediate message to all registered listeners, with no extra info.
 	 * <p>
-	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, sender,
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, null,
+	 * null, msg, null)}
+	 * 
+	 * @param msg the message code */
+	public void dispatchMessage (int msg) {
+		dispatchMessage(0f, null, null, msg, null);
+	}
+
+	/** Sends an immediate message to all registered listeners, with no extra info.
+	 * <p>
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, null,
 	 * null, msg, null)}
 	 * 
 	 * @param sender the sender of the telegram
 	 * @param msg the message code */
 	public void dispatchMessage (Telegraph sender, int msg) {
 		dispatchMessage(0f, sender, null, msg, null);
+	}
+
+	/** Sends an immediate message to all registered listeners, with extra info.
+	 * <p>
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, sender,
+	 * null, msg, extraInfo)}
+	 * 
+	 * @param msg the message code
+	 * @param extraInfo an optional object */
+	public void dispatchMessage (int msg, Object extraInfo) {
+		dispatchMessage(0f, null, null, msg, extraInfo);
 	}
 
 	/** Sends an immediate message to all registered listeners, with extra info.
@@ -252,6 +273,17 @@ public class MessageDispatcher {
 
 	/** Sends a message to all registered listeners, with the specified delay but no extra info.
 	 * <p>
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(delay, null,
+	 * null, msg, null)}
+	 * 
+	 * @param delay the delay in seconds
+	 * @param msg the message code */
+	public void dispatchMessage (float delay, int msg) {
+		dispatchMessage(delay, null, null, msg, null);
+	}
+
+	/** Sends a message to all registered listeners, with the specified delay but no extra info.
+	 * <p>
 	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(delay,
 	 * sender, null, msg, null)}
 	 * 
@@ -260,6 +292,18 @@ public class MessageDispatcher {
 	 * @param msg the message code */
 	public void dispatchMessage (float delay, Telegraph sender, int msg) {
 		dispatchMessage(delay, sender, null, msg, null);
+	}
+
+	/** Sends a message to all registered listeners, with the specified delay and extra info.
+	 * <p>
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(delay, null,
+	 * null, msg, extraInfo)}
+	 * 
+	 * @param delay the delay in seconds
+	 * @param msg the message code
+	 * @param extraInfo an optional object */
+	public void dispatchMessage (float delay, int msg, Object extraInfo) {
+		dispatchMessage(delay, null, null, msg, extraInfo);
 	}
 
 	/** Sends a message to all registered listeners, with the specified delay and extra info.
