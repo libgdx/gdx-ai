@@ -210,7 +210,7 @@ public class MessageDispatcher {
 
 	/** Sends an immediate message to all registered listeners, with no extra info.
 	 * <p>
-	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, null,
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, sender,
 	 * null, msg, null)}
 	 * 
 	 * @param sender the sender of the telegram
@@ -221,7 +221,7 @@ public class MessageDispatcher {
 
 	/** Sends an immediate message to all registered listeners, with extra info.
 	 * <p>
-	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, sender,
+	 * This is a shortcut method for {@link #dispatchMessage(float, Telegraph, Telegraph, int, Object) dispatchMessage(0, null,
 	 * null, msg, extraInfo)}
 	 * 
 	 * @param msg the message code
