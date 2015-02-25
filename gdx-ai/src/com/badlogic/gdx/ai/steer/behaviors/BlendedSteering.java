@@ -59,7 +59,7 @@ public class BlendedSteering<T extends Vector<T>> extends SteeringBehavior<T> {
 		super(owner);
 
 		this.list = new Array<BehaviorAndWeight<T>>();
-		this.steering = new SteeringAcceleration<T>(owner.newVector());
+		this.steering = new SteeringAcceleration<T>(newVector(owner));
 	}
 
 	/** Adds a steering behavior and its weight to the list.

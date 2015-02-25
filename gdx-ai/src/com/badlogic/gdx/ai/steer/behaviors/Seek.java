@@ -20,6 +20,7 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code Seek} behavior moves the owner towards the target position. Given a target, this behavior calculates the linear steering
@@ -31,7 +32,7 @@ import com.badlogic.gdx.math.Vector;
 public class Seek<T extends Vector<T>> extends SteeringBehavior<T> {
 
 	/** The target to seek */
-	protected Steerable<T> target;
+	protected Location<T> target;
 
 	/** Creates a {@code Seek} behavior for the specified owner.
 	 * @param owner the owner of this behavior. */
@@ -42,7 +43,7 @@ public class Seek<T extends Vector<T>> extends SteeringBehavior<T> {
 	/** Creates a {@code Seek} behavior for the specified owner and target.
 	 * @param owner the owner of this behavior
 	 * @param target the target agent of this behavior. */
-	public Seek (Steerable<T> owner, Steerable<T> target) {
+	public Seek (Steerable<T> owner, Location<T> target) {
 		super(owner);
 		this.target = target;
 	}
@@ -61,13 +62,13 @@ public class Seek<T extends Vector<T>> extends SteeringBehavior<T> {
 	}
 
 	/** Returns the target to seek. */
-	public Steerable<T> getTarget () {
+	public Location<T> getTarget () {
 		return target;
 	}
 
 	/** Sets the target to seek.
 	 * @return this behavior for chaining. */
-	public Seek<T> setTarget (Steerable<T> target) {
+	public Seek<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

@@ -56,10 +56,10 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 	public CollisionAvoidance (Steerable<T> owner, Proximity<T> proximity) {
 		super(owner, proximity);
 
-		this.firstRelativePosition = owner.newVector();
-		this.firstRelativeVelocity = owner.newVector();
+		this.firstRelativePosition = newVector(owner);
+		this.firstRelativeVelocity = newVector(owner);
 
-		this.relativeVelocity = owner.newVector();
+		this.relativeVelocity = newVector(owner);
 	}
 
 	@Override

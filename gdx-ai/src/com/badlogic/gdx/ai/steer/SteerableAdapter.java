@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.steer;
 
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** An adapter class for {@link Steerable}. You can derive from this and only override what you are interested in. For example,
@@ -73,6 +74,10 @@ public class SteerableAdapter<T extends Vector<T>> implements Steerable<T> {
 	}
 
 	@Override
+	public void setOrientation (float orientation) {
+	}
+
+	@Override
 	public T getLinearVelocity () {
 		return null;
 	}
@@ -97,7 +102,7 @@ public class SteerableAdapter<T extends Vector<T>> implements Steerable<T> {
 	}
 
 	@Override
-	public T newVector () {
+	public Location<T> newLocation () {
 		return null;
 	}
 

@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -92,6 +93,11 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 	}
 
 	@Override
+	public void setOrientation (float orientation) {
+		body.setTransform(getPosition(), orientation);
+	}
+
+	@Override
 	public Vector2 getLinearVelocity () {
 		return body.getLinearVelocity();
 	}
@@ -116,21 +122,20 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 		this.tagged = tagged;
 	}
 
+
 	@Override
-	public Vector2 newVector () {
-		return new Vector2();
+	public Location<Vector2> newLocation () {
+		return new Box2dLocation();
 	}
 
 	@Override
 	public float vectorToAngle (Vector2 vector) {
-		return (float)Math.atan2(-vector.x, vector.y);
+		return Box2dSteeringUtils.vectorToAngle(vector);
 	}
 
 	@Override
 	public Vector2 angleToVector (Vector2 outVector, float angle) {
-		outVector.x = -(float)Math.sin(angle);
-		outVector.y = (float)Math.cos(angle);
-		return outVector;
+		return Box2dSteeringUtils.angleToVector(outVector, angle);
 	}
 
 	public SteeringBehavior<Vector2> getSteeringBehavior () {

@@ -20,6 +20,7 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
@@ -39,7 +40,7 @@ import com.badlogic.gdx.math.Vector;
 public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 
 	/** The target to align to. */
-	protected Steerable<T> target;
+	protected Location<T> target;
 
 	/** The tolerance for aligning to the target without letting small errors keep the owner swinging. */
 	protected float alignTolerance;
@@ -59,7 +60,7 @@ public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 	/** Creates a {@code ReachOrientation} behavior for the specified owner and target.
 	 * @param owner the owner of this behavior
 	 * @param target the target. */
-	public ReachOrientation (Steerable<T> owner, Steerable<T> target) {
+	public ReachOrientation (Steerable<T> owner, Location<T> target) {
 		super(owner);
 		this.target = target;
 	}
@@ -113,13 +114,13 @@ public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 	}
 
 	/** Returns the target to align to. */
-	public Steerable<T> getTarget () {
+	public Location<T> getTarget () {
 		return target;
 	}
 
 	/** Sets the target to align to.
 	 * @return this behavior for chaining. */
-	public ReachOrientation<T> setTarget (Steerable<T> target) {
+	public ReachOrientation<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

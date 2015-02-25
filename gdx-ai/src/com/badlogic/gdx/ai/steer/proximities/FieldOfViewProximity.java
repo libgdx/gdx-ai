@@ -52,8 +52,8 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 		this.radius = radius;
 		setAngle(angle);
 		this.frameId = -1;
-		this.ownerOrientation = owner.newVector();
-		this.toAgent = owner.newVector();
+		this.ownerOrientation = owner.getPosition().cpy().setZero();
+		this.toAgent = owner.getPosition().cpy().setZero();
 	}
 
 	/** Returns the radius of this proximity. */

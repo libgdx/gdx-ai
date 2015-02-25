@@ -21,6 +21,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.Path.PathParam;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code FollowPath} behavior produces a linear acceleration that moves the agent along the given path. First it calculates the
@@ -90,7 +91,7 @@ public class FollowPath<T extends Vector<T>, P extends PathParam> extends Arrive
 
 		this.arriveEnabled = true;
 
-		this.internalTargetPosition = owner.newVector();
+		this.internalTargetPosition = newVector(owner);
 	}
 
 	@Override
@@ -223,7 +224,7 @@ public class FollowPath<T extends Vector<T>, P extends PathParam> extends Arrive
 	}
 
 	@Override
-	public FollowPath<T, P> setTarget (Steerable<T> target) {
+	public FollowPath<T, P> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

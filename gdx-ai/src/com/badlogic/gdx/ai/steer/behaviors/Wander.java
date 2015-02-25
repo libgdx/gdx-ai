@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
@@ -77,8 +78,8 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	public Wander (Steerable<T> owner) {
 		super(owner);
 
-		this.internalTargetPosition = owner.newVector();
-		this.wanderCenter = owner.newVector();
+		this.internalTargetPosition = newVector(owner);
+		this.wanderCenter = newVector(owner);
 	}
 
 	@Override
@@ -218,7 +219,7 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	 * for {@code Wander} because owner's orientation is determined by the internal target, which is moving on the wander circle.
 	 * @return this behavior for chaining. */
 	@Override
-	public Wander<T> setTarget (Steerable<T> target) {
+	public Wander<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

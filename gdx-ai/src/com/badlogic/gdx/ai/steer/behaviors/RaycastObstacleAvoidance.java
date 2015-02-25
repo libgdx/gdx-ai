@@ -118,8 +118,8 @@ public class RaycastObstacleAvoidance<T extends Vector<T>> extends SteeringBehav
 		this.raycastCollisionDetector = raycastCollisionDetector;
 		this.distanceFromBoundary = distanceFromBoundary;
 
-		this.outputCollision = new Collision<T>(owner.newVector(), owner.newVector());
-		this.minOutputCollision = new Collision<T>(owner.newVector(), owner.newVector());
+		this.outputCollision = new Collision<T>(newVector(owner), newVector(owner));
+		this.minOutputCollision = new Collision<T>(newVector(owner), newVector(owner));
 	}
 
 	@Override

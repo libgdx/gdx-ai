@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
@@ -87,7 +88,7 @@ public class LookWhereYouAreGoing<T extends Vector<T>> extends ReachOrientation<
 	 * for {@code LookWhereYouAreGoing} because the target orientation is determined by the velocity of the owner itself.
 	 * @return this behavior for chaining. */
 	@Override
-	public LookWhereYouAreGoing<T> setTarget (Steerable<T> target) {
+	public LookWhereYouAreGoing<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

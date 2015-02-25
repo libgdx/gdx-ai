@@ -77,7 +77,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		this.callback = callback;
 
 		this.jumpTarget = new JumpTarget<T>(owner);
-		this.planarVelocity = owner.newVector();
+		this.planarVelocity = newVector(owner);
 	}
 
 	@Override
@@ -302,7 +302,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
 		public JumpTarget (Steerable<T> other) {
 			this.position = null;
-			this.linearVelocity = other.newVector();
+			this.linearVelocity = other.getPosition().cpy().setZero();
 		}
 
 		@Override

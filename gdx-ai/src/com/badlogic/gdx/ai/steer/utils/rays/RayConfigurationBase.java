@@ -39,7 +39,7 @@ public abstract class RayConfigurationBase<T extends Vector<T>> implements RayCo
 		this.owner = owner;
 		this.rays = new Ray[numRays];
 		for (int i = 0; i < numRays; i++)
-			this.rays[i] = new Ray<T>(owner.newVector(), owner.newVector());
+			this.rays[i] = new Ray<T>(owner.getPosition().cpy().setZero(), owner.getPosition().cpy().setZero());
 	}
 
 	/** Returns the owner of this configuration. */

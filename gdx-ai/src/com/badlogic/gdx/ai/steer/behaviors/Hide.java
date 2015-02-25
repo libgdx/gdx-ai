@@ -22,6 +22,7 @@ import com.badlogic.gdx.ai.steer.Proximity.ProximityCallback;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.proximities.FieldOfViewProximity;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** This behavior attempts to position a owner so that an obstacle is always between itself and the agent (the hunter) it's trying
@@ -77,7 +78,7 @@ public class Hide<T extends Vector<T>> extends Arrive<T> implements ProximityCal
 	/** Creates a {@code Hide} behavior for the specified owner and target.
 	 * @param owner the owner of this behavior
 	 * @param target the target of this behavior */
-	public Hide (Steerable<T> owner, Steerable<T> target) {
+	public Hide (Steerable<T> owner, Location<T> target) {
 		this(owner, target, null);
 	}
 
@@ -85,11 +86,11 @@ public class Hide<T extends Vector<T>> extends Arrive<T> implements ProximityCal
 	 * @param owner the owner of this behavior
 	 * @param target the target of this behavior
 	 * @param proximity the proximity to find nearby obstacles */
-	public Hide (Steerable<T> owner, Steerable<T> target, Proximity<T> proximity) {
+	public Hide (Steerable<T> owner, Location<T> target, Proximity<T> proximity) {
 		super(owner, target);
 		this.proximity = proximity;
 
-		this.bestHidingSpot = owner.newVector();
+		this.bestHidingSpot = newVector(owner);
 		this.toObstacle = null; // Set to null since we'll reuse steering.linear for this vector
 	}
 
@@ -193,7 +194,7 @@ public class Hide<T extends Vector<T>> extends Arrive<T> implements ProximityCal
 	}
 
 	@Override
-	public Hide<T> setTarget (Steerable<T> target) {
+	public Hide<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

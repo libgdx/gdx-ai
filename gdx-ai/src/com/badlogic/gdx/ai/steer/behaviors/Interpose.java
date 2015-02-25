@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code Interpose} behavior produces a steering force that moves the owner to a point along the imaginary line connecting two
@@ -69,7 +70,7 @@ public class Interpose<T extends Vector<T>> extends Arrive<T> {
 		this.agentB = agentB;
 		this.interpositionRatio = interpositionRatio;
 
-		this.internalTargetPosition = owner.newVector();
+		this.internalTargetPosition = newVector(owner);
 	}
 
 	/** Returns the first agent. */
@@ -164,7 +165,7 @@ public class Interpose<T extends Vector<T>> extends Arrive<T> {
 	}
 
 	@Override
-	public Interpose<T> setTarget (Steerable<T> target) {
+	public Interpose<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.steer.behaviors;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code Flee} behavior does the opposite of {@link Seek}. It produces a linear steering force that moves the agent away from a
@@ -38,7 +39,7 @@ public class Flee<T extends Vector<T>> extends Seek<T> {
 	/** Creates a {@code Flee} behavior for the specified owner and target.
 	 * @param owner the owner of this behavior
 	 * @param target the target agent of this behavior. */
-	public Flee (Steerable<T> owner, Steerable<T> target) {
+	public Flee (Steerable<T> owner, Location<T> target) {
 		super(owner, target);
 	}
 
@@ -80,7 +81,7 @@ public class Flee<T extends Vector<T>> extends Seek<T> {
 	}
 
 	@Override
-	public Flee<T> setTarget (Steerable<T> target) {
+	public Flee<T> setTarget (Location<T> target) {
 		this.target = target;
 		return this;
 	}

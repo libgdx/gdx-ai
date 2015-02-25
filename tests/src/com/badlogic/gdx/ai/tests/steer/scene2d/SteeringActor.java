@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.tests.steer.scene2d;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -84,6 +85,11 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 	}
 
 	@Override
+	public void setOrientation (float orientation) {
+		setRotation(orientation * MathUtils.radiansToDegrees);
+	}
+
+	@Override
 	public Vector2 getLinearVelocity () {
 		return linearVelocity;
 	}
@@ -109,20 +115,18 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 	}
 
 	@Override
-	public Vector2 newVector () {
-		return new Vector2();
+	public Location<Vector2> newLocation () {
+		return new Scene2dLocation();
 	}
 
 	@Override
 	public float vectorToAngle (Vector2 vector) {
-		return (float)Math.atan2(-vector.x, vector.y);
+		return Scene2dSteeringUtils.vectorToAngle(vector);
 	}
 
 	@Override
 	public Vector2 angleToVector (Vector2 outVector, float angle) {
-		outVector.x = -(float)Math.sin(angle);
-		outVector.y = (float)Math.cos(angle);
-		return outVector;
+		return Scene2dSteeringUtils.angleToVector(outVector, angle);
 	}
 
 	@Override

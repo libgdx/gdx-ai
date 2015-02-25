@@ -20,6 +20,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
@@ -164,6 +165,12 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	}
 
 	@Override
+	public void setOrientation (float orientation) {
+		transform.setToRotationRad(0, 1, 0, orientation);
+		body.setWorldTransform(transform);
+	}
+
+	@Override
 	public float getOrientation () {
 		transform.getRotation(tmpQuaternion, true);
 		return tmpQuaternion.getYawRad();
@@ -197,23 +204,18 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	}
 
 	@Override
-	public Vector3 newVector () {
-		return new Vector3();
+	public Location<Vector3> newLocation () {
+		return new BulletLocation();
 	}
 
 	@Override
 	public float vectorToAngle (Vector3 vector) {
-//		return (float)Math.atan2(vector.z, vector.x);
-		return (float)Math.atan2(-vector.z, vector.x);
+		return BulletSteeringUtils.vectorToAngle(vector);
 	}
 
 	@Override
 	public Vector3 angleToVector (Vector3 outVector, float angle) {
-//		outVector.set(MathUtils.cos(angle), 0f, MathUtils.sin(angle));
-		outVector.z = -(float)Math.sin(angle);
-		outVector.y = 0;
-		outVector.x = (float)Math.cos(angle);
-		return outVector;
+		return BulletSteeringUtils.angleToVector(outVector, angle);
 	}
 
 	@Override

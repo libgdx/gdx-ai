@@ -47,7 +47,7 @@ public class Separation<T extends Vector<T>> extends GroupBehavior<T> implements
 	public Separation (Steerable<T> owner, Proximity<T> proximity) {
 		super(owner, proximity);
 
-		this.toAgent = owner.newVector();
+		this.toAgent = newVector(owner);
 	}
 
 	@Override

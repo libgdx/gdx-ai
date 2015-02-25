@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.steer;
 
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 
 /** A {@code SteeringBehavior} calculates the linear and/or angular accelerations to be applied to its owner.
@@ -124,5 +125,16 @@ public abstract class SteeringBehavior<T extends Vector<T>> {
 	/** Returns the actual limiter of this steering behavior. */
 	protected Limiter getActualLimiter () {
 		return limiter == null ? owner : limiter;
+	}
+
+	/** Utility method that creates a new vector.
+	 * <p>
+	 * This method is used internally to instantiate vectors of the correct type parameter {@code T}. This technique keeps the API
+	 * simple and makes the API easier to use with the GWT backend because avoids the use of reflection.
+	 * 
+	 * @param location the location whose position is used to create the new vector
+	 * @return the newly created vector */
+	protected T newVector (Location<T> location) {
+		return location.getPosition().cpy().setZero();
 	}
 }
