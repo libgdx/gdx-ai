@@ -20,6 +20,7 @@ import com.badlogic.gdx.ai.fma.Formation;
 import com.badlogic.gdx.ai.fma.FormationMember;
 import com.badlogic.gdx.ai.fma.FreeSlotAssignmentStrategy;
 import com.badlogic.gdx.ai.fma.SlotAssignment;
+import com.badlogic.gdx.ai.fma.SlotAssignmentStrategy;
 import com.badlogic.gdx.ai.fma.SoftRoleSlotAssignmentStrategy;
 import com.badlogic.gdx.ai.fma.SoftRoleSlotAssignmentStrategy.SlotCostProvider;
 import com.badlogic.gdx.ai.fma.patterns.DefensiveCircleFormationPattern;
@@ -100,12 +101,12 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 
 		table.addActor(character);
 
+		// Create the formation pattern
 		DefensiveCircleFormationPattern<Vector2> defensiveCirclePattern = new DefensiveCircleFormationPattern<Vector2>(
 			container.greenFish.getRegionWidth());
-		
-		formation = new Formation<Vector2>(character, defensiveCirclePattern, null);
 
-		// Set the slot assignment strategy
+		// Create the slot assignment strategy
+		SlotAssignmentStrategy<Vector2> slotAssignmentStrategy;
 		if (bounded) {
 			SlotCostProvider<Vector2> slotCostProvider = new SlotCostProvider<Vector2>() {
 
@@ -120,9 +121,12 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 					return cost + safm.getPosition().dst(slotTarget.getPosition());
 				}
 			};
-			formation.setSlotAssignmentStrategy(new SoftRoleSlotAssignmentStrategy<Vector2>(slotCostProvider));
+			slotAssignmentStrategy = new SoftRoleSlotAssignmentStrategy<Vector2>(slotCostProvider);
 		} else
-			formation.setSlotAssignmentStrategy(new FreeSlotAssignmentStrategy<Vector2>());
+			slotAssignmentStrategy = new FreeSlotAssignmentStrategy<Vector2>();
+
+		// Create the formation
+		formation = new Formation<Vector2>(character, defensiveCirclePattern, slotAssignmentStrategy);
 
 		for (int i = 0; i < 4; i++) {
 			SteeringActorFormationMember safm = createFormationMember(i, table);

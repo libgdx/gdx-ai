@@ -42,9 +42,6 @@ public class Formation<T extends Vector<T>> {
 	/** A list of slots assignments. */
 	Array<SlotAssignment<T>> slotAssignments;
 
-	/** The location representing the drift offset for the currently filled slots. */
-	Location<T> driftOffset;
-
 	/** The anchor point of this formation. */
 	protected Location<T> anchor;
 
@@ -54,31 +51,50 @@ public class Formation<T extends Vector<T>> {
 	/** The strategy used to assign a member to his slot */
 	protected SlotAssignmentStrategy<T> slotAssignmentStrategy;
 
-	private T anchorLessDriftPosition;
-	private static final Matrix3 orientationMatrix = new Matrix3();
+	/** The formation motion moderator */
+	protected FormationMotionModerator<T> motionModerator;
 
-	/** Creates a {@code Formation} for the specified {@code pattern} using a {@link FreeSlotAssignmentStrategy}.
+	private final T positionOffset;
+	private final Matrix3 orientationMatrix = new Matrix3();
+
+	/** The location representing the drift offset for the currently filled slots. */
+	private final Location<T> driftOffset;
+
+	/** Creates a {@code Formation} for the specified {@code pattern} using a {@link FreeSlotAssignmentStrategy} and no motion
+	 * moderator.
 	 * @param anchor the anchor point of this formation, usually a {@link Steerable}. Cannot be {@code null}.
 	 * @param pattern the pattern of this formation
 	 * @throws IllegalArgumentException if the anchor point is {@code null} */
 	public Formation (Location<T> anchor, FormationPattern<T> pattern) {
-		this(anchor, pattern, new FreeSlotAssignmentStrategy<T>());
+		this(anchor, pattern, new FreeSlotAssignmentStrategy<T>(), null);
 	}
 
-	/** Creates a {@code Formation} for the specified {@code pattern} and {@code slotAssignmentStrategy}.
+	/** Creates a {@code Formation} for the specified {@code pattern} and {@code slotAssignmentStrategy} using no motion moderator.
 	 * @param anchor the anchor point of this formation, usually a {@link Steerable}. Cannot be {@code null}.
 	 * @param pattern the pattern of this formation
 	 * @param slotAssignmentStrategy the strategy used to assign a member to his slot
 	 * @throws IllegalArgumentException if the anchor point is {@code null} */
 	public Formation (Location<T> anchor, FormationPattern<T> pattern, SlotAssignmentStrategy<T> slotAssignmentStrategy) {
+		this(anchor, pattern, slotAssignmentStrategy, null);
+	}
+
+	/** Creates a {@code Formation} for the specified {@code pattern}, {@code slotAssignmentStrategy} and {@code moderator}.
+	 * @param anchor the anchor point of this formation, usually a {@link Steerable}. Cannot be {@code null}.
+	 * @param pattern the pattern of this formation
+	 * @param slotAssignmentStrategy the strategy used to assign a member to his slot
+	 * @param moderator the motion moderator. Can be {@code null} if moderation is not needed
+	 * @throws IllegalArgumentException if the anchor point is {@code null} */
+	public Formation (Location<T> anchor, FormationPattern<T> pattern, SlotAssignmentStrategy<T> slotAssignmentStrategy,
+		FormationMotionModerator<T> motionModerator) {
 		if (anchor == null) throw new IllegalArgumentException("The anchor point cannot be null");
 		this.anchor = anchor;
 		this.pattern = pattern;
 		this.slotAssignmentStrategy = slotAssignmentStrategy;
+		this.motionModerator = motionModerator;
 
 		this.slotAssignments = new Array<SlotAssignment<T>>();
 		this.driftOffset = anchor.newLocation();
-		this.anchorLessDriftPosition = anchor.getPosition().cpy();
+		this.positionOffset = anchor.getPosition().cpy();
 	}
 
 	/** Returns the current anchor point of the formation. This can be the location (i.e. position and orientation) of a leader
@@ -110,9 +126,22 @@ public class Formation<T extends Vector<T>> {
 		return slotAssignmentStrategy;
 	}
 
-	/** @param slotAssignmentStrategy the slotAssignmentStrategy to set */
+	/** Sets the slot assignment strategy of this formation
+	 * @param slotAssignmentStrategy the slot assignment strategy to set */
 	public void setSlotAssignmentStrategy (SlotAssignmentStrategy<T> slotAssignmentStrategy) {
 		this.slotAssignmentStrategy = slotAssignmentStrategy;
+	}
+
+	/** Sets the motion moderator of this formation
+	 * @param motionModerator the motion moderator to set */
+	public FormationMotionModerator<T> getMotionModerator () {
+		return motionModerator;
+	}
+
+	/** Sets the motion moderator of this formation
+	 * @param motionModerator the motion moderator to set */
+	public void setMotionModerator (FormationMotionModerator<T> motionModerator) {
+		this.motionModerator = motionModerator;
 	}
 
 	/** Updates the assignment of members to slots */
@@ -123,8 +152,8 @@ public class Formation<T extends Vector<T>> {
 		// Set the newly calculated number of slots
 		pattern.setNumberOfSlots(slotAssignmentStrategy.calculateNumberOfSlots(slotAssignments));
 
-		// Update the drift offset
-		pattern.calculateDriftOffset(driftOffset, slotAssignments);
+		// Update the drift offset if a motion moderator is set
+		if (motionModerator != null) motionModerator.calculateDriftOffset(driftOffset, slotAssignments, pattern);
 	}
 
 	/** Add a new member to the first available slot. Returns false if no more slots are available. */
@@ -154,7 +183,7 @@ public class Formation<T extends Vector<T>> {
 		// Make sure we've found a valid result
 		if (slot >= 0) {
 			// Remove the slot
-			//slotAssignments.removeIndex(slot);
+			// slotAssignments.removeIndex(slot);
 			slotAssignmentStrategy.removeSlotAssignment(slotAssignments, slot);
 
 			// Update the assignments
@@ -184,8 +213,12 @@ public class Formation<T extends Vector<T>> {
 		// Find the anchor point
 		Location<T> anchor = getAnchorPoint();
 
-		anchorLessDriftPosition.set(anchor.getPosition()).sub(driftOffset.getPosition());
-		float anchorLessDriftOrientation = anchor.getOrientation() - driftOffset.getOrientation();
+		positionOffset.set(anchor.getPosition());
+		float orientationOffset = anchor.getOrientation();
+		if (motionModerator != null) {
+			positionOffset.sub(driftOffset.getPosition());
+			orientationOffset -= driftOffset.getOrientation();
+		}
 
 		// Get the orientation of the anchor point as a matrix
 		orientationMatrix.idt().rotateRad(anchor.getOrientation());
@@ -211,7 +244,7 @@ public class Formation<T extends Vector<T>> {
 // [17:34] * ThreadL0ck (~ThreadL0c@197.220.114.182) Quit (Remote host closed the connection)
 // [17:35] <davebaol> thanks Xoppa, sounds interesting
 
-			// TODO Valutare se portare mul(orientationMatrix) in Vector
+			// TODO Consider the possibility of declaring mul(orientationMatrix) in Vector
 			// Transform it by the anchor point's position and orientation
 // relativeLocPosition.mul(orientationMatrix).add(anchor.position);
 			if (relativeLocPosition instanceof Vector2)
@@ -219,8 +252,13 @@ public class Formation<T extends Vector<T>> {
 			else if (relativeLocPosition instanceof Vector3) ((Vector3)relativeLocPosition).mul(orientationMatrix);
 
 			// Add the anchor and drift components
-			relativeLocPosition.add(anchorLessDriftPosition);
-			relativeLoc.setOrientation(relativeLoc.getOrientation() + anchorLessDriftOrientation);
+			relativeLocPosition.add(positionOffset);
+			relativeLoc.setOrientation(relativeLoc.getOrientation() + orientationOffset);
+		}
+
+		// Possibly reset the anchor point if a moderator is set
+		if (motionModerator != null) {
+			motionModerator.updateAnchorPoint(anchor);
 		}
 	}
 }

@@ -17,11 +17,9 @@
 package com.badlogic.gdx.ai.fma.patterns;
 
 import com.badlogic.gdx.ai.fma.FormationPattern;
-import com.badlogic.gdx.ai.fma.SlotAssignment;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.Array;
 
 /** The defensive circle posts members around the circumference of a circle, so their backs are to the center of the circle. The
  * circle can consist of any number of members. Although a huge number of members might look silly, this implementation doesn't
@@ -37,9 +35,6 @@ public class DefensiveCircleFormationPattern<T extends Vector<T>> implements For
 	/** The radius of one member. This is needed to determine how close we can pack a given number of members around circle. */
 	float memberRadius;
 
-	private Location<T> tempLocation;
-	private float centerOfMassOrientation;
-
 	/** Creates a {@code DefensiveCircleFormationPattern}
 	 * @param memberRadius */
 	public DefensiveCircleFormationPattern (float memberRadius) {
@@ -49,35 +44,6 @@ public class DefensiveCircleFormationPattern<T extends Vector<T>> implements For
 	@Override
 	public void setNumberOfSlots (int numberOfSlots) {
 		this.numberOfSlots = numberOfSlots;
-	}
-
-	@Override
-	public Location<T> calculateDriftOffset (Location<T> centerOfMass, Array<SlotAssignment<T>> assignments) {
-
-		// Clear the center of mass
-		centerOfMass.getPosition().setZero();
-		centerOfMassOrientation = 0;
-
-		// Make sure tempLocation is instantiated
-		if (tempLocation == null) tempLocation = centerOfMass.newLocation();
-
-		T centerOfMassPos = centerOfMass.getPosition();
-		T tempLocationPos = tempLocation.getPosition();
-
-		// Go through each assignment and add its contribution to the center
-		float numberOfAssignments = assignments.size;
-		for (int i = 0; i < numberOfAssignments; i++) {
-			calculateSlotLocation(tempLocation, assignments.get(i).slotNumber);
-			centerOfMassPos.add(tempLocationPos);
-			centerOfMassOrientation +=  tempLocation.getOrientation();
-		}
-
-		// Divide through to get the drift offset.
-		centerOfMassPos.scl(1f / numberOfAssignments);
-		centerOfMassOrientation /= numberOfAssignments;
-		centerOfMass.setOrientation(centerOfMassOrientation);
-
-		return centerOfMass;
 	}
 
 	@Override
@@ -94,7 +60,7 @@ public class DefensiveCircleFormationPattern<T extends Vector<T>> implements For
 		outLocation.angleToVector(outLocation.getPosition(), angleAroundCircle).scl(radius);
 
 		// The members should be facing out
-		outLocation.setOrientation(centerOfMassOrientation + angleAroundCircle);
+		outLocation.setOrientation(angleAroundCircle);
 
 		// Return the slot location
 		return outLocation;
