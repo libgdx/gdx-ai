@@ -24,10 +24,9 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /** {@code SoftRoleSlotAssignmentStrategy} is a concrete implementation of {@link BoundedSlotAssignmentStrategy} that supports soft
  * roles, i.e. roles that can be broken. Rather than a member having a list of roles it can fulfill, it has a set of values
  * representing how difficult it would find it to fulfill every role. The value is known as the slot cost. To make a slot
- * impossible for a member to fill, its slot cost should be infinite. Normally, this is just a very large value. The algorithm
- * below works better if the values aren't near to the upper limit {@link Float#MAX_VALUE} because several costs will be added. To
- * make a slot ideal for a member, its slot cost should be zero. We can have different levels of unsuitable assignment for one
- * member.
+ * impossible for a member to fill, its slot cost should be infinite (you can even set a threshold to ignore all slots whose cost
+ * is too high; this will reduce computation time when several costs are exceeding). To make a slot ideal for a member, its slot
+ * cost should be zero. We can have different levels of unsuitable assignment for one member.
  * <p>
  * Slot costs do not necessarily have to depend only on the member and the slot roles. They can be generalized to include any
  * difficulty a member might have in taking up a slot. If a formation is spread out, for example, a member may choose a slot that
@@ -47,10 +46,22 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 
 	protected SlotCostProvider<T> slotCostProvider;
 
+	protected float costThreshold;
+
 	private BooleanArray filledSlots;
 
+	/** Creates a {@code SoftRoleSlotAssignmentStrategy} with the given slot cost provider and no cost threshold.
+	 * @param slotCostProvider the slot cost provider */
 	public SoftRoleSlotAssignmentStrategy (SlotCostProvider<T> slotCostProvider) {
+		this(slotCostProvider, Float.POSITIVE_INFINITY);
+	}
+
+	/** Creates a {@code SoftRoleSlotAssignmentStrategy} with the given slot cost provider and cost threshold.
+	 * @param slotCostProvider the slot cost provider
+	 * @param costThreshold the cost threshold */
+	public SoftRoleSlotAssignmentStrategy (SlotCostProvider<T> slotCostProvider, float costThreshold) {
 		this.slotCostProvider = slotCostProvider;
+		this.costThreshold = costThreshold;
 
 		this.filledSlots = new BooleanArray();
 	}
@@ -58,15 +69,11 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 	@Override
 	public void updateSlotAssignments (Array<SlotAssignment<T>> assignments) {
 
-		// Calculate slot costs
-		slotCostProvider.calculateCosts();
-
 		// Holds a list of member and slot data for each member.
 		Array<MemberAndSlots<T>> memberData = new Array<MemberAndSlots<T>>();
 
 		// Compile the member data
 		int numberOfAssignments = assignments.size;
-		System.out.println("numberOfAsignments =" + numberOfAssignments);
 		for (int i = 0; i < numberOfAssignments; i++) {
 			SlotAssignment<T> assignment = assignments.get(i);
 
@@ -80,8 +87,7 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 				float cost = slotCostProvider.getCost(assignment.member, j);
 
 				// Make sure the slot is valid
-				if (cost >= Float.MAX_VALUE) continue;
-				System.out.println("step1.j=" + j);
+				if (cost >= costThreshold) continue;
 
 				SlotAssignment<T> slot = assignments.get(j);
 
@@ -95,7 +101,6 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 
 			// Add member datum
 			memberData.add(datum);
-			System.out.println("step1.i=" + i);
 		}
 
 		// Reset the array to keep track of which slots we have already filled.
@@ -106,10 +111,8 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 
 		// Arrange members in order of ease of assignment, with the least easy first.
 		memberData.sort();
-		System.out.println("---------------------");
 		MEMBER_LOOP:
 		for (int i = 0; i < memberData.size; i++) {
-			System.out.println("step2.i=" + i);
 			MemberAndSlots<T> memberDatum = memberData.get(i);
 
 			// Choose the first slot in the list that is still empty (non-filled)
@@ -117,8 +120,6 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 			int m = memberDatum.costAndSlots.size;
 			for (int j = 0; j < m; j++) {
 				int slotNumber = memberDatum.costAndSlots.get(j).slotNumber;
-
-				System.out.println("step2.j=" + j + " filled[" + slotNumber + "]=" + filledSlots.get(slotNumber));
 
 				// Check if this slot is valid
 				if (!filledSlots.get(slotNumber)) {
@@ -178,8 +179,6 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 	}
 
 	public interface SlotCostProvider<T extends Vector<T>> {
-
-		public void calculateCosts ();
 
 		public float getCost (FormationMember<T> member, int slotNumber);
 

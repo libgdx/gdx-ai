@@ -108,9 +108,6 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 		// Set the slot assignment strategy
 		if (bounded) {
 			SlotCostProvider<Vector2> slotCostProvider = new SlotCostProvider<Vector2>() {
-				@Override
-				public void calculateCosts () {
-				}
 
 				@Override
 				public float getCost (FormationMember<Vector2> member, int slotNumber) {
