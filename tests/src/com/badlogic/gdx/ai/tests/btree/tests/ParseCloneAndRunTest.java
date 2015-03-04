@@ -34,6 +34,7 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
+	private int step;
 
 	public ParseCloneAndRunTest (BehaviorTreeTests container) {
 		super(container, "Parse, Clone and Run");
@@ -42,6 +43,7 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 	@Override
 	public void create (Table table) {
 		elapsedTime = 0;
+		step = 0;
 
 		BehaviorTree<Dog> dogBehaviorTreeArchetype = null;
 
@@ -64,6 +66,7 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 		elapsedTime += Gdx.graphics.getRawDeltaTime();
 
 		if (elapsedTime > 0.8f) {
+			System.out.println("Step: " + (++step));
 			dogBehaviorTree.step();
 			elapsedTime = 0;
 		}

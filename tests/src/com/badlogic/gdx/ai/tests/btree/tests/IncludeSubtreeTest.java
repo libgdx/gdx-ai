@@ -33,6 +33,7 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 
 	private BehaviorTree<Dog> dogBehaviorTree;
 	private float elapsedTime;
+	private int step;
 	private boolean lazy;
 
 	public IncludeSubtreeTest (BehaviorTreeTests container, boolean lazy) {
@@ -43,6 +44,7 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 	@Override
 	public void create (Table table) {
 		elapsedTime = 0;
+		step = 0;
 
 		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
 		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
@@ -56,6 +58,7 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 		elapsedTime += Gdx.graphics.getRawDeltaTime();
 
 		if (elapsedTime > 0.8f) {
+			System.out.println("Step: " + (++step));
 			dogBehaviorTree.step();
 			elapsedTime = 0;
 		}
