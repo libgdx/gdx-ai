@@ -69,6 +69,9 @@ public class FollowFlowField<T extends Vector<T>> extends SteeringBehavior<T> {
 
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
+		// Clear both linear and angular components
+		steering.setZero();
+
 		// Predictive or non-predictive behavior?
 		T location = (predictionTime == 0) ?
 		// Use the current position of the owner
@@ -80,14 +83,13 @@ public class FollowFlowField<T extends Vector<T>> extends SteeringBehavior<T> {
 		// Retrieve the flow vector at the specified location
 		T flowVector = flowField.lookup(location);
 
-		Limiter actualLimiter = getActualLimiter();
+		if (flowVector != null && !flowVector.isZero()) {
+			Limiter actualLimiter = getActualLimiter();
 
-		// Clear both linear and angular components
-		steering.setZero();
-
-		// Calculate linear acceleration
-		steering.linear.mulAdd(flowVector, actualLimiter.getMaxLinearSpeed()).sub(owner.getLinearVelocity())
-			.limit(actualLimiter.getMaxLinearAcceleration());
+			// Calculate linear acceleration
+			steering.linear.mulAdd(flowVector, actualLimiter.getMaxLinearSpeed()).sub(owner.getLinearVelocity())
+				.limit(actualLimiter.getMaxLinearAcceleration());
+		}
 
 		// Output steering
 		return steering;
