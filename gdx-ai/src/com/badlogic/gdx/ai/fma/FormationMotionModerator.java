@@ -40,7 +40,7 @@ public abstract class FormationMotionModerator<T extends Vector<T>> {
 	 * @param slotAssignments the set of slots
 	 * @param pattern the pattern
 	 * @return the given location for chaining. */
-	public Location<T> calculateDriftOffset (Location<T> centerOfMass, Array<SlotAssignment<T>> assignments,
+	public Location<T> calculateDriftOffset (Location<T> centerOfMass, Array<SlotAssignment<T>> slotAssignments,
 		FormationPattern<T> pattern) {
 
 		// Clear the center of mass
@@ -54,9 +54,9 @@ public abstract class FormationMotionModerator<T extends Vector<T>> {
 		T tempLocationPos = tempLocation.getPosition();
 
 		// Go through each assignment and add its contribution to the center
-		float numberOfAssignments = assignments.size;
+		float numberOfAssignments = slotAssignments.size;
 		for (int i = 0; i < numberOfAssignments; i++) {
-			pattern.calculateSlotLocation(tempLocation, assignments.get(i).slotNumber);
+			pattern.calculateSlotLocation(tempLocation, slotAssignments.get(i).slotNumber);
 			centerOfMassPos.add(tempLocationPos);
 			centerOfMassOrientation += tempLocation.getOrientation();
 		}

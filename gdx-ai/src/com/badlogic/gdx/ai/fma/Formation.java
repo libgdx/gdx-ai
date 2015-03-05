@@ -82,7 +82,7 @@ public class Formation<T extends Vector<T>> {
 	 * @param anchor the anchor point of this formation, usually a {@link Steerable}. Cannot be {@code null}.
 	 * @param pattern the pattern of this formation
 	 * @param slotAssignmentStrategy the strategy used to assign a member to his slot
-	 * @param moderator the motion moderator. Can be {@code null} if moderation is not needed
+	 * @param motionModerator the motion moderator. Can be {@code null} if moderation is not needed
 	 * @throws IllegalArgumentException if the anchor point is {@code null} */
 	public Formation (Location<T> anchor, FormationPattern<T> pattern, SlotAssignmentStrategy<T> slotAssignmentStrategy,
 		FormationMotionModerator<T> motionModerator) {
@@ -121,7 +121,7 @@ public class Formation<T extends Vector<T>> {
 		this.pattern = pattern;
 	}
 
-	/** @return the slotAssignmentStrategy */
+	/** @return the slot assignment strategy of this formation */
 	public SlotAssignmentStrategy<T> getSlotAssignmentStrategy () {
 		return slotAssignmentStrategy;
 	}
@@ -132,8 +132,7 @@ public class Formation<T extends Vector<T>> {
 		this.slotAssignmentStrategy = slotAssignmentStrategy;
 	}
 
-	/** Sets the motion moderator of this formation
-	 * @param motionModerator the motion moderator to set */
+	/** @return the motion moderator of this formation */
 	public FormationMotionModerator<T> getMotionModerator () {
 		return motionModerator;
 	}
