@@ -58,7 +58,7 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 
 	/** Creates a {@code SoftRoleSlotAssignmentStrategy} with the given slot cost provider and cost threshold.
 	 * @param slotCostProvider the slot cost provider
-	 * @param costThreshold the cost threshold */
+	 * @param costThreshold is a slot-cost limit, beyond which a slot is considered to be too expensive to consider occupying. */
 	public SoftRoleSlotAssignmentStrategy (SlotCostProvider<T> slotCostProvider, float costThreshold) {
 		this.slotCostProvider = slotCostProvider;
 		this.costThreshold = costThreshold;
@@ -146,7 +146,7 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 
 	}
 
-	public static class CostAndSlot<T extends Vector<T>> implements Comparable<CostAndSlot<T>> {
+	static class CostAndSlot<T extends Vector<T>> implements Comparable<CostAndSlot<T>> {
 		float cost;
 		int slotNumber;
 
@@ -161,7 +161,7 @@ public class SoftRoleSlotAssignmentStrategy<T extends Vector<T>> extends Bounded
 		}
 	}
 
-	public static class MemberAndSlots<T extends Vector<T>> implements Comparable<MemberAndSlots<T>> {
+	static class MemberAndSlots<T extends Vector<T>> implements Comparable<MemberAndSlots<T>> {
 		FormationMember<T> member;
 		float assignmentEase;
 		Array<CostAndSlot<T>> costAndSlots;
