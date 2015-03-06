@@ -155,7 +155,31 @@ public class Formation<T extends Vector<T>> {
 		if (motionModerator != null) motionModerator.calculateDriftOffset(driftOffset, slotAssignments, pattern);
 	}
 
-	/** Add a new member to the first available slot. Returns false if no more slots are available. */
+	/** Changes the pattern of this formation and updates slot assignments if the number of member is supported by the given
+	 * pattern.
+	 * @param pattern the pattern to set
+	 * @return {@code true} if the pattern has effectively changed; {@code false} otherwise. */
+	public boolean changePattern (FormationPattern<T> pattern) {
+		// Find out how many slots we have occupied
+		int occupiedSlots = slotAssignments.size;
+
+		// Check if the pattern supports one more slot
+		if (pattern.supportsSlots(occupiedSlots)) {
+			setPattern(pattern);
+
+			// Update the slot assignments and return success
+			updateSlotAssignments();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/** Adds a new member to the first available slot and updates slot assignments if the number of member is supported by the
+	 * current pattern.
+	 * @param member the member to add
+	 * @return {@code false} if no more slots are available; {@code true} otherwise. */
 	public boolean addMember (FormationMember<T> member) {
 		// Find out how many slots we have occupied
 		int occupiedSlots = slotAssignments.size;
@@ -163,7 +187,6 @@ public class Formation<T extends Vector<T>> {
 		// Check if the pattern supports one more slot
 		if (pattern.supportsSlots(occupiedSlots + 1)) {
 			// Add a new slot assignment
-			// TODO is occupiedSlots below correct? Maybe we have to find the first free slot.
 			slotAssignments.add(new SlotAssignment<T>(member, occupiedSlots));
 
 			// Update the slot assignments and return success
@@ -174,7 +197,8 @@ public class Formation<T extends Vector<T>> {
 		return false;
 	}
 
-	/** Removes a member from its slot. */
+	/** Removes a member from its slot and updates slot assignments.
+	 * @param member the member to remove */
 	public void removeMember (FormationMember<T> member) {
 		// Find the member's slot
 		int slot = findMemberSlot(member);
@@ -198,12 +222,12 @@ public class Formation<T extends Vector<T>> {
 	}
 
 	// debug
-	public SlotAssignment<T> getSlot (int index) {
+	public SlotAssignment<T> getSlotAssignmentAt (int index) {
 		return slotAssignments.get(index);
 	}
 
 	// debug
-	public int getSlotCount () {
+	public int getSlotAssignmentCount () {
 		return slotAssignments.size;
 	}
 

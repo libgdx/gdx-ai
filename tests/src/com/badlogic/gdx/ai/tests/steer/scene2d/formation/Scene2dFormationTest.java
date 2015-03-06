@@ -73,8 +73,8 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 			public void clicked (InputEvent event, float x, float y) {
 				int badlogics = 0;
 				int fishes = 0;
-				for (int i = 0; i < formation.getSlotCount(); i++) {
-					SlotAssignment<Vector2> slot = formation.getSlot(i);
+				for (int i = 0; i < formation.getSlotAssignmentCount(); i++) {
+					SlotAssignment<Vector2> slot = formation.getSlotAssignmentAt(i);
 					SteeringActorFormationMember safm = (SteeringActorFormationMember)slot.member;
 					if (safm.getRegion() == container.badlogicSmall)
 						badlogics++;
@@ -116,8 +116,8 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 					boolean isCorrectSlot = slotNumber % 2 == 0;
 					if (safm.getRegion() != container.greenFish) isCorrectSlot = !isCorrectSlot;
 // float cost = isCorrectSlot ? 0f : 5000000000f;
-					float cost = isCorrectSlot ? 0f : 10000f * 2 * formation.getSlotCount();
-					Scene2dLocation slotTarget = ((SteeringActorFormationMember)formation.getSlot(slotNumber).member).target;
+					float cost = isCorrectSlot ? 0f : 10000f * 2 * formation.getSlotAssignmentCount();
+					Scene2dLocation slotTarget = ((SteeringActorFormationMember)formation.getSlotAssignmentAt(slotNumber).member).target;
 					return cost + safm.getPosition().dst(slotTarget.getPosition());
 				}
 			};
@@ -135,9 +135,9 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 			table.addActor(safm);
 
 			// debug
-			for (int k = 0; k < formation.getSlotCount(); k++) {
-				System.out.println("slot " + formation.getSlot(k).slotNumber + ": "
-					+ (formation.getSlot(k).slotNumber % 2 == 0 ? "fish" : "badlogic"));
+			for (int k = 0; k < formation.getSlotAssignmentCount(); k++) {
+				System.out.println("slot " + formation.getSlotAssignmentAt(k).slotNumber + ": "
+					+ (formation.getSlotAssignmentAt(k).slotNumber % 2 == 0 ? "fish" : "badlogic"));
 			}
 
 		}
