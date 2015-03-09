@@ -60,6 +60,9 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 
 	final static float width = 8; // 5; // 10;
 
+	final static int PF_REQUEST = 1;
+	final static int PF_RESPONSE = 2;
+
 	final static int NUM_PATHS = 10;
 
 	ShapeRenderer renderer;
@@ -132,7 +135,7 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 			}
 		};
 		PathFinderQueue<HierarchicalTiledNode> pathFinderQueue = new PathFinderQueue<HierarchicalTiledNode>(pathFinder);
-		MessageManager.getInstance().addListener(pathFinderQueue, 1);
+		MessageManager.getInstance().addListener(pathFinderQueue, PF_REQUEST);
 
 		scheduler = new LoadBalancingScheduler(100);
 		scheduler.add(pathFinderQueue, 1, 0);
@@ -306,25 +309,28 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 
 	@Override
 	public boolean handleMessage (Telegram telegram) {
-		if (telegram.extraInfo instanceof MyPathFinderRequest) {
-			if (PathFinderRequestControl.DEBUG) {
-				@SuppressWarnings("unchecked")
-				PathFinderQueue<HierarchicalTiledNode> pfQueue = (PathFinderQueue<HierarchicalTiledNode>)telegram.sender;
-				if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size());
-			}
-			MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
-			TiledSmoothableGraphPath<HierarchicalTiledNode> path = paths[pfr.pathIndex];
-			int n = path.getCount();
-			if (n > 0 && pfr.pathFound && pfr.endNode != path.get(n - 1)) {
-				pfr.startNode = path.get(n - 1);
-				pfr.pathIndex++;
-				pfr.resultPath = paths[pfr.pathIndex];
-				pfr.changeStatus(PathFinderRequest.SEARCH_NEW);
-				numPaths = pfr.pathIndex;
-			} else {
-				requestPool.free(pfr);
-				numPaths = pfr.pathIndex + 1;
-			}
+		// PathFinderQueue will call us directly, no need to register for this message
+		switch (telegram.message) {
+			case PF_RESPONSE:
+				if (PathFinderRequestControl.DEBUG) {
+					@SuppressWarnings("unchecked")
+					PathFinderQueue<HierarchicalTiledNode> pfQueue = (PathFinderQueue<HierarchicalTiledNode>)telegram.sender;
+					if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size());
+				}
+				MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+				TiledSmoothableGraphPath<HierarchicalTiledNode> path = paths[pfr.pathIndex];
+				int n = path.getCount();
+				if (n > 0 && pfr.pathFound && pfr.endNode != path.get(n - 1)) {
+					pfr.startNode = path.get(n - 1);
+					pfr.pathIndex++;
+					pfr.resultPath = paths[pfr.pathIndex];
+					pfr.changeStatus(PathFinderRequest.SEARCH_NEW);
+					numPaths = pfr.pathIndex;
+				} else {
+					requestPool.free(pfr);
+					numPaths = pfr.pathIndex + 1;
+				}
+				break;
 		}
 		return true;
 	}
@@ -363,7 +369,8 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 		pfRequest.heuristic = heuristic;
 		pfRequest.resultPath = path;
 		pfRequest.pathIndex = pathIndex;
-		MessageManager.getInstance().dispatchMessage(this, 1, pfRequest);
+		pfRequest.responseMessageCode = PF_RESPONSE;
+		MessageManager.getInstance().dispatchMessage(this, PF_REQUEST, pfRequest);
 	}
 
 	/** An {@link InputProcessor} that allows you to define a path to find.
