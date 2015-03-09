@@ -309,28 +309,27 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 
 	@Override
 	public boolean handleMessage (Telegram telegram) {
-		// PathFinderQueue will call us directly, no need to register for this message
 		switch (telegram.message) {
-			case PF_RESPONSE:
-				if (PathFinderRequestControl.DEBUG) {
-					@SuppressWarnings("unchecked")
-					PathFinderQueue<HierarchicalTiledNode> pfQueue = (PathFinderQueue<HierarchicalTiledNode>)telegram.sender;
-					if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size());
-				}
-				MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
-				TiledSmoothableGraphPath<HierarchicalTiledNode> path = paths[pfr.pathIndex];
-				int n = path.getCount();
-				if (n > 0 && pfr.pathFound && pfr.endNode != path.get(n - 1)) {
-					pfr.startNode = path.get(n - 1);
-					pfr.pathIndex++;
-					pfr.resultPath = paths[pfr.pathIndex];
-					pfr.changeStatus(PathFinderRequest.SEARCH_NEW);
-					numPaths = pfr.pathIndex;
-				} else {
-					requestPool.free(pfr);
-					numPaths = pfr.pathIndex + 1;
-				}
-				break;
+		case PF_RESPONSE: // PathFinderQueue will call us directly, no need to register for this message
+			if (PathFinderRequestControl.DEBUG) {
+				@SuppressWarnings("unchecked")
+				PathFinderQueue<HierarchicalTiledNode> pfQueue = (PathFinderQueue<HierarchicalTiledNode>)telegram.sender;
+				System.out.println("pfQueue.size = " + pfQueue.size());
+			}
+			MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+			TiledSmoothableGraphPath<HierarchicalTiledNode> path = paths[pfr.pathIndex];
+			int n = path.getCount();
+			if (n > 0 && pfr.pathFound && pfr.endNode != path.get(n - 1)) {
+				pfr.startNode = path.get(n - 1);
+				pfr.pathIndex++;
+				pfr.resultPath = paths[pfr.pathIndex];
+				pfr.changeStatus(PathFinderRequest.SEARCH_NEW);
+				numPaths = pfr.pathIndex;
+			} else {
+				requestPool.free(pfr);
+				numPaths = pfr.pathIndex + 1;
+			}
+			break;
 		}
 		return true;
 	}

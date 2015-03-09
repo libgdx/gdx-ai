@@ -32,5 +32,5 @@ public interface Heuristic<N> {
 	 * @param node the start node
 	 * @param endNode the end node
 	 * @return the estimated cost */
-	public abstract float estimate (N node, N endNode);
+	public float estimate (N node, N endNode);
 }

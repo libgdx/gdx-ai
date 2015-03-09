@@ -57,7 +57,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  * 
  * @author davebaol */
 public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implements Telegraph {
-	
+
 	final static float width = 8; // 5; // 10;
 
 	final static int PF_REQUEST = 1;
@@ -78,7 +78,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	TiledManhattanDistance<FlatTiledNode> heuristic;
 	IndexedAStarPathFinder<FlatTiledNode> pathFinder;
 	PathSmoother<FlatTiledNode, Vector2> pathSmoother;
-	PathSmootherRequest<FlatTiledNode, Vector2> pathSmootherRequest; 
+	PathSmootherRequest<FlatTiledNode, Vector2> pathSmootherRequest;
 
 	Pool<MyPathFinderRequest> requestPool;
 
@@ -114,7 +114,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		heuristic = new TiledManhattanDistance<FlatTiledNode>();
 		pathFinder = new IndexedAStarPathFinder<FlatTiledNode>(worldMap, true);
 		pathSmoother = new PathSmoother<FlatTiledNode, Vector2>(new TiledRaycastCollisionDetector<FlatTiledNode>(worldMap));
-		pathSmootherRequest = new PathSmootherRequest<FlatTiledNode, Vector2>(); 
+		pathSmootherRequest = new PathSmootherRequest<FlatTiledNode, Vector2>();
 
 		requestPool = new Pool<MyPathFinderRequest>() {
 			@Override
@@ -181,7 +181,8 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		detailTable.row();
 		sliderMillisAvailablePerFrame = new Slider(0.1f, 40f, 0.1f, false, container.skin);
 		sliderMillisAvailablePerFrame.setValue(16);
-		final Label labelMillisAvailablePerFrame = new Label("Millis Available per Frame [[" + sliderMillisAvailablePerFrame.getValue() + "]", container.skin);
+		final Label labelMillisAvailablePerFrame = new Label("Millis Available per Frame [["
+			+ sliderMillisAvailablePerFrame.getValue() + "]", container.skin);
 		detailTable.add(labelMillisAvailablePerFrame);
 		detailTable.row();
 		sliderMillisAvailablePerFrame.addListener(new ChangeListener() {
@@ -264,15 +265,16 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 
 	@Override
 	public boolean handleMessage (Telegram telegram) {
-		// PathFinderQueue will call us directly, no need to register for this message
 		switch (telegram.message) {
-			case PF_RESPONSE:
-				MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+		case PF_RESPONSE: // PathFinderQueue will call us directly, no need to register for this message
+			MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+			if (PathFinderRequestControl.DEBUG) {
 				@SuppressWarnings("unchecked")
 				PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
-				if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
-				requestPool.free(pfr);
-				break;
+				System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
+			}
+			requestPool.free(pfr);
+			break;
 		}
 		return true;
 	}
@@ -381,7 +383,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			return true;
 		}
 	}
-	
+
 	class MyPathFinderRequest extends PathFinderRequest<FlatTiledNode> implements Poolable {
 		boolean smoothFinished;
 
