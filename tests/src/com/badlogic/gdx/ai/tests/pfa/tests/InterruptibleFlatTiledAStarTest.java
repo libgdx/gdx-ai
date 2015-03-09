@@ -264,16 +264,16 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 
 	@Override
 	public boolean handleMessage (Telegram telegram) {
-        // PathFinderQueue will call us directly, no need to register for this message
-        switch (telegram.message) {
-            case PF_RESPONSE:
-                MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
-                @SuppressWarnings("unchecked")
-                PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
-                if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
-                requestPool.free(pfr);
-                break;
-        }
+		// PathFinderQueue will call us directly, no need to register for this message
+		switch (telegram.message) {
+			case PF_RESPONSE:
+				MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+				@SuppressWarnings("unchecked")
+				PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
+				if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
+				requestPool.free(pfr);
+				break;
+		}
 		return true;
 	}
 
@@ -297,7 +297,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 				pfRequest.endNode = endNode;
 				pfRequest.heuristic = heuristic;
 				pfRequest.resultPath = path;
-                pfRequest.responseMessageCode = PF_RESPONSE;
+				pfRequest.responseMessageCode = PF_RESPONSE;
 				MessageManager.getInstance().dispatchMessage(this, PF_REQUEST, pfRequest);
 // worldMap.startNode = startNode;
 // long startTime = nanoTime();
