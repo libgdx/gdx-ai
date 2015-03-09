@@ -60,6 +60,9 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	
 	final static float width = 8; // 5; // 10;
 
+	final static int PF_REQUEST = 1;
+	final static int PF_RESPONSE = 2;
+
 	ShapeRenderer renderer;
 	Vector3 tmpUnprojection = new Vector3();
 
@@ -120,7 +123,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			}
 		};
 		PathFinderQueue<FlatTiledNode> pathFinderQueue = new PathFinderQueue<FlatTiledNode>(pathFinder);
-		MessageManager.getInstance().addListener(pathFinderQueue, 1);
+		MessageManager.getInstance().addListener(pathFinderQueue, PF_REQUEST);
 
 		scheduler = new LoadBalancingScheduler(100);
 		scheduler.add(pathFinderQueue, 1, 0);
@@ -261,13 +264,16 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 
 	@Override
 	public boolean handleMessage (Telegram telegram) {
-		if (telegram.extraInfo instanceof MyPathFinderRequest) {
-			MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
-			@SuppressWarnings("unchecked")
-			PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
-			if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
-			requestPool.free(pfr);
-		}
+        // PathFinderQueue will call us directly, no need to register for this message
+        switch (telegram.message) {
+            case PF_RESPONSE:
+                MyPathFinderRequest pfr = (MyPathFinderRequest)telegram.extraInfo;
+                @SuppressWarnings("unchecked")
+                PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
+                if (PathFinderRequestControl.DEBUG) System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
+                requestPool.free(pfr);
+                break;
+        }
 		return true;
 	}
 
@@ -291,7 +297,8 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 				pfRequest.endNode = endNode;
 				pfRequest.heuristic = heuristic;
 				pfRequest.resultPath = path;
-				MessageManager.getInstance().dispatchMessage(this, 1, pfRequest);
+                pfRequest.responseMessageCode = PF_RESPONSE;
+				MessageManager.getInstance().dispatchMessage(this, PF_REQUEST, pfRequest);
 // worldMap.startNode = startNode;
 // long startTime = nanoTime();
 // pathFinder.searchNodePath(startNode, endNode, heuristic, path);
