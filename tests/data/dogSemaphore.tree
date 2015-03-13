@@ -1,0 +1,8 @@
+import bark:"com.badlogic.gdx.ai.tests.btree.dog.BarkTask"
+import walk:"com.badlogic.gdx.ai.tests.btree.dog.WalkTask"
+
+root
+  selector
+    semaphoreGuard name:"dogSemaphore"
+      walk
+    bark

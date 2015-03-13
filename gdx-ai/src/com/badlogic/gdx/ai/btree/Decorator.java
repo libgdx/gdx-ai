@@ -69,6 +69,7 @@ public abstract class Decorator<E> extends Task<E> {
 
 	@Override
 	public void start (E object) {
+		child.object = object;
 		child.setControl(this);
 		child.start(object);
 	}

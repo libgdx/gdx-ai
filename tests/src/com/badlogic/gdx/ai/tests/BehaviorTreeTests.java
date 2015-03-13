@@ -23,6 +23,7 @@ import com.badlogic.gdx.ai.tests.btree.tests.IncludeSubtreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseAndRunTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseCloneAndRunTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTest;
+import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.graphics.GL20;
@@ -60,7 +61,8 @@ public class BehaviorTreeTests extends GdxAiTest {
 		new IncludeSubtreeTest(this, false),
 		new IncludeSubtreeTest(this, true),
 		new ProgrammaticallyCreatedTest(this, false),
-		new ProgrammaticallyCreatedTest(this, true)
+		new ProgrammaticallyCreatedTest(this, true),
+		new SemaphoreGuardTest(this)
 	};
 	// @on - enable libgdx formatter
 

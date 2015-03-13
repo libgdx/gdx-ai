@@ -34,8 +34,16 @@ public class Dog {
 		log("Bow wow!!!");
 	}
 
+	public void startWalking () {
+		log("Dog starts walking");
+	}
+
 	public void randomlyWalk () {
 		log("Dog walks randomly around!");
+	}
+
+	public void stopWalking () {
+		log("Dog stops walking");
 	}
 
 	public boolean standBesideATree () {

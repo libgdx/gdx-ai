@@ -29,6 +29,7 @@ import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
+import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
 import com.badlogic.gdx.files.FileHandle;
@@ -127,6 +128,7 @@ public class BehaviorTreeParser<E> {
 				Invert.class,
 				Parallel.class,
 				Selector.class,
+				SemaphoreGuard.class,
 				Sequence.class,
 				UntilFail.class,
 				UntilSuccess.class

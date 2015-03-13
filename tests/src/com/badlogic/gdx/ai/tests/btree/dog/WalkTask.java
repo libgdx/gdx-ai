@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 
 /** @author implicit-invocation
  * @author davebaol */
@@ -28,6 +28,7 @@ public class WalkTask extends LeafTask<Dog> {
 	@Override
 	public void start (Dog dog) {
 		i = 0;
+		dog.startWalking();
 	}
 
 	@Override
@@ -39,6 +40,11 @@ public class WalkTask extends LeafTask<Dog> {
 		} else {
 			success();
 		}
+	}
+
+	@Override
+	public void end (Dog dog) {
+		dog.stopWalking();
 	}
 
 	@Override
