@@ -22,7 +22,16 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphore;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
 
-/** A {@code SemaphoreGuard} decorator...
+/** A {@code SemaphoreGuard} decorator allows you to specify how many characters should be allowed to concurrently execute its
+ * child which represents a limited resource used in different behavior trees (note that this does not necessarily involve
+ * multithreading concurrency).
+ * <p>
+ * This is a simple mechanism for ensuring that a limited shared resource is not over subscribed. You might have a pool of 5
+ * pathfinders, for example, meaning at most 5 characters can be pathfinding at a time. Or you can associate a semaphore to the
+ * player character to ensure that at most 3 enemies can simultaneously attack him.
+ * <p>
+ * This decorator fails when it cannot acquire the semaphore. This allows a select task higher up the tree to find a different
+ * action that doesn't involve the contested resource.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
@@ -58,8 +67,7 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	public void run (E object) {
 		if (semaphoreAcquired) {
 			super.run(object);
-		}
-		else {
+		} else {
 			// System.out.println("FAILING");
 			fail();
 		}

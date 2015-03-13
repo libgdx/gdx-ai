@@ -52,7 +52,7 @@ public class Include<E> extends Decorator<E> {
 
 	/** Creates an eager or lazy {@code Include} decorator for the specified subtree.
 	 * @param subtree the subtree reference, usually a path
-	 * @param lazy whether inclusion should happen at clone-time (false) or ar run-time (true) */
+	 * @param lazy whether inclusion should happen at clone-time (false) or at run-time (true) */
 	public Include (String subtree, boolean lazy) {
 		this.subtree = subtree;
 		this.lazy = lazy;
