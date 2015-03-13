@@ -201,6 +201,11 @@ public class BehaviorTreeTests extends GdxAiTest {
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
 		Gdx.app.log("BehaviorTreeTests", "Starting test " + currentTest.getClass().getSimpleName());
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
+		String description = currentTest.getDescription();
+		if (description != null) {
+			Gdx.app.log("BehaviorTreeTests", description);
+			Gdx.app.log("BehaviorTreeTests", "***********************************************");
+		}
 		currentTest.create(testsTable);
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);

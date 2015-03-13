@@ -43,6 +43,11 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 	}
 
 	@Override
+	public String getDescription () {
+		return "When Buddy walks Snoopy barks and vice versa";
+	}
+
+	@Override
 	public void create (Table table) {
 		elapsedTime = 0;
 		step = 0;

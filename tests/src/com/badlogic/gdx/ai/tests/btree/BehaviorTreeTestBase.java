@@ -45,6 +45,10 @@ public abstract class BehaviorTreeTestBase {
 		container.helpMessage = null;
 	}
 
+	public String getDescription () {
+		return null;
+	}
+
 	public abstract void create (Table table);
 
 	public abstract void render ();
