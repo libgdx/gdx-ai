@@ -32,6 +32,11 @@ import com.badlogic.gdx.ai.btree.decorator.Invert;
 import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
+import com.badlogic.gdx.ai.utils.random.Distribution;
+import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
+import com.badlogic.gdx.ai.utils.random.FloatDistribution;
+import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
+import com.badlogic.gdx.ai.utils.random.LongDistribution;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -259,7 +264,11 @@ public class BehaviorTreeParser<E> {
 					ret = numberValue.doubleValue();
 				else if (type == short.class || type == Short.class)
 					ret = numberValue.shortValue();
-				else if (type == byte.class || type == Byte.class) ret = numberValue.byteValue();
+				else if (type == byte.class || type == Byte.class)
+					ret = numberValue.byteValue();
+				else if (Distribution.class.isAssignableFrom(type)) {
+					ret = parseDistribution("constant," + numberValue, type);
+				}
 			} else if (value instanceof Boolean) {
 				if (type == boolean.class || type == Boolean.class) ret = value;
 			} else if (value instanceof String) {
@@ -270,10 +279,29 @@ public class BehaviorTreeParser<E> {
 					if (stringValue.length() != 1) throw new GdxRuntimeException("Invalid character '" + value + "'");
 					ret = Character.valueOf(stringValue.charAt(0));
 				}
+				else if (Distribution.class.isAssignableFrom(type)) {
+					ret = parseDistribution(stringValue, type);
+				}
 			}
 			if (ret == null) throwAttributeTypeException(prevTask.name, field.getName(), type.getSimpleName());
 			return ret;
 		}
+
+		private Object parseDistribution(String stringValue, Class<?> type) {
+			Object ret;
+			if (IntegerDistribution.class.isAssignableFrom(type))
+				ret = IntegerDistribution.parse(stringValue);
+			else if (FloatDistribution.class.isAssignableFrom(type))
+				ret = FloatDistribution.parse(stringValue);
+			else if (LongDistribution.class.isAssignableFrom(type))
+				ret = LongDistribution.parse(stringValue);
+			else if (DoubleDistribution.class.isAssignableFrom(type))
+				ret = DoubleDistribution.parse(stringValue);
+			else
+				ret = null;
+			return ret;
+		}
+		
 
 		private boolean attributeTag (String name, Object value) {
 			if (tagType == TAG_IMPORT) {

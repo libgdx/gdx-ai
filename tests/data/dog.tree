@@ -16,7 +16,7 @@ root
       alwaysFail
         com.badlogic.gdx.ai.tests.btree.dog.RestTask # fully qualified task
     sequence
-      bark times:2
+      bark times:"uniform,1,5"
       walk
       com.badlogic.gdx.ai.tests.btree.dog.BarkTask # fully qualified task
       mark

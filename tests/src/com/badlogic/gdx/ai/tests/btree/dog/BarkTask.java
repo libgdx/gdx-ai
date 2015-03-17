@@ -16,9 +16,11 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.utils.random.ConstantIntegerDistribution;
+import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
 
 /** @author implicit-invocation
  * @author davebaol */
@@ -26,11 +28,19 @@ public class BarkTask extends LeafTask<Dog> {
 
 	public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "times");
 
-	public int times = 1;
+	public IntegerDistribution times = ConstantIntegerDistribution.ONE;
+
+	private int t;
+
+	@Override
+	public void start (Dog dog) {
+		super.start(dog);
+		t = times.nextInt();
+	}
 
 	@Override
 	public void run (Dog dog) {
-		for (int i = 0; i < times; i++)
+		for (int i = 0; i < t; i++)
 			dog.bark();
 		success();
 	}

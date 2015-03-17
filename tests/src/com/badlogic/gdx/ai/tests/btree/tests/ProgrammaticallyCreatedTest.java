@@ -35,6 +35,7 @@ import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.ai.tests.btree.dog.MarkTask;
 import com.badlogic.gdx.ai.tests.btree.dog.RestTask;
 import com.badlogic.gdx.ai.tests.btree.dog.WalkTask;
+import com.badlogic.gdx.ai.utils.random.TriangularIntegerDistribution;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time) for programmatically created
@@ -92,7 +93,7 @@ public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 		selector.addChild(sequence);
 
 		BarkTask bark1 = new BarkTask();
-		bark1.times = 2;
+		bark1.times = new TriangularIntegerDistribution(1, 5, 2);
 		sequence.addChild(bark1);
 		sequence.addChild(new WalkTask());
 		sequence.addChild(new BarkTask());
