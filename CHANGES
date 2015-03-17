@@ -1,6 +1,7 @@
 [1.5.1]
 - API Addition: added Formation Motion API, see https://github.com/libgdx/gdx-ai/wiki/Formation-Motion
 - API Change: the Steering Behavior API has slightly changed to interact with the new Formation Motion API.
+- API Addition: added random distributions to behavior trees.
 - API Addition: added shortcut methods to send telegrams without specifying a sender.
 - API Addition: added capability to reset behavior trees.
 
