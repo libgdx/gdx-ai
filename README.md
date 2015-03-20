@@ -12,6 +12,7 @@ However, in the present state of the art, the gdxAI framework covers only part o
 Currently supported features are:
 - Movement AI
   * Steering Behaviors
+  * Formation Motion
 - Pathfinding
   * A*
   * Hierarchical Pathfinding
