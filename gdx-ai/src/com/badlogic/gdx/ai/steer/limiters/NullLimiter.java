@@ -48,11 +48,6 @@ public class NullLimiter implements Limiter {
 			return Float.POSITIVE_INFINITY;
 		}
 
-		@Override
-		public float getZeroLinearSpeedThreshold () {
-			return 0.001f;
-		}
-
 	};
 
 	/** Creates a {@code NullLimiter}. */
@@ -115,11 +110,9 @@ public class NullLimiter implements Limiter {
 		throw new UnsupportedOperationException();
 	}
 
-	/** Guaranteed to throw UnsupportedOperationException.
-	 * @throws UnsupportedOperationException always */
 	@Override
 	public float getZeroLinearSpeedThreshold () {
-		throw new UnsupportedOperationException();
+		return 0.001f;
 	}
 
 	/** Guaranteed to throw UnsupportedOperationException.
