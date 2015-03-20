@@ -4,6 +4,7 @@
 - API Addition: added random distributions to behavior trees.
 - API Addition: added shortcut methods to send telegrams without specifying a sender.
 - API Addition: added capability to reset behavior trees.
+- API Addition: added zero speed threshold to the Limiter interface.
 
 [1.5.0]
 - API Change: moved singleton capability of the MessageDispatcher to MessageManager, meaning that you can now use multiple message dispatchers if needed.
