@@ -48,19 +48,25 @@ public class DefensiveCircleFormationPattern<T extends Vector<T>> implements For
 
 	@Override
 	public Location<T> calculateSlotLocation (Location<T> outLocation, int slotNumber) {
-		// Place the slot around the circle based on its slot number
-		float angleAroundCircle = (MathUtils.PI2 * slotNumber) / numberOfSlots;
+		if (numberOfSlots > 1) {
+			// Place the slot around the circle based on its slot number
+			float angleAroundCircle = (MathUtils.PI2 * slotNumber) / numberOfSlots;
 
-		// The radius depends on the radius of the member,
-		// and the number of members in the circle:
-		// we want there to be no gap between member's shoulders.
-		float radius = memberRadius / (float)Math.sin(Math.PI / numberOfSlots);
+			// The radius depends on the radius of the member,
+			// and the number of members in the circle:
+			// we want there to be no gap between member's shoulders.
+			float radius = memberRadius / (float)Math.sin(Math.PI / numberOfSlots);
 
-		// Fill location components based on the angle around circle.
-		outLocation.angleToVector(outLocation.getPosition(), angleAroundCircle).scl(radius);
+			// Fill location components based on the angle around circle.
+			outLocation.angleToVector(outLocation.getPosition(), angleAroundCircle).scl(radius);
 
-		// The members should be facing out
-		outLocation.setOrientation(angleAroundCircle);
+			// The members should be facing out
+			outLocation.setOrientation(angleAroundCircle);
+		}
+		else {
+			outLocation.getPosition().setZero();
+			outLocation.setOrientation(MathUtils.PI2 * slotNumber);
+		}
 
 		// Return the slot location
 		return outLocation;
