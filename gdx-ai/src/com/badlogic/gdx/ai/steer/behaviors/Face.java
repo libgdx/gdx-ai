@@ -20,7 +20,6 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code Face} behavior makes the owner look at its target. It delegates to the {@link ReachOrientation} behavior to perform the
@@ -54,7 +53,7 @@ public class Face<T extends Vector<T>> extends ReachOrientation<T> {
 		T toTarget = steering.linear.set(targetPosition).sub(owner.getPosition());
 
 		// Check for a zero direction, and return no steering if so
-		if (toTarget.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) return steering.setZero();
+		if (toTarget.isZero(getActualLimiter().getZeroLinearSpeedThreshold())) return steering.setZero();
 
 		// Calculate the orientation to face the target
 		float orientation = owner.vectorToAngle(toTarget);

@@ -21,7 +21,6 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -115,7 +114,7 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 		else {
 			// If we haven't got any velocity, then we can do nothing.
 			Vector3 linVel = getLinearVelocity();
-			if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+			if (!linVel.isZero(getZeroLinearSpeedThreshold())) {
 				// 
 				// TODO: Commented out!!!
 				// Looks like the code below creates troubles in combination with the applyCentralForce above

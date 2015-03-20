@@ -187,7 +187,7 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 		else {
 			// If we haven't got any velocity, then we can do nothing.
 			Vector2 linVel = getLinearVelocity();
-			if (!linVel.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+			if (!linVel.isZero(getZeroLinearSpeedThreshold())) {
 				float newOrientation = vectorToAngle(linVel);
 				body.setAngularVelocity((newOrientation - getAngularVelocity()) * deltaTime); // this is superfluous if independentFacing is always true
 				body.setTransform(body.getPosition(), newOrientation);
