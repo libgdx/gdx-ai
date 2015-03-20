@@ -294,4 +294,14 @@ public class Box2dSteeringEntity implements Steerable<Vector2> {
 	public void setMaxAngularAcceleration (float maxAngularAcceleration) {
 		this.maxAngularAcceleration = maxAngularAcceleration;
 	}
+
+	@Override
+	public float getZeroLinearSpeedThreshold () {
+		return 0.001f;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold (float value) {
+		throw new UnsupportedOperationException();
+	}
 }

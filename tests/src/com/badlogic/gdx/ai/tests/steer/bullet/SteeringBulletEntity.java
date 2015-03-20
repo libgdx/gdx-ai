@@ -264,4 +264,14 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 		this.maxAngularAcceleration = maxAngularAcceleration;
 	}
 
+	@Override
+	public float getZeroLinearSpeedThreshold () {
+		return 0.001f;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold (float value) {
+		throw new UnsupportedOperationException();
+	}
+
 }

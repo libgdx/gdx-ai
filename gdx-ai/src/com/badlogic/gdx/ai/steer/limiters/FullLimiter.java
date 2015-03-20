@@ -27,6 +27,7 @@ public class FullLimiter implements Limiter {
 	private float maxLinearSpeed;
 	private float maxAngularAcceleration;
 	private float maxAngularSpeed;
+	private float zeroLinearSpeedThreshold;
 
 	/** Creates a {@code FullLimiter}.
 	 * @param maxLinearAcceleration the maximum linear acceleration
@@ -78,5 +79,15 @@ public class FullLimiter implements Limiter {
 	@Override
 	public void setMaxAngularAcceleration (float maxAngularAcceleration) {
 		this.maxAngularAcceleration = maxAngularAcceleration;
+	}
+
+	@Override
+	public float getZeroLinearSpeedThreshold () {
+		return zeroLinearSpeedThreshold;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold (float zeroLinearSpeedThreshold) {
+		this.zeroLinearSpeedThreshold = zeroLinearSpeedThreshold;
 	}
 }

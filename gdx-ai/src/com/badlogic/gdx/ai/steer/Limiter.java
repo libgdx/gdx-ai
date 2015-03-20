@@ -21,6 +21,14 @@ package com.badlogic.gdx.ai.steer;
  * @author davebaol */
 public interface Limiter {
 
+	/** Returns the threshold below which the linear speed can be considered zero. It must be a small positive value near to zero.
+	 * Usually it is used to avoid updating the orientation when the velocity vector has a negligible length. */
+	public float getZeroLinearSpeedThreshold ();
+
+	/** Sets the threshold below which the linear speed can be considered zero. It must be a small positive value near to zero.
+	 * Usually it is used to avoid updating the orientation when the velocity vector has a negligible length. */
+	public void setZeroLinearSpeedThreshold (float value);
+
 	/** Returns the maximum linear speed. */
 	public float getMaxLinearSpeed ();
 

@@ -18,8 +18,8 @@ package com.badlogic.gdx.ai.steer.limiters;
 
 import com.badlogic.gdx.ai.steer.Limiter;
 
-/** A {@code NullLimiter} always throws {@link UnsupportedOperationException}. Typically it's used as the base class of partial
- * or immutable limiters.
+/** A {@code NullLimiter} always throws {@link UnsupportedOperationException}. Typically it's used as the base class of partial or
+ * immutable limiters.
  * 
  * @author davebaol */
 public class NullLimiter implements Limiter {
@@ -46,6 +46,11 @@ public class NullLimiter implements Limiter {
 		@Override
 		public float getMaxAngularAcceleration () {
 			return Float.POSITIVE_INFINITY;
+		}
+
+		@Override
+		public float getZeroLinearSpeedThreshold () {
+			return 0.001f;
 		}
 
 	};
@@ -107,6 +112,20 @@ public class NullLimiter implements Limiter {
 	 * @throws UnsupportedOperationException always */
 	@Override
 	public void setMaxAngularAcceleration (float maxAngularAcceleration) {
+		throw new UnsupportedOperationException();
+	}
+
+	/** Guaranteed to throw UnsupportedOperationException.
+	 * @throws UnsupportedOperationException always */
+	@Override
+	public float getZeroLinearSpeedThreshold () {
+		throw new UnsupportedOperationException();
+	}
+
+	/** Guaranteed to throw UnsupportedOperationException.
+	 * @throws UnsupportedOperationException always */
+	@Override
+	public void setZeroLinearSpeedThreshold (float zeroLinearSpeedThreshold) {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -20,7 +20,6 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
 /** The entire steering framework assumes that the direction a character is facing does not have to be its direction of motion. In
@@ -50,7 +49,7 @@ public class LookWhereYouAreGoing<T extends Vector<T>> extends ReachOrientation<
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Check for a zero direction, and return no steering if so
-		if (owner.getLinearVelocity().isZero(MathUtils.FLOAT_ROUNDING_ERROR)) return steering.setZero();
+		if (owner.getLinearVelocity().isZero(getActualLimiter().getZeroLinearSpeedThreshold())) return steering.setZero();
 
 		// Calculate the orientation based on the velocity of the owner
 		float orientation = owner.vectorToAngle(owner.getLinearVelocity());

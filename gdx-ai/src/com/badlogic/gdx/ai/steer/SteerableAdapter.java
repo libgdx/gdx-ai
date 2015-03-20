@@ -28,6 +28,15 @@ import com.badlogic.gdx.math.Vector;
 public class SteerableAdapter<T extends Vector<T>> implements Steerable<T> {
 
 	@Override
+	public float getZeroLinearSpeedThreshold () {
+		return 0.001f;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold (float value) {
+	}
+
+	@Override
 	public float getMaxLinearSpeed () {
 		return 0;
 	}

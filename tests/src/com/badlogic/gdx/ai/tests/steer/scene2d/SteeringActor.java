@@ -99,6 +99,10 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 		return angularVelocity;
 	}
 
+	public void setAngularVelocity (float angularVelocity) {
+		this.angularVelocity = angularVelocity;
+	}
+
 	@Override
 	public float getBoundingRadius () {
 		return boundingRadius;
@@ -169,6 +173,16 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 		this.maxAngularAcceleration = maxAngularAcceleration;
 	}
 
+	@Override
+	public float getZeroLinearSpeedThreshold () {
+		return 0.001f;
+	}
+
+	@Override
+	public void setZeroLinearSpeedThreshold (float value) {
+		throw new UnsupportedOperationException();
+	}
+
 	public boolean isIndependentFacing () {
 		return independentFacing;
 	}
@@ -233,7 +247,7 @@ public class SteeringActor extends Actor implements Steerable<Vector2> {
 			angularVelocity += steering.angular * time;
 		} else {
 			// If we haven't got any velocity, then we can do nothing.
-			if (!linearVelocity.isZero(MathUtils.FLOAT_ROUNDING_ERROR)) {
+			if (!linearVelocity.isZero(getZeroLinearSpeedThreshold())) {
 				float newOrientation = vectorToAngle(linearVelocity);
 				angularVelocity = (newOrientation - getRotation() * MathUtils.degreesToRadians) * time; // this is superfluous if independentFacing is always true
 				setRotation(newOrientation * MathUtils.radiansToDegrees);
