@@ -321,7 +321,9 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 			int n = path.getCount();
 			if (n > 0 && pfr.pathFound && pfr.endNode != path.get(n - 1)) {
 				pfr.startNode = path.get(n - 1);
-				pfr.pathIndex++;
+				if(pfr.pathIndex + 1 < paths.length) {
+					pfr.pathIndex++;
+				}
 				pfr.resultPath = paths[pfr.pathIndex];
 				pfr.changeStatus(PathFinderRequest.SEARCH_NEW);
 				numPaths = pfr.pathIndex;
