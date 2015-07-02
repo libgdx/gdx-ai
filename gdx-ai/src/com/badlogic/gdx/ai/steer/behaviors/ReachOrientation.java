@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ import com.badlogic.gdx.math.Vector;
  * Because we are dealing with a single scalar value, rather than a 2D or 3D vector, the radius acts as an interval.
  * <p>
  * Similarly to {@code Arrive}, there is a {@code timeToTarget} that defaults to 0.1 seconds.
- * 
+ *
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
- * 
+ *
  * @author davebaol */
 public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 
@@ -77,7 +77,7 @@ public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 	 * @return the calculated steering for chaining. */
 	protected SteeringAcceleration<T> reachOrientation (SteeringAcceleration<T> steering, float targetOrientation) {
 		// Get the rotation direction to the target wrapped to the range [-PI, PI]
-		float rotation = (targetOrientation - owner.getOrientation()) % MathUtils.PI2;
+	        float rotation = ((targetOrientation - owner.getOrientation()) % MathUtils.PI2 + MathUtils.PI2) % MathUtils.PI2;
 		if (rotation > MathUtils.PI) rotation -= MathUtils.PI2;
 
 		// Absolute rotation
