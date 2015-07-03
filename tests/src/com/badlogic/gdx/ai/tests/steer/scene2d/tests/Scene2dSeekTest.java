@@ -24,7 +24,8 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.Scene2dTargetInputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.utils.Align;
+
 
 /** A class to test and experiment with the {@link Seek} behavior.
  * 
