@@ -28,7 +28,6 @@ import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
-import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.steer.limiters.AngularLimiter;
 import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
@@ -45,7 +44,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
-/** A class to test and experiment with the {@link Seek} behavior.
+/** A class to test and experiment with formations.
  * 
  * @autor davebaol */
 public class Scene2dFormationTest extends Scene2dSteeringTest {
