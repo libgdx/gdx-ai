@@ -16,12 +16,29 @@
 
 package com.badlogic.gdx.ai.utils;
 
+import com.badlogic.gdx.math.MathUtils;
+
 /** Some useful math functions.
  * 
  * @author davebaol */
 public final class ArithmeticUtils {
 
 	private ArithmeticUtils () {
+	}
+
+	/** Wraps the given angle to the range [-PI, PI]
+	 * @param a the angle in radians
+	 * @return the given angle wrapped to the range [-PI, PI] */
+	public static float wrapAngleAroundZero (float a) {
+		if (a >= 0) {
+			float rotation = a % MathUtils.PI2;
+			if (rotation > MathUtils.PI) rotation -= MathUtils.PI2;
+			return rotation;
+		} else {
+			float rotation = -a % MathUtils.PI2;
+			if (rotation > MathUtils.PI) rotation -= MathUtils.PI2;
+			return -rotation;
+		}
 	}
 
 	/** Returns the greatest common divisor of two <em>positive</em> numbers (this precondition is <em>not</em> checked and the

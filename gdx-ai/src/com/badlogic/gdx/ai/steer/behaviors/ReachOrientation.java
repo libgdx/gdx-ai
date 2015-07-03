@@ -20,8 +20,8 @@ import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 
 /** {@code ReachOrientation} tries to align the owner to the target. It pays no attention to the position or velocity of the owner
@@ -77,8 +77,7 @@ public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 	 * @return the calculated steering for chaining. */
 	protected SteeringAcceleration<T> reachOrientation (SteeringAcceleration<T> steering, float targetOrientation) {
 		// Get the rotation direction to the target wrapped to the range [-PI, PI]
-		float rotation = (targetOrientation - owner.getOrientation()) % MathUtils.PI2;
-		if (rotation > MathUtils.PI) rotation -= MathUtils.PI2;
+		float rotation = ArithmeticUtils.wrapAngleAroundZero(targetOrientation - owner.getOrientation());
 
 		// Absolute rotation
 		float rotationSize = rotation < 0f ? -rotation : rotation;
