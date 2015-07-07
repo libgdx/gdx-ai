@@ -80,7 +80,7 @@ public class PathFinderTests extends GdxAiTest {
 
 		// Enable color markup
 		BitmapFont font = skin.get("default-font", BitmapFont.class);
-		font.setMarkupEnabled(true);
+		font.getData().markupEnabled = true;
 
 		stage = new Stage();
 		stage.setDebugAll(DEBUG_STAGE);
