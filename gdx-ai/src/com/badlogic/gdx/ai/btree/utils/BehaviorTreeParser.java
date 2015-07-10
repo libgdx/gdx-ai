@@ -20,8 +20,9 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
-import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.ai.btree.decorator.Invert;
 import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
+import com.badlogic.gdx.ai.utils.AnnotationUtils;
 import com.badlogic.gdx.ai.utils.random.Distribution;
 import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
 import com.badlogic.gdx.ai.utils.random.FloatDistribution;
@@ -41,7 +43,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Entries;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.SerializationException;
+import com.badlogic.gdx.utils.reflect.Annotation;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -158,6 +164,7 @@ public class BehaviorTreeParser<E> {
 
 		Task<E> root;
 		Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
+		ObjectSet<String> encounteredAttributes = new ObjectSet<String>();
 		int tagType;
 		boolean isTask;
 		int currentDepth;
@@ -180,6 +187,7 @@ public class BehaviorTreeParser<E> {
 			currentDepth = -1;
 			step = 1;
 			stack.clear();
+			encounteredAttributes.clear();
 			super.parse(data, offset, length);
 
 			// Pop all task from the stack and check their minimum number of children
@@ -225,7 +233,9 @@ public class BehaviorTreeParser<E> {
 		}
 
 		private boolean attributeTask (String name, Object value) {
-			if (!prevTask.metadata.hasAttribute(name)) return false;
+			if (!prevTask.metadata.attributes.containsKey(name)) return false;
+			boolean isNew = encounteredAttributes.add(name);
+			if (!isNew) throw new GdxRuntimeException(prevTask.name + ": attribute '" + name + "' specified more than once");
 			Field attributeField = getField(prevTask.task.getClass(), name);
 			setField(attributeField, prevTask.task, value);
 			return true;
@@ -266,7 +276,7 @@ public class BehaviorTreeParser<E> {
 					ret = numberValue.shortValue();
 				else if (type == byte.class || type == Byte.class)
 					ret = numberValue.byteValue();
-				else if (Distribution.class.isAssignableFrom(type)) {
+				else if (ClassReflection.isAssignableFrom(Distribution.class, type)) {
 					ret = parseDistribution("constant," + numberValue, type);
 				}
 			} else if (value instanceof Boolean) {
@@ -278,8 +288,7 @@ public class BehaviorTreeParser<E> {
 				else if (type == char.class || type == Character.class) {
 					if (stringValue.length() != 1) throw new GdxRuntimeException("Invalid character '" + value + "'");
 					ret = Character.valueOf(stringValue.charAt(0));
-				}
-				else if (Distribution.class.isAssignableFrom(type)) {
+				} else if (ClassReflection.isAssignableFrom(Distribution.class, type)) {
 					ret = parseDistribution(stringValue, type);
 				}
 			}
@@ -287,21 +296,20 @@ public class BehaviorTreeParser<E> {
 			return ret;
 		}
 
-		private Object parseDistribution(String stringValue, Class<?> type) {
+		private Object parseDistribution (String stringValue, Class<?> type) {
 			Object ret;
-			if (IntegerDistribution.class.isAssignableFrom(type))
+			if (ClassReflection.isAssignableFrom(IntegerDistribution.class, type))
 				ret = IntegerDistribution.parse(stringValue);
-			else if (FloatDistribution.class.isAssignableFrom(type))
+			else if (ClassReflection.isAssignableFrom(FloatDistribution.class, type))
 				ret = FloatDistribution.parse(stringValue);
-			else if (LongDistribution.class.isAssignableFrom(type))
+			else if (ClassReflection.isAssignableFrom(LongDistribution.class, type))
 				ret = LongDistribution.parse(stringValue);
-			else if (DoubleDistribution.class.isAssignableFrom(type))
+			else if (ClassReflection.isAssignableFrom(DoubleDistribution.class, type))
 				ret = DoubleDistribution.parse(stringValue);
 			else
 				ret = null;
 			return ret;
 		}
-		
 
 		private boolean attributeTag (String name, Object value) {
 			if (tagType == TAG_IMPORT) {
@@ -321,6 +329,10 @@ public class BehaviorTreeParser<E> {
 		protected void endStatement () {
 			if (isTask) {
 				isTask = (stack.size != 0);
+				if (isTask) {
+					checkRequiredAttributes(prevTask);
+					encounteredAttributes.clear();
+				}
 			} else {
 // if (tagType == TAG_IMPORT) {
 // addImport(importTask, importAs);
@@ -392,7 +404,7 @@ public class BehaviorTreeParser<E> {
 
 					// Check the max number of children of the parent
 					StackedTask<E> stackedParent = stack.peek();
-					int maxChildren = stackedParent.metadata.getMaxChildren();
+					int maxChildren = stackedParent.metadata.maxChildren;
 					if (stackedParent.task.getChildCount() >= maxChildren)
 						throw new GdxRuntimeException(stackedParent.name + ": max number of children exceeded ("
 							+ (stackedParent.task.getChildCount() + 1) + " > " + maxChildren + ")");
@@ -400,7 +412,7 @@ public class BehaviorTreeParser<E> {
 					// Add child task to the parent
 					stackedParent.task.addChild(task);
 				}
-				prevTask = new StackedTask<E>(name, task);
+				prevTask = createStackedTask(name, task);
 				currentDepth = indent;
 			} catch (ReflectionException e) {
 				throw new GdxRuntimeException("Cannot parse behavior tree!!!", e);
@@ -420,10 +432,50 @@ public class BehaviorTreeParser<E> {
 
 		private void checkMinChildren (StackedTask<E> stackedTask) {
 			// Check the minimum number of children
-			int minChildren = stackedTask.metadata.getMinChildren();
+			int minChildren = stackedTask.metadata.minChildren;
 			if (stackedTask.task.getChildCount() < minChildren)
 				throw new GdxRuntimeException(stackedTask.name + ": not enough children (" + stackedTask.task.getChildCount() + " < "
 					+ minChildren + ")");
+		}
+
+		private void checkRequiredAttributes (StackedTask<E> stackedTask) {
+			// Check the minimum number of children
+			Entries<String, TaskAttribute> entries = stackedTask.metadata.attributes.iterator();
+			while (entries.hasNext()) {
+				Entry<String, TaskAttribute> entry = entries.next();
+				if (entry.value.required() && !encounteredAttributes.contains(entry.key))
+					throw new GdxRuntimeException(stackedTask.name + ": missing required attribute '" + entry.key + "'");
+			}
+		}
+
+		private StackedTask<E> createStackedTask (String name, Task<E> task) {
+			return new StackedTask<E>(name, task, findMetadata(task.getClass()));
+		}
+
+		private ObjectMap<Class<?>, Metadata> metadataCache = new ObjectMap<Class<?>, Metadata>();
+
+		private static final Metadata EMPTY_METADATA = new Metadata();
+
+		private Metadata findMetadata (Class<?> clazz) {
+			Metadata metadata = metadataCache.get(clazz);
+			if (metadata == null) {
+				TaskConstraint taskConstraint = AnnotationUtils.findAnnotation(clazz, TaskConstraint.class);
+				if (taskConstraint != null) {
+					ObjectMap<String, TaskAttribute> taskAttributes = new ObjectMap<String, TaskAttribute>();
+					Field[] fields = ClassReflection.getFields(clazz);
+					for (Field f : fields) {
+						Annotation a = f.getDeclaredAnnotation(TaskAttribute.class);
+						if (a != null) {
+							taskAttributes.put(f.getName(), a.getAnnotation(TaskAttribute.class));
+						}
+					}
+					metadata = new Metadata(taskConstraint.minChildren(), taskConstraint.maxChildren(), taskAttributes);
+				} else {
+					metadata = EMPTY_METADATA;
+				}
+				metadataCache.put(clazz, metadata);
+			}
+			return metadata;
 		}
 
 		private static class StackedTask<E> {
@@ -431,10 +483,32 @@ public class BehaviorTreeParser<E> {
 			Task<E> task;
 			Metadata metadata;
 
-			StackedTask (String name, Task<E> task) {
+			StackedTask (String name, Task<E> task, Metadata metadata) {
 				this.name = name;
 				this.task = task;
-				this.metadata = task.getMetadata();
+				this.metadata = metadata;
+			}
+		}
+
+		private static class Metadata {
+			int minChildren;
+			int maxChildren;
+			ObjectMap<String, TaskAttribute> attributes;
+
+			/** Creates a {@code Metadata} with no attributes and unlimited children. */
+			public Metadata () {
+				this(0, Integer.MAX_VALUE, new ObjectMap<String, TaskAttribute>());
+			}
+
+			/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
+			 * attributes.
+			 * @param minChildren the minimum number of children (defaults to 0 if negative)
+			 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
+			 * @param attributes the attributes */
+			public Metadata (int minChildren, int maxChildren, ObjectMap<String, TaskAttribute> attributes) {
+				this.minChildren = minChildren < 0 ? 0 : minChildren;
+				this.maxChildren = maxChildren < 0 ? Integer.MAX_VALUE : maxChildren;
+				this.attributes = attributes;
 			}
 		}
 	}

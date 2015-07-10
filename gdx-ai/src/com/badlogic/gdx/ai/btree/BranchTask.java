@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,11 +27,10 @@ import com.badlogic.gdx.utils.Array;
  * 
  * @author implicit-invocation
  * @author davebaol */
+@TaskConstraint(minChildren=1)
 public abstract class BranchTask<E> extends Task<E> {
 
-	/** The task metadata specifying static information used by parsers and tools. */
-	public static final Metadata METADATA = new Metadata(1, -1, "deterministic");
-
+	@TaskAttribute
 	public boolean deterministic = true;
 
 	protected int actualTask;

@@ -16,16 +16,15 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 
 /** @author implicit-invocation
  * @author davebaol */
 public class CareTask extends LeafTask<Dog> {
 
-	public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "urgentProb");
-
+	@TaskAttribute(required=true)
 	public float urgentProb = 0.8f;
 
 	@Override

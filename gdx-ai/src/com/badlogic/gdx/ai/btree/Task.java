@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -26,10 +27,8 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * 
  * @author implicit-invocation
  * @author davebaol */
+@TaskConstraint
 public abstract class Task<E> {
-
-	/** The task metadata specifying static information used by parsers and tools. */
-	public static final Metadata METADATA = new Metadata();
 
 	protected Task<E> control;
 	protected Task<E> runningTask;
@@ -129,11 +128,6 @@ public abstract class Task<E> {
 	 * @param reporter the task that reports, usually one of this task's children */
 	public void childRunning (Task<E> runningTask, Task<E> reporter) {
 		this.runningTask = runningTask;
-	}
-
-	/** Returns the metadata of this task. */
-	public Metadata getMetadata () {
-		return Metadata.findMetadata(this.getClass());
 	}
 
 	/** Clones this task to a new one.

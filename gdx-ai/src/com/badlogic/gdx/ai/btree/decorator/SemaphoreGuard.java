@@ -17,8 +17,8 @@
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphore;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
 
@@ -38,9 +38,7 @@ import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
  * @author davebaol */
 public class SemaphoreGuard<E> extends Decorator<E> {
 
-	/** The task metadata specifying static information used by parsers and tools. */
-	public static final Metadata METADATA = new Metadata(1, "name");
-
+	@TaskAttribute(required=true)
 	public String name;
 
 	protected NonBlockingSemaphore semaphore;

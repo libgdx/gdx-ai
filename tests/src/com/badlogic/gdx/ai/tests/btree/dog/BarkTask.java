@@ -17,8 +17,8 @@
 package com.badlogic.gdx.ai.tests.btree.dog;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
-import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.utils.random.ConstantIntegerDistribution;
 import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
 
@@ -26,8 +26,7 @@ import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
  * @author davebaol */
 public class BarkTask extends LeafTask<Dog> {
 
-	public static final Metadata METADATA = new Metadata(LeafTask.METADATA, "times");
-
+	@TaskAttribute
 	public IntegerDistribution times = ConstantIntegerDistribution.ONE;
 
 	private int t;

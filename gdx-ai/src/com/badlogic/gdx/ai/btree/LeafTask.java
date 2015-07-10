@@ -16,12 +16,15 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
+
 /** A {@code LeafTask} is a terminal task of a behavior tree, contains action or condition logic, can not have any child.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation
  * @author davebaol */
+@TaskConstraint(minChildren=0, maxChildren=0)
 public abstract class LeafTask<E> extends Task<E> {
 
 	@Override

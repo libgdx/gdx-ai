@@ -17,9 +17,10 @@
 package com.badlogic.gdx.ai.btree.decorator;
 
 import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.Metadata;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloneException;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 
 /** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link #lazy} parameter:
@@ -29,15 +30,15 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
  * 
  * @author davebaol
  * @author implicit-invocation */
+@TaskConstraint(minChildren=0, maxChildren=0)
 public class Include<E> extends Decorator<E> {
 
-	/** The task metadata specifying static information used by parsers and tools. */
-	public static final Metadata METADATA = new Metadata("subtree", "lazy");
-
 	/** The path of the subtree we're referencing to. */
+	@TaskAttribute(required=true)
 	public String subtree;
 
 	/** Whether the subtree should be included at clone-time ({@code false}, the default) or at run-time ({@code true}). */
+	@TaskAttribute
 	public boolean lazy;
 
 	/** Creates a non-lazy {@code Include} decorator without specifying the subtree. */

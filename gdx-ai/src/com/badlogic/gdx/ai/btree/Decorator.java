@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
+
 /** A {@code Decorator} is a wrapper that provides custom behavior for its child. The child can be of any kind (branch task, leaf
  * task, or another decorator).
  * 
@@ -23,10 +25,8 @@ package com.badlogic.gdx.ai.btree;
  * 
  * @author implicit-invocation
  * @author davebaol */
+@TaskConstraint(minChildren=1, maxChildren=1)
 public abstract class Decorator<E> extends Task<E> {
-
-	/** The task metadata specifying static information used by parsers and tools. */
-	public static final Metadata METADATA = new Metadata(1);
 
 	protected Task<E> child;
 
