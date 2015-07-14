@@ -33,7 +33,6 @@ import com.badlogic.gdx.ai.btree.decorator.Invert;
 import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
-import com.badlogic.gdx.ai.utils.AnnotationUtils;
 import com.badlogic.gdx.ai.utils.random.Distribution;
 import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
 import com.badlogic.gdx.ai.utils.random.FloatDistribution;
@@ -161,6 +160,8 @@ public class BehaviorTreeParser<E> {
 		BehaviorTreeParser<E> btParser;
 
 		ObjectMap<String, String> userImports = new ObjectMap<String, String>();
+
+		ObjectMap<Class<?>, Metadata> metadataCache = new ObjectMap<Class<?>, Metadata>();
 
 		Task<E> root;
 		Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
@@ -449,18 +450,19 @@ public class BehaviorTreeParser<E> {
 		}
 
 		private StackedTask<E> createStackedTask (String name, Task<E> task) {
-			return new StackedTask<E>(name, task, findMetadata(task.getClass()));
+			Metadata metadata = findMetadata(task.getClass());
+			if (metadata == null)
+				throw new GdxRuntimeException(name + ": @TaskConstraint annotation not found in '" + task.getClass().getSimpleName()
+					+ "' class hierarchy");
+			return new StackedTask<E>(name, task, metadata);
 		}
-
-		private ObjectMap<Class<?>, Metadata> metadataCache = new ObjectMap<Class<?>, Metadata>();
-
-		private static final Metadata EMPTY_METADATA = new Metadata();
 
 		private Metadata findMetadata (Class<?> clazz) {
 			Metadata metadata = metadataCache.get(clazz);
 			if (metadata == null) {
-				TaskConstraint taskConstraint = AnnotationUtils.findAnnotation(clazz, TaskConstraint.class);
-				if (taskConstraint != null) {
+				Annotation tca = ClassReflection.getAnnotation(clazz, TaskConstraint.class);
+				if (tca != null) {
+					TaskConstraint taskConstraint = tca.getAnnotation(TaskConstraint.class);
 					ObjectMap<String, TaskAttribute> taskAttributes = new ObjectMap<String, TaskAttribute>();
 					Field[] fields = ClassReflection.getFields(clazz);
 					for (Field f : fields) {
@@ -470,10 +472,8 @@ public class BehaviorTreeParser<E> {
 						}
 					}
 					metadata = new Metadata(taskConstraint.minChildren(), taskConstraint.maxChildren(), taskAttributes);
-				} else {
-					metadata = EMPTY_METADATA;
+					metadataCache.put(clazz, metadata);
 				}
-				metadataCache.put(clazz, metadata);
 			}
 			return metadata;
 		}
@@ -495,17 +495,12 @@ public class BehaviorTreeParser<E> {
 			int maxChildren;
 			ObjectMap<String, TaskAttribute> attributes;
 
-			/** Creates a {@code Metadata} with no attributes and unlimited children. */
-			public Metadata () {
-				this(0, Integer.MAX_VALUE, new ObjectMap<String, TaskAttribute>());
-			}
-
 			/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
 			 * attributes.
 			 * @param minChildren the minimum number of children (defaults to 0 if negative)
 			 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
 			 * @param attributes the attributes */
-			public Metadata (int minChildren, int maxChildren, ObjectMap<String, TaskAttribute> attributes) {
+			Metadata (int minChildren, int maxChildren, ObjectMap<String, TaskAttribute> attributes) {
 				this.minChildren = minChildren < 0 ? 0 : minChildren;
 				this.maxChildren = maxChildren < 0 ? Integer.MAX_VALUE : maxChildren;
 				this.attributes = attributes;
