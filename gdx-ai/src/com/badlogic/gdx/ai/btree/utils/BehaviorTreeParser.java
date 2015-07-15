@@ -234,10 +234,11 @@ public class BehaviorTreeParser<E> {
 		}
 
 		private boolean attributeTask (String name, Object value) {
-			if (!prevTask.metadata.attributes.containsKey(name)) return false;
+			AttrInfo ai = prevTask.metadata.attributes.get(name);
+			if (ai == null) return false;
 			boolean isNew = encounteredAttributes.add(name);
 			if (!isNew) throw new GdxRuntimeException(prevTask.name + ": attribute '" + name + "' specified more than once");
-			Field attributeField = getField(prevTask.task.getClass(), name);
+			Field attributeField = getField(prevTask.task.getClass(), ai.fieldName);
 			setField(attributeField, prevTask.task, value);
 			return true;
 		}
@@ -441,10 +442,10 @@ public class BehaviorTreeParser<E> {
 
 		private void checkRequiredAttributes (StackedTask<E> stackedTask) {
 			// Check the minimum number of children
-			Entries<String, TaskAttribute> entries = stackedTask.metadata.attributes.iterator();
+			Entries<String, AttrInfo> entries = stackedTask.metadata.attributes.iterator();
 			while (entries.hasNext()) {
-				Entry<String, TaskAttribute> entry = entries.next();
-				if (entry.value.required() && !encounteredAttributes.contains(entry.key))
+				Entry<String, AttrInfo> entry = entries.next();
+				if (entry.value.required && !encounteredAttributes.contains(entry.key))
 					throw new GdxRuntimeException(stackedTask.name + ": missing required attribute '" + entry.key + "'");
 			}
 		}
@@ -463,12 +464,13 @@ public class BehaviorTreeParser<E> {
 				Annotation tca = ClassReflection.getAnnotation(clazz, TaskConstraint.class);
 				if (tca != null) {
 					TaskConstraint taskConstraint = tca.getAnnotation(TaskConstraint.class);
-					ObjectMap<String, TaskAttribute> taskAttributes = new ObjectMap<String, TaskAttribute>();
+					ObjectMap<String, AttrInfo> taskAttributes = new ObjectMap<String, AttrInfo>();
 					Field[] fields = ClassReflection.getFields(clazz);
 					for (Field f : fields) {
 						Annotation a = f.getDeclaredAnnotation(TaskAttribute.class);
 						if (a != null) {
-							taskAttributes.put(f.getName(), a.getAnnotation(TaskAttribute.class));
+							AttrInfo ai = new AttrInfo(f.getName(), a.getAnnotation(TaskAttribute.class));
+							taskAttributes.put(ai.name, ai);
 						}
 					}
 					metadata = new Metadata(taskConstraint.minChildren(), taskConstraint.maxChildren(), taskAttributes);
@@ -493,17 +495,33 @@ public class BehaviorTreeParser<E> {
 		private static class Metadata {
 			int minChildren;
 			int maxChildren;
-			ObjectMap<String, TaskAttribute> attributes;
+			ObjectMap<String, AttrInfo> attributes;
 
 			/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
 			 * attributes.
 			 * @param minChildren the minimum number of children (defaults to 0 if negative)
 			 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
 			 * @param attributes the attributes */
-			Metadata (int minChildren, int maxChildren, ObjectMap<String, TaskAttribute> attributes) {
+			Metadata (int minChildren, int maxChildren, ObjectMap<String, AttrInfo> attributes) {
 				this.minChildren = minChildren < 0 ? 0 : minChildren;
 				this.maxChildren = maxChildren < 0 ? Integer.MAX_VALUE : maxChildren;
 				this.attributes = attributes;
+			}
+		}
+
+		private static class AttrInfo {
+			String name;
+			String fieldName;
+			boolean required;
+
+			AttrInfo (String fieldName, TaskAttribute annotation) {
+				this(annotation.name(), fieldName , annotation.required());
+			}
+
+			AttrInfo (String name, String fieldName, boolean required) {
+				this.name = name == null || name.length() == 0 ? fieldName : name;
+				this.fieldName = fieldName;
+				this.required = required;
 			}
 		}
 	}

@@ -28,6 +28,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface TaskAttribute {
 
+	/** Specifies the attribute's name; if empty the name of the field is used instead.
+	 * @return the attribute's name or an empty string if the name of the field must be used. */
+	public String name() default "";
+
 	/** Specifies whether the attribute is required or not.
 	 * @return {@code true} if the attribute is required; {@code false} if it is optional. */
 	public boolean required() default false;
