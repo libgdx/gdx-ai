@@ -140,7 +140,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		// Create character
 		character = createSteeringEntity(world, container.badlogicSmall, true);
 		character.setMaxLinearSpeed(4);
-		character.setMaxLinearAcceleration(200);
+		character.setMaxLinearAcceleration(40);
 		// Remove all stuff that causes jump failure
 		// Notice that you might remove this on takeoff and restore on landing
 //		character.body.setSleepingThresholds(0, 0);
@@ -196,7 +196,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 			.setMaxVerticalVelocity(5) //
 			.setTakeoffPositionTolerance(.3f) //
 			.setTakeoffVelocityTolerance(.7f) //
-			.setTimeToTarget(.01f);
+			.setTimeToTarget(.1f);
 
 		// Setup the limiter for the run up
 		jumpSB.setLimiter(new LinearLimiter(Float.POSITIVE_INFINITY, character.getMaxLinearSpeed() * 3));

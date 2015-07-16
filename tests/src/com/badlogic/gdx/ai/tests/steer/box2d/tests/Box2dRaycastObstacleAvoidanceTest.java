@@ -92,7 +92,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 
 		character = createSteeringEntity(world, container.greenFish);
 		character.setMaxLinearSpeed(2);
-		character.setMaxLinearAcceleration(100);
+		character.setMaxLinearAcceleration(1);
 
 		@SuppressWarnings("unchecked")
 		RayConfigurationBase<Vector2>[] localRayConfigurations = new RayConfigurationBase[] {
@@ -105,17 +105,17 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
 		raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(character, rayConfigurations[rayConfigurationIndex],
-			raycastCollisionDetector, Box2dSteeringTest.pixelsToMeters(50));
+			raycastCollisionDetector, Box2dSteeringTest.pixelsToMeters(1000));
 
 		Wander<Vector2> wanderSB = new Wander<Vector2>(character) //
 			// Don't use Face internally because independent facing is off
 			.setFaceEnabled(false) //
 			// We don't need a limiter supporting angular components because Face is not used
 			// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-			.setLimiter(new LinearAccelerationLimiter(10)) //
-			.setWanderOffset(60) //
-			.setWanderOrientation(10) //
-			.setWanderRadius(40) //
+			.setLimiter(new LinearAccelerationLimiter(4)) //
+			.setWanderOffset(3) //
+			.setWanderOrientation(5) //
+			.setWanderRadius(1) //
 			.setWanderRate(MathUtils.PI / 5);
 
 		PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(character, 0.0001f) //
@@ -129,14 +129,14 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 2000, 1);
+		addMaxLinearAccelerationController(detailTable, character, 0, 30, .5f);
 
 		detailTable.row();
 		final Label labelDistFromBoundary = new Label("Distance from Boundary ["
 			+ raycastObstacleAvoidanceSB.getDistanceFromBoundary() + "]", container.skin);
 		detailTable.add(labelDistFromBoundary);
 		detailTable.row();
-		Slider distFromBoundary = new Slider(0, 5, .1f, false, container.skin);
+		Slider distFromBoundary = new Slider(0, 60, 1f, false, container.skin);
 		distFromBoundary.setValue(raycastObstacleAvoidanceSB.getDistanceFromBoundary());
 		distFromBoundary.addListener(new ChangeListener() {
 			@Override

@@ -64,8 +64,8 @@ public class Box2dArriveTest extends Box2dSteeringTest {
 		inputProcessor = new Box2dTargetInputProcessor(target);
 
 		final Arrive<Vector2> arriveSB = new Arrive<Vector2>(character, target) //
-			.setTimeToTarget(0.01f) //
-			.setArrivalTolerance(0.0002f) //
+			.setTimeToTarget(0.1f) //
+			.setArrivalTolerance(0.001f) //
 			.setDecelerationRadius(3);
 		character.setSteeringBehavior(arriveSB);
 
@@ -98,7 +98,7 @@ public class Box2dArriveTest extends Box2dSteeringTest {
 		final Label labelArrivalTolerance = new Label("Arrival tolerance [" + arriveSB.getArrivalTolerance() + "]", container.skin);
 		detailTable.add(labelArrivalTolerance);
 		detailTable.row();
-		Slider arrivalTolerance = new Slider(0, .1f, 0.00001f, false, container.skin);
+		Slider arrivalTolerance = new Slider(0, .2f, 0.0001f, false, container.skin);
 		arrivalTolerance.setValue(arriveSB.getArrivalTolerance());
 		arrivalTolerance.addListener(new ChangeListener() {
 			@Override

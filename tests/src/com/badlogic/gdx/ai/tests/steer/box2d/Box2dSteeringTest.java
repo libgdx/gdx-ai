@@ -65,7 +65,7 @@ public abstract class Box2dSteeringTest extends SteeringTestBase {
 	}
 
 	protected void addMaxLinearSpeedController (Table table, Limiter limiter) {
-		addMaxLinearSpeedController(table, limiter, 0, 500, 10);
+		addMaxLinearSpeedController(table, limiter, 0, 50, 1);
 	}
 
 	protected void addMaxAngularAccelerationController (Table table, Limiter limiter) {

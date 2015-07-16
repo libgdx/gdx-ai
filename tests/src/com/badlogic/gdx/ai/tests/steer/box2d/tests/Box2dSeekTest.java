@@ -52,8 +52,8 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 
 		// Create character
 		character = createSteeringEntity(world, container.greenFish);
-		character.setMaxLinearSpeed(4);
-		character.setMaxLinearAcceleration(200);
+		character.setMaxLinearSpeed(5);
+		character.setMaxLinearAcceleration(10);
 
 		// Create target
 		target = createSteeringEntity(world, container.target);
@@ -67,13 +67,13 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 1000, 1);
+		addMaxLinearAccelerationController(detailTable, character, 0, 200, 1);
 
 		detailTable.row();
 		addSeparator(detailTable);
 
 		detailTable.row();
-		addMaxLinearSpeedController(detailTable, character, 0, 30, 1);
+		addMaxLinearSpeedController(detailTable, character, 0, 30, .5f);
 
 		detailWindow = createDetailWindow(detailTable);
 	}

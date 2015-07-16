@@ -76,8 +76,8 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 
 		for (int i = 0; i < 60; i++) {
 			final Box2dSteeringEntity character = createSteeringEntity(world, container.greenFish, false);
-			character.setMaxLinearSpeed(1.5f);
-			character.setMaxLinearAcceleration(40);
+			character.setMaxLinearSpeed(2);
+			character.setMaxLinearAcceleration(4);
 
 			Box2dRadiusProximity proximity = new Box2dRadiusProximity(character, world,
 				character.getBoundingRadius() * 4);
@@ -90,10 +90,10 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 				.setFaceEnabled(false) //
 				// We don't need a limiter supporting angular components because Face is not used
 				// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-				.setLimiter(new LinearAccelerationLimiter(30)) //
-				.setWanderOffset(60) //
-				.setWanderOrientation(10) //
-				.setWanderRadius(40) //
+				.setLimiter(new LinearAccelerationLimiter(5)) //
+				.setWanderOffset(3) //
+				.setWanderOrientation(5) //
+				.setWanderRadius(1) //
 				.setWanderRate(MathUtils.PI / 5);
 
 			PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(character, 0.0001f);
@@ -116,7 +116,7 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 			container.skin);
 		detailTable.add(labelMaxLinAcc);
 		detailTable.row();
-		Slider maxLinAcc = new Slider(0, 300, 1, false, container.skin);
+		Slider maxLinAcc = new Slider(0, 30, .1f, false, container.skin);
 		maxLinAcc.setValue(characters.get(0).getMaxLinearAcceleration());
 		maxLinAcc.addListener(new ChangeListener() {
 			@Override

@@ -61,9 +61,9 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 		// Create character
 		character = createSteeringEntity(world, container.greenFish, true);
 		character.setMaxLinearSpeed(5);
-		character.setMaxLinearAcceleration(500);
-		character.setMaxAngularAcceleration(40);
-		character.setMaxAngularSpeed(15);
+		character.setMaxLinearAcceleration(100);
+		character.setMaxAngularAcceleration(2);
+		character.setMaxAngularSpeed(7);
 
 		// Create target
 		target = createSteeringEntity(world, container.target);
@@ -73,11 +73,11 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 		final LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(character) //
 			.setTimeToTarget(0.1f) //
 			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.PI);
+			.setDecelerationRadius(MathUtils.PI / 3);
 
 		final Arrive<Vector2> arriveSB = new Arrive<Vector2>(character, target) //
-			.setTimeToTarget(0.01f) //
-			.setArrivalTolerance(0.0002f) //
+			.setTimeToTarget(0.1f) //
+			.setArrivalTolerance(0.001f) //
 			.setDecelerationRadius(3);
 
 		BlendedSteering<Vector2> blendedSteering = new BlendedSteering<Vector2>(character) //
@@ -89,7 +89,7 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxAngularAccelerationController(detailTable, character, 0, 50, 1);
+		addMaxAngularAccelerationController(detailTable, character, 0, 10, .1f);
 
 		detailTable.row();
 		addMaxAngularSpeedController(detailTable, character, 0, 20, 1);

@@ -56,8 +56,8 @@ public class Box2dFaceTest extends Box2dSteeringTest {
 
 		// Create character
 		character = createSteeringEntity(world, container.greenFish, true);
-		character.setMaxAngularAcceleration(100);
-		character.setMaxAngularSpeed(15);
+		character.setMaxAngularAcceleration(1);
+		character.setMaxAngularSpeed(7);
 
 		// Create target
 		target = createSteeringEntity(world, container.target);
@@ -65,18 +65,18 @@ public class Box2dFaceTest extends Box2dSteeringTest {
 		inputProcessor = new Box2dTargetInputProcessor(target);
 
 		final Face<Vector2> faceSB = new Face<Vector2>(character, target) //
-			.setTimeToTarget(0.1f) //
-			.setAlignTolerance(0.001f) //
-			.setDecelerationRadius(MathUtils.degreesToRadians * 180);
+			.setTimeToTarget(0.01f) //
+			.setAlignTolerance(0.0001f) //
+			.setDecelerationRadius(MathUtils.degreesToRadians * 120);
 		character.setSteeringBehavior(faceSB);
 
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxAngularAccelerationController(detailTable, character, 0, 100, 1);
+		addMaxAngularAccelerationController(detailTable, character, 0, 10, .1f);
 
 		detailTable.row();
-		addMaxAngularSpeedController(detailTable, character, 0, 30, 1);
+		addMaxAngularSpeedController(detailTable, character, 0, 20, .5f);
 
 		detailTable.row();
 		final Label labelDecelerationRadius = new Label("Deceleration Radius [" + faceSB.getDecelerationRadius() + "]",
