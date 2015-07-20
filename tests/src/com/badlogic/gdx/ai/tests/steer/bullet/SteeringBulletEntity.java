@@ -100,14 +100,16 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 
 		// Update position and linear velocity
 		if (!steeringOutput.linear.isZero()) {
-			body.applyCentralForce(steeringOutput.linear.scl(deltaTime));
+			// this method internally scales the force by deltaTime
+			body.applyCentralForce(steeringOutput.linear);
 			anyAccelerations = true;
 		}
 
 		// Update orientation and angular velocity
 		if (isIndependentFacing()) {
 			if (steeringOutput.angular != 0) {
-				body.applyTorque(tmpVector3.set(0, steeringOutput.angular * deltaTime, 0));
+				// this method internally scales the torque by deltaTime
+				body.applyTorque(tmpVector3.set(0, steeringOutput.angular, 0));
 				anyAccelerations = true;
 			}
 		}
@@ -189,7 +191,7 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 	@Override
 	public float getBoundingRadius () {
 		// TODO: this should be calculated via the actual btShape
-		return 1;
+		return .5f;
 	}
 
 	@Override

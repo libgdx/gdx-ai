@@ -124,7 +124,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 				}
 			}
 		};
-		character.setMaxLinearAcceleration(8500);
+		character.setMaxLinearAcceleration(100);
 		character.setMaxLinearSpeed(5);
 
 		// Remove all stuff that causes jump failure
@@ -211,7 +211,7 @@ public class BulletJumpTest extends BulletSteeringTest {
 			.setMaxVerticalVelocity(9) //
 			.setTakeoffPositionTolerance(.3f) //
 			.setTakeoffVelocityTolerance(2f) //
-			.setTimeToTarget(.01f);
+			.setTimeToTarget(.1f);
 
 		// Setup the limiter for the run up
 		jumpSB.setLimiter(new LinearLimiter(Float.POSITIVE_INFINITY, character.getMaxLinearSpeed() * 3));

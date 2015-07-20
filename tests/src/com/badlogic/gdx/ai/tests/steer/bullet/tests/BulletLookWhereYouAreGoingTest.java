@@ -74,11 +74,11 @@ public class BulletLookWhereYouAreGoingTest extends BulletSteeringTest {
 
 		final LookWhereYouAreGoing<Vector3> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector3>(character) //
 			.setAlignTolerance(.005f) //
-			.setDecelerationRadius(MathUtils.PI2 * 3f / 4f) //
-			.setTimeToTarget(.02f);
+			.setDecelerationRadius(MathUtils.PI) //
+			.setTimeToTarget(.1f);
 
 		Arrive<Vector3> arriveSB = new Arrive<Vector3>(character, target) //
-			.setTimeToTarget(0.01f) //
+			.setTimeToTarget(0.1f) //
 			.setArrivalTolerance(0.0002f) //
 			.setDecelerationRadius(3);
 
@@ -136,7 +136,7 @@ public class BulletLookWhereYouAreGoingTest extends BulletSteeringTest {
 			container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
-		Slider timeToTarget = new Slider(0, 1, 0.01f, false, container.skin);
+		Slider timeToTarget = new Slider(0, 1, 0.1f, false, container.skin);
 		timeToTarget.setValue(lookWhereYouAreGoingSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override

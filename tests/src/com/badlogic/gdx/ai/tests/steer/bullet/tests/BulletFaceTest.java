@@ -56,7 +56,7 @@ public class BulletFaceTest extends BulletSteeringTest {
 		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
 		character = new SteeringBulletEntity(characterBase, true);
-		character.setMaxAngularAcceleration(50);
+		character.setMaxAngularAcceleration(20);
 		character.setMaxAngularSpeed(10);
 
 		BulletEntity targetBase = world.add("staticbox", new Matrix4().setToTranslation(new Vector3(5f, 1.5f, 5f)));
@@ -68,8 +68,8 @@ public class BulletFaceTest extends BulletSteeringTest {
 
 		final Face<Vector3> faceSB = new Face<Vector3>(character, target) //
 			.setAlignTolerance(.01f) //
-			.setDecelerationRadius(MathUtils.PI2 * 3f / 4f) //
-			.setTimeToTarget(.01f);
+			.setDecelerationRadius(MathUtils.PI) //
+			.setTimeToTarget(.18f);
 
 		character.setSteeringBehavior(faceSB);
 

@@ -27,6 +27,7 @@ import com.badlogic.gdx.ai.steer.utils.rays.RayConfigurationBase;
 import com.badlogic.gdx.ai.steer.utils.rays.SingleRayConfiguration;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringUtils;
 import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
 import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.ai.utils.Ray;
@@ -72,38 +73,21 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 		shapeRenderer = new ShapeRenderer();
 
-		world.add("ground", 0f, 0f, 0f).setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
-			0.25f + 0.5f * (float)Math.random(), 1f);
+		world.add("ground", 0f, 0f, 0f).setColor(MathUtils.random(0.25f, 0.75f), MathUtils.random(0.25f, 0.75f),
+			MathUtils.random(0.25f, 0.75f), 1f);
 
-		BulletEntity wall1 = world.add("staticwall", -10f, 0f, 0f);
-		wall1.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
-			0.25f + 0.5f * (float)Math.random(), 1f);
-		wall1.transform.rotate(Vector3.Y, 90);
-		wall1.body.setWorldTransform(wall1.transform);
-
-		BulletEntity wall2 = world.add("staticwall", 0f, 0f, -10f);
-		wall2.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
-			0.25f + 0.5f * (float)Math.random(), 1f);
-
-		BulletEntity wall3 = world.add("staticwall", 10f, 0f, 0f);
-		wall3.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
-			0.25f + 0.5f * (float)Math.random(), 1f);
-		wall3.transform.rotate(Vector3.Y, 90);
-		wall3.body.setWorldTransform(wall3.transform);
-
-		BulletEntity wall4 = world.add("staticwall", 0f, 0f, 10f);
-		wall4.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
-			0.25f + 0.5f * (float)Math.random(), 1f);
+		createWalls();
 
 		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
 		character = new SteeringBulletEntity(characterBase);
-		character.setMaxLinearAcceleration(1500);
-		character.setMaxLinearSpeed(250);
+		character.setMaxLinearAcceleration(70);
+		character.setMaxLinearSpeed(10);
 
-		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration<Vector3>(character, 3),
-			new ParallelSideRayConfiguration<Vector3>(character, 3, character.getBoundingRadius()),
-			new CentralRayWithWhiskersConfiguration<Vector3>(character, 3, 1.5f, 35 * MathUtils.degreesToRadians)};
+		float rayLength = 6;
+		rayConfigurations = new RayConfigurationBase[] {new SingleRayConfiguration<Vector3>(character, rayLength),
+			new ParallelSideRayConfiguration<Vector3>(character, rayLength, character.getBoundingRadius()),
+			new CentralRayWithWhiskersConfiguration<Vector3>(character, rayLength, rayLength / 2, 35 * MathUtils.degreesToRadians)};
 		rayConfigurationIndex = 0;
 		RaycastCollisionDetector<Vector3> raycastCollisionDetector = new BulletRaycastCollisionDetector(world.collisionWorld,
 			character.body);
@@ -115,13 +99,13 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 			.setFaceEnabled(false) //
 			// We don't need a limiter supporting angular components because Face is disabled
 			// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-			.setLimiter(new LinearAccelerationLimiter(1500)) //
-			.setWanderOffset(2) //
+			.setLimiter(new LinearAccelerationLimiter(7)) //
+			.setWanderOffset(8) //
 			.setWanderOrientation(0) //
-			.setWanderRadius(1) //
+			.setWanderRadius(3) //
 			.setWanderRate(MathUtils.PI / 5);
 
-		PrioritySteering<Vector3> prioritySteeringSB = new PrioritySteering<Vector3>(character, 0.0001f) //
+		PrioritySteering<Vector3> prioritySteeringSB = new PrioritySteering<Vector3>(character, 0.000001f) //
 			.add(raycastObstacleAvoidanceSB) //
 			.add(wanderSB);
 
@@ -130,7 +114,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		Table detailTable = new Table(container.skin);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 20000, 100);
+		addMaxLinearAccelerationController(detailTable, character, 0, 200, 1);
 
 		detailTable.row();
 		final Label labelDistFromBoundary = new Label("Distance from Boundary ["
@@ -217,4 +201,20 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		shapeRenderer.dispose();
 	}
 
+	private void createWalls () {
+		float side = 20; // Wall length
+		int sides = MathUtils.random(4, 12);
+		float angle = MathUtils.PI2 / sides;
+		float radius = side / (2 * MathUtils.sin(MathUtils.PI / sides));
+		float apothem = radius * MathUtils.cos(MathUtils.PI / sides);
+		Vector3 v = new Vector3();
+		for (int i = 0; i < sides; i++) {
+			float a = angle * i;
+			BulletSteeringUtils.angleToVector(v, a).scl(apothem);
+			BulletEntity wall = world.add("staticwall", v.x, 0, v.z);
+			wall.setColor(MathUtils.random(0.25f, 0.75f), MathUtils.random(0.25f, 0.75f), MathUtils.random(0.25f, 0.75f), 1f);
+			wall.transform.rotateRad(Vector3.Y, a + MathUtils.PI / 2);
+			wall.body.setWorldTransform(wall.transform);
+		}
+	}
 }

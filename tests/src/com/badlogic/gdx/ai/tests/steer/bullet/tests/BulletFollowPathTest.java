@@ -88,7 +88,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 				}
 			}
 		};
-		character.setMaxLinearAcceleration(2000);
+		character.setMaxLinearAcceleration(100);
 		character.setMaxLinearSpeed(15);
 
 		wayPoints = createRandomPath(MathUtils.random(4, 16), 20, 20, 30, 30, 1.5f);
@@ -127,7 +127,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 		addMaxLinearSpeedController(detailTable, character);
 
 		detailTable.row();
-		addMaxLinearAccelerationController(detailTable, character, 0, 20000, 100);
+		addMaxLinearAccelerationController(detailTable, character, 0, 200, 1);
 
 		detailTable.row();
 		final Label labelPredictionTime = new Label("Prediction Time [" + followPathSB.getPredictionTime() + " sec.]",
