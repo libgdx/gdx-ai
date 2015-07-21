@@ -115,7 +115,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 			.setWanderOffset(60) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(40) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setWanderRate(MathUtils.PI2 * 4);
 
 		// Sum up behaviors without truncating the result
 		BlendedSteering<Vector2> blendedSteeringSB = new BlendedSteering<Vector2>(character) //

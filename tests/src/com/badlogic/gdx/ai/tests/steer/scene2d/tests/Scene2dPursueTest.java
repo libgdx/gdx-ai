@@ -65,7 +65,7 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 			.setWanderOffset(110) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(64) //
-			.setWanderRate(MathUtils.PI / 6);
+			.setWanderRate(MathUtils.PI2 * 3.5f);
 		prey.setSteeringBehavior(wanderSB);
 
 		table.addActor(character);

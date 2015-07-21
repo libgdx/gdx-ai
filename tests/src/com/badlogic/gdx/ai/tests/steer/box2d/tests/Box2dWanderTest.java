@@ -80,7 +80,7 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 			.setWanderOffset(3) //
 			.setWanderOrientation(3) //
 			.setWanderRadius(1) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setWanderRate(MathUtils.PI2 * 4);
 		character.setSteeringBehavior(wanderSB);
 
 		Table detailTable = new Table(container.skin);
@@ -130,7 +130,7 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 		final Label labelWanderRate = new Label("Wander Rate [" + wanderSB.getWanderRate() + "]", container.skin);
 		detailTable.add(labelWanderRate);
 		detailTable.row();
-		Slider wanderRate = new Slider(0, MathUtils.PI2, MathUtils.degreesToRadians, false, container.skin);
+		Slider wanderRate = new Slider(0, MathUtils.PI2 * 10, MathUtils.degreesToRadians, false, container.skin);
 		wanderRate.setValue(wanderSB.getWanderRate());
 		wanderRate.addListener(new ChangeListener() {
 			@Override

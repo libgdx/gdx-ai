@@ -94,7 +94,7 @@ public class Box2dCollisionAvoidanceTest extends Box2dSteeringTest {
 				.setWanderOffset(3) //
 				.setWanderOrientation(5) //
 				.setWanderRadius(1) //
-				.setWanderRate(MathUtils.PI / 5);
+				.setWanderRate(MathUtils.PI2 * 4);
 
 			PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(character, 0.0001f);
 			prioritySteeringSB.add(collisionAvoidanceSB);

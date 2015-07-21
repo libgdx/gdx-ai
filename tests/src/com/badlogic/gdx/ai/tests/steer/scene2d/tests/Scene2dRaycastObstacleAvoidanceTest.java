@@ -111,7 +111,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 			.setWanderOffset(60) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(40) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setWanderRate(MathUtils.PI2 * 4);
 
 		PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(character, 0.0001f) //
 			.add(raycastObstacleAvoidanceSB) //

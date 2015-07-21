@@ -95,7 +95,7 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 			.setWanderOffset(70) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(40) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setWanderRate(MathUtils.PI2 * 4);
 		character.setSteeringBehavior(wanderSB);
 
 		table.addActor(character);

@@ -88,7 +88,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 			.setWanderOffset(110) //
 			.setWanderOrientation(MathUtils.random(MathUtils.PI2)) //
 			.setWanderRadius(64) //
-			.setWanderRate(MathUtils.PI / 6);
+			.setWanderRate(MathUtils.PI2 * 3.5f);
 		c1.setSteeringBehavior(wanderSB1);
 
 		Wander<Vector2> wanderSB2 = new Wander<Vector2>(c1) //
@@ -96,7 +96,8 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 			// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
 			.setWanderOffset(70) //
 			.setWanderOrientation(MathUtils.random(MathUtils.PI2)) //
-			.setWanderRadius(94).setWanderRate(MathUtils.PI / 4);
+			.setWanderRadius(94). //
+			setWanderRate(MathUtils.PI2 * 5);
 		c2.setSteeringBehavior(wanderSB2);
 
 		table.addActor(character);

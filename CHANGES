@@ -1,5 +1,6 @@
 [1.5.1]
 - Updated to libgdx 1.6.5-SNAPSHOT
+- Now the wander rate of the wander steering behavior is expressed in radian per second to make it frame independent.
 - API Change: now behavior trees support annotations to define attributes and constraints in task classes.
 - Fix: now the reach orientation behavior always chooses the shortest rotation angle.
 - API Addition: added Formation Motion API, see https://github.com/libgdx/gdx-ai/wiki/Formation-Motion

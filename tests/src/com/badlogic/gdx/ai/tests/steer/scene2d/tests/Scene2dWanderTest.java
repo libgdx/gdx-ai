@@ -68,7 +68,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 			.setWanderOffset(90) //
 			.setWanderOrientation(10) //
 			.setWanderRadius(40) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setWanderRate(MathUtils.PI2 * 4);
 		character.setSteeringBehavior(wanderSB);
 
 		table.addActor(character);
@@ -122,7 +122,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 		final Label labelWanderRate = new Label("Wander Rate [" + wanderSB.getWanderRate() + "]", container.skin);
 		detailTable.add(labelWanderRate);
 		detailTable.row();
-		Slider wanderRate = new Slider(0, MathUtils.PI2, MathUtils.degreesToRadians, false, container.skin);
+		Slider wanderRate = new Slider(0, MathUtils.PI2 * 10, MathUtils.degreesToRadians, false, container.skin);
 		wanderRate.setValue(wanderSB.getWanderRate());
 		wanderRate.addListener(new ChangeListener() {
 			@Override

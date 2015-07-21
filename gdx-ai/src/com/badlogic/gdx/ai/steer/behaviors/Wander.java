@@ -22,6 +22,7 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
+import com.badlogic.gdx.utils.TimeUtils;
 
 /** {@code Wander} behavior is designed to produce a steering acceleration that will give the impression of a random walk through
  * the agent's environment. You'll often find it a useful ingredient when creating an agent's behavior.
@@ -60,8 +61,11 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	/** The radius of the wander circle */
 	protected float wanderRadius;
 
-	/** The maximum rate at which the wander orientation can change */
+	/** The rate, expressed in radian per second, at which the wander orientation can change */
 	protected float wanderRate;
+	
+	/** The last time the orientation of the wander target has been updated */
+	protected long lastTime;
 
 	/** The current orientation of the wander target */
 	protected float wanderOrientation;
@@ -85,8 +89,10 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Update the wander orientation
-		// TODO it should be frame rate independent by interpreting wanderRate as a max distance per second.
-		wanderOrientation += MathUtils.randomTriangular(wanderRate);
+		long now = TimeUtils.nanoTime();
+		float delta = (now - lastTime) / 1000000000f;
+		lastTime = now;
+		wanderOrientation += MathUtils.randomTriangular(wanderRate * delta);
 
 		// Calculate the combined target orientation
 		float targetOrientation = wanderOrientation + owner.getOrientation();
@@ -143,12 +149,12 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 		return this;
 	}
 
-	/** Returns the maximum rate at which the wander orientation can change. */
+	/** Returns the rate, expressed in radian per second, at which the wander orientation can change. */
 	public float getWanderRate () {
 		return wanderRate;
 	}
 
-	/** Sets the maximum rate at which the wander orientation can change.
+	/** Sets the rate, expressed in radian per second, at which the wander orientation can change.
 	 * @return this behavior for chaining. */
 	public Wander<T> setWanderRate (float wanderRate) {
 		this.wanderRate = wanderRate;

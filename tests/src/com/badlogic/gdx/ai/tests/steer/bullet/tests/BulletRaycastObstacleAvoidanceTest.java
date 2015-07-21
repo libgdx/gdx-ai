@@ -81,7 +81,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		BulletEntity characterBase = world.add("capsule", new Matrix4());
 
 		character = new SteeringBulletEntity(characterBase);
-		character.setMaxLinearAcceleration(70);
+		character.setMaxLinearAcceleration(100);
 		character.setMaxLinearSpeed(10);
 
 		float rayLength = 6;
@@ -92,20 +92,20 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 		RaycastCollisionDetector<Vector3> raycastCollisionDetector = new BulletRaycastCollisionDetector(world.collisionWorld,
 			character.body);
 		raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector3>(character, rayConfigurations[rayConfigurationIndex],
-			raycastCollisionDetector, 2);
+			raycastCollisionDetector, 7);
 
 		Wander<Vector3> wanderSB = new Wander<Vector3>(character) //
 			// Don't use Face internally because independent facing is off
 			.setFaceEnabled(false) //
 			// We don't need a limiter supporting angular components because Face is disabled
 			// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-			.setLimiter(new LinearAccelerationLimiter(7)) //
-			.setWanderOffset(8) //
-			.setWanderOrientation(0) //
-			.setWanderRadius(3) //
-			.setWanderRate(MathUtils.PI / 5);
+			.setLimiter(new LinearAccelerationLimiter(10)) //
+			.setWanderOffset(10) //
+			.setWanderOrientation(1) //
+			.setWanderRadius(8) //
+			.setWanderRate(MathUtils.PI2 * 3.5f);
 
-		PrioritySteering<Vector3> prioritySteeringSB = new PrioritySteering<Vector3>(character, 0.000001f) //
+		PrioritySteering<Vector3> prioritySteeringSB = new PrioritySteering<Vector3>(character, 0.00001f) //
 			.add(raycastObstacleAvoidanceSB) //
 			.add(wanderSB);
 
