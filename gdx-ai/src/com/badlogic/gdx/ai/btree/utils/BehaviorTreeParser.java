@@ -194,7 +194,7 @@ public class BehaviorTreeParser<E> {
 			// Pop all task from the stack and check their minimum number of children
 			popAndCheckMinChildren(0);
 
-			if (root == null) throw new GdxRuntimeException("The tree must have at least the task");
+			if (root == null) throw new GdxRuntimeException("The tree must have at least the root task");
 		}
 
 		@Override
