@@ -49,8 +49,7 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void start (E object) {
-		this.object = object;
+	public void start () {
 		runningTasks.clear();
 		success = true;
 	}
@@ -65,16 +64,15 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void run (E object) {
+	public void run () {
 		notDone = children.size;
-		this.object = object;
 		for (Task<E> child : children) {
 			if (runningTasks.contains(child, true)) {
-				child.run(object);
+				child.run();
 			} else {
 				child.setControl(this);
-				child.start(object);
-				child.run(object);
+				child.start();
+				child.run();
 			}
 		}
 	}

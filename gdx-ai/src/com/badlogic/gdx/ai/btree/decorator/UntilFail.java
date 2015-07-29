@@ -36,8 +36,8 @@ public class UntilFail<E> extends Decorator<E> {
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		start(object);
-		run(object);
+		start();
+		run();
 	}
 
 	@Override

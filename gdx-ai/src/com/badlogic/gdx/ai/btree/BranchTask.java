@@ -34,7 +34,6 @@ public abstract class BranchTask<E> extends Task<E> {
 	public boolean deterministic = true;
 
 	protected int actualTask;
-	protected Task<E> taskRunning;
 
 	/** Create a branch task with a list of children
 	 * 
@@ -50,11 +49,10 @@ public abstract class BranchTask<E> extends Task<E> {
 	}
 
 	@Override
-	public void run (E object) {
+	public void run () {
 		if (runningTask != null) {
-			runningTask.run(object);
+			runningTask.run();
 		} else {
-			this.object = object;
 			if (actualTask < children.size) {
 				if (!deterministic) {
 					int lastTask = children.size - 1;
@@ -62,17 +60,16 @@ public abstract class BranchTask<E> extends Task<E> {
 				}
 				runningTask = children.get(actualTask);
 				runningTask.setControl(this);
-				runningTask.object = object;
-				runningTask.start(object);
-				run(object);
+				runningTask.start();
+				run();
 			} else {
-				end(object);
+				end();
 			}
 		}
 	}
 
 	@Override
-	public void start (E object) {
+	public void start () {
 		this.actualTask = 0;
 		runningTask = null;
 	}

@@ -28,10 +28,11 @@ public class CareTask extends LeafTask<Dog> {
 	public float urgentProb = 0.8f;
 
 	@Override
-	public void run (Dog dog) {
+	public void run () {
 		if (Math.random() < urgentProb) {
 			success();
 		} else {
+			Dog dog = getObject();
 			dog.brainLog("It's leaking out!!!");
 			dog.setUrgent(true);
 			success();

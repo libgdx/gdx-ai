@@ -33,7 +33,7 @@ public abstract class Task<E> {
 	protected Task<E> control;
 	protected Task<E> runningTask;
 	protected Array<Task<E>> children;
-	protected E object;
+	protected BehaviorTree<E> tree;
 
 	/** This method will add a child to the list of this task's children
 	 * 
@@ -63,48 +63,48 @@ public abstract class Task<E> {
 		}
 	}
 
+	/** Returns the blackboard object of the behavior tree this task belongs to.
+	 * @throws IllegalStateException if this task has never run */
+	public E getObject () {
+		if (tree == null) throw new IllegalStateException("This task has never run");
+		return tree.getObject();
+	}
+
 	/** This method will set a task as this task's control (parent)
 	 * 
 	 * @param control the parent task */
 	public void setControl (Task<E> control) {
 		this.control = control;
+		this.tree = control.tree;
 	}
 
-	/** This method will be called once before this task's first run
-	 * 
-	 * @param object the blackboard object */
-	public void start (E object) {
-
-	}
-
-	/** This method will be called when this task succeeds or fails
-	 * 
-	 * @param object the blackboard object */
-	public void end (E object) {
+	/** This method will be called once before this task's first run. */
+	public void start () {
 
 	}
 
-	/** This method contains update logic of this task
-	 * 
-	 * @param object the blackboard object */
-	public abstract void run (E object);
+	/** This method will be called when this task succeeds or fails. */
+	public void end () {
 
-	/** This method will be called in {@link #run(Object) run()} to inform control that this task needs to run again */
+	}
+
+	/** This method contains update logic of this task. */
+	public abstract void run ();
+
+	/** This method will be called in {@link #run()} to inform control that this task needs to run again */
 	public final void running () {
 		control.childRunning(this, this);
 	}
 
-	/** This method will be called in {@link #run(Object) run()} to inform control that this task has finished running with a
-	 * success result */
+	/** This method will be called in {@link #run()} to inform control that this task has finished running with a success result */
 	public void success () {
-		end(object);
+		end();
 		control.childSuccess(this);
 	}
 
-	/** This method will be called in {@link #run(Object) run()} to inform control that this task has finished running with a
-	 * failure result */
+	/** This method will be called in {@link #run()} to inform control that this task has finished running with a failure result */
 	public void fail () {
-		end(object);
+		end();
 		control.childFail(this);
 	}
 

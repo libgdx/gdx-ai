@@ -32,13 +32,14 @@ public class BarkTask extends LeafTask<Dog> {
 	private int t;
 
 	@Override
-	public void start (Dog dog) {
-		super.start(dog);
+	public void start () {
+		super.start();
 		t = times.nextInt();
 	}
 
 	@Override
-	public void run (Dog dog) {
+	public void run () {
+		Dog dog = getObject();
 		for (int i = 0; i < t; i++)
 			dog.bark();
 		success();

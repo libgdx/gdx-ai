@@ -44,7 +44,7 @@ public class Selector<E> extends BranchTask<E> {
 	public void childFail (Task<E> runningTask) {
 		super.childFail(runningTask);
 		if (++actualTask < children.size) {
-			run(this.object);
+			run();
 		} else {
 			fail();
 		}

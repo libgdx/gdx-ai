@@ -25,6 +25,7 @@ package com.badlogic.gdx.ai.btree;
 public class BehaviorTree<E> extends Task<E> {
 
 	private Task<E> rootTask;
+	private E object;
 
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
 	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
@@ -51,9 +52,11 @@ public class BehaviorTree<E> extends Task<E> {
 	public BehaviorTree (Task<E> rootTask, E object) {
 		this.rootTask = rootTask;
 		this.object = object;
+		this.tree = this;
 	}
 
 	/** Returns the blackboard object of this behavior tree. */
+	@Override
 	public E getObject () {
 		return object;
 	}
@@ -90,17 +93,16 @@ public class BehaviorTree<E> extends Task<E> {
 	 * the game is realtime, or on entity's turn if the game is turn-based */
 	public void step () {
 		if (runningTask != null) {
-			runningTask.run(object);
+			runningTask.run();
 		} else {
 			rootTask.setControl(this);
-			rootTask.object = object;
-			rootTask.start(object);
-			rootTask.run(object);
+			rootTask.start();
+			rootTask.run();
 		}
 	}
 
 	@Override
-	public void run (E object) {
+	public void run () {
 	}
 
 	@Override

@@ -26,14 +26,16 @@ public class WalkTask extends LeafTask<Dog> {
 	private int i = 0;
 
 	@Override
-	public void start (Dog dog) {
+	public void start () {
 		i = 0;
+		Dog dog = getObject();
 		dog.startWalking();
 	}
 
 	@Override
-	public void run (Dog dog) {
+	public void run () {
 		i++;
+		Dog dog = getObject();
 		dog.randomlyWalk();
 		if (i < 3) {
 			running();
@@ -43,7 +45,8 @@ public class WalkTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void end (Dog dog) {
+	public void end () {
+		Dog dog = getObject();
 		dog.stopWalking();
 	}
 

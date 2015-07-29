@@ -44,7 +44,7 @@ public class Sequence<E> extends BranchTask<E> {
 	public void childSuccess (Task<E> runningTask) {
 		super.childSuccess(runningTask);
 		if (++actualTask < children.size) {
-			run(this.object);
+			run();
 		} else {
 			success();
 		}

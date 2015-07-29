@@ -52,19 +52,19 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	}
 
 	@Override
-	public void start (E object) {
+	public void start () {
 		if (semaphore == null) {
 			semaphore = NonBlockingSemaphoreRepository.getSemaphore(name);
 		}
 		semaphoreAcquired = semaphore.acquire();
 		// System.out.println(object+" Enter START: semaphoreAcquired="+semaphoreAcquired);
-		if (semaphoreAcquired) super.start(object);
+		if (semaphoreAcquired) super.start();
 	}
 
 	@Override
-	public void run (E object) {
+	public void run () {
 		if (semaphoreAcquired) {
-			super.run(object);
+			super.run();
 		} else {
 			// System.out.println("FAILING");
 			fail();
@@ -72,10 +72,10 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	}
 
 	@Override
-	public void end (E object) {
+	public void end () {
 		// System.out.println(object+" Enter END: semaphoreAcquired="+semaphoreAcquired);
 		if (semaphoreAcquired) { // This should never happen
-			super.end(object);
+			super.end();
 			semaphore.release();
 			semaphoreAcquired = false;
 		}

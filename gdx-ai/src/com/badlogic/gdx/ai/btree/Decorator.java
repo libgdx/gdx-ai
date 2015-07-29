@@ -57,21 +57,19 @@ public abstract class Decorator<E> extends Task<E> {
 	}
 
 	@Override
-	public void run (E object) {
-		this.object = object;
-		child.run(object);
+	public void run () {
+		child.run();
 	}
 
 	@Override
-	public void end (E object) {
-		child.end(object);
+	public void end () {
+		child.end();
 	}
 
 	@Override
-	public void start (E object) {
-		child.object = object;
+	public void start () {
 		child.setControl(this);
-		child.start(object);
+		child.start();
 	}
 
 	@Override
