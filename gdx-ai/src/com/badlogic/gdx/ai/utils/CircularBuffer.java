@@ -26,6 +26,7 @@ public class CircularBuffer<T> {
 	private boolean resizable;
 	private int head;
 	private int tail;
+	private int size;
 
 	/** Creates a resizable {@code CircularBuffer} with the given initial capacity.
 	 * @param initialCapacity the initial capacity of this circular buffer */
@@ -42,18 +43,20 @@ public class CircularBuffer<T> {
 		this.resizable = resizable;
 		this.head = 0;
 		this.tail = 0;
+		this.size = 0;
 	}
 
 	/** Adds the given item to the tail of this circular buffer.
 	 * @param item the item to add
 	 * @return {@code true} if the item has been successfully added to this circular buffer; {@code false} otherwise. */
 	public boolean store (T item) {
-		if (isFull()) {
+		if (size == items.length) {
 			if (!resizable) return false;
 
 			// Resize this queue
 			resize(Math.max(8, (int)(items.length * 1.75f)));
 		}
+		size++;
 		items[tail++] = item;
 		if (tail == items.length) tail = 0;
 		return true;
@@ -62,7 +65,8 @@ public class CircularBuffer<T> {
 	/** Removes and returns the item at the head of this circular buffer (if any).
 	 * @return the item just removed or {@code null} if this circular buffer is empty. */
 	public T read () {
-		if (head != tail) {
+		if (size > 0) {
+			size--;
 			T item = items[head++];
 			if (head == items.length) head = 0;
 			return item;
@@ -73,19 +77,17 @@ public class CircularBuffer<T> {
 
 	/** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
 	public boolean isEmpty () {
-		return head == tail;
-	}
-
-	/** Returns the number of items in this circular buffer. */
-	public int size () {
-		return tail >= head ? tail - head : items.length - head + tail;
+		return size == 0;
 	}
 
 	/** Returns {@code true} if this circular buffer contains as many items as its capacity; {@code false} otherwise. */
-	private boolean isFull () {
-		if (tail + 1 == head) return true;
-		if (tail == items.length - 1 && head == 0) return true;
-		return false;
+	public boolean isFull () {
+		return size == items.length;
+	}
+
+	/** Returns the number of elements in this circular buffer. */
+	public int size () {
+		return size;
 	}
 
 	/** Returns {@code true} if this circular buffer can be resized; {@code false} otherwise. */
@@ -99,14 +101,13 @@ public class CircularBuffer<T> {
 		this.resizable = resizable;
 	}
 
-	/** Creates a new backing array with the specified size containing the current items. */
-	protected void resize (int newSize) {
-		System.out.println("resize: " + newSize);
+	/** Creates a new backing array with the specified capacity containing the current items. */
+	protected void resize (int newCapacity) {
 		T[] items = this.items;
 		@SuppressWarnings("unchecked")
-		T[] newItems = (T[])ArrayReflection.newInstance(items.getClass().getComponentType(), newSize);
+		T[] newItems = (T[])ArrayReflection.newInstance(items.getClass().getComponentType(), newCapacity);
 		if (tail >= head) {
-			System.arraycopy(items, head, newItems, 0, tail - head - 1);
+			System.arraycopy(items, head, newItems, 0, size);
 			tail = tail - head;
 			head = 0;
 		} else {
