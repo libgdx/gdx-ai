@@ -106,11 +106,11 @@ public class CircularBuffer<T> {
 		T[] items = this.items;
 		@SuppressWarnings("unchecked")
 		T[] newItems = (T[])ArrayReflection.newInstance(items.getClass().getComponentType(), newCapacity);
-		if (tail >= head) {
+		if (tail > head) {
 			System.arraycopy(items, head, newItems, 0, size);
 			tail = tail - head;
 			head = 0;
-		} else {
+		} else if (size > 0) { // NOTE: when head == tail the buffer can be empty or full
 			System.arraycopy(items, head, newItems, 0, items.length - head);
 			System.arraycopy(items, 0, newItems, items.length - head, tail);
 			tail = items.length - head + tail;
