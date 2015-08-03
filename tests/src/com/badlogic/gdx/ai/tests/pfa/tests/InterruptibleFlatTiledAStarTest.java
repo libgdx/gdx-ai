@@ -74,11 +74,12 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	int startTileY;
 
 	FlatTiledGraph worldMap;
-	TiledSmoothableGraphPath<FlatTiledNode> path;
+	TiledSmoothableGraphPath<FlatTiledNode> activePath;
+	TiledSmoothableGraphPath<FlatTiledNode> workPath;
+	boolean isActivePathSmoothed;
 	TiledManhattanDistance<FlatTiledNode> heuristic;
 	IndexedAStarPathFinder<FlatTiledNode> pathFinder;
 	PathSmoother<FlatTiledNode, Vector2> pathSmoother;
-	PathSmootherRequest<FlatTiledNode, Vector2> pathSmootherRequest;
 
 	Pool<MyPathFinderRequest> requestPool;
 
@@ -110,11 +111,11 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		int squashIterations = 100;
 		worldMap.init(roomCount, roomMinSize, roomMaxSize, squashIterations);
 
-		path = new TiledSmoothableGraphPath<FlatTiledNode>();
+		activePath = new TiledSmoothableGraphPath<FlatTiledNode>();
+		workPath = new TiledSmoothableGraphPath<FlatTiledNode>();
 		heuristic = new TiledManhattanDistance<FlatTiledNode>();
 		pathFinder = new IndexedAStarPathFinder<FlatTiledNode>(worldMap, true);
 		pathSmoother = new PathSmoother<FlatTiledNode, Vector2>(new TiledRaycastCollisionDetector<FlatTiledNode>(worldMap));
-		pathSmootherRequest = new PathSmootherRequest<FlatTiledNode, Vector2>();
 
 		requestPool = new Pool<MyPathFinderRequest>() {
 			@Override
@@ -205,6 +206,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		long timeToRun = (long)(sliderMillisAvailablePerFrame.getValue() * 1000000f);
 		scheduler.run(timeToRun);
 
+		// Draw dungeon
 		renderer.begin(ShapeType.Filled);
 		for (int x = 0; x < FlatTiledGraph.sizeX; x++) {
 			for (int y = 0; y < FlatTiledGraph.sizeY; y++) {
@@ -223,20 +225,21 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			}
 		}
 
+		// Draw active path
 		renderer.setColor(Color.RED);
-		int nodeCount = path.getCount();
+		int nodeCount = activePath.getCount();
 		for (int i = 0; i < nodeCount; i++) {
-			FlatTiledNode node = path.nodes.get(i);
+			FlatTiledNode node = activePath.nodes.get(i);
 			renderer.rect(node.x * width, node.y * width, width, width);
 		}
-		if (smooth) {
+		if (isActivePathSmoothed) {
 			renderer.end();
 			renderer.begin(ShapeType.Line);
 			float hw = width / 2f;
 			if (nodeCount > 0) {
-				FlatTiledNode prevNode = path.nodes.get(0);
+				FlatTiledNode prevNode = activePath.nodes.get(0);
 				for (int i = 1; i < nodeCount; i++) {
-					FlatTiledNode node = path.nodes.get(i);
+					FlatTiledNode node = activePath.nodes.get(i);
 					renderer.line(node.x * width + hw, node.y * width + hw, prevNode.x * width + hw, prevNode.y * width + hw);
 					prevNode = node;
 				}
@@ -250,7 +253,8 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 		renderer.dispose();
 
 		worldMap = null;
-		path = null;
+		activePath = null;
+		workPath = null;
 		heuristic = null;
 		pathFinder = null;
 		pathSmoother = null;
@@ -273,6 +277,14 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 				PathFinderQueue<FlatTiledNode> pfQueue = (PathFinderQueue<FlatTiledNode>)telegram.sender;
 				System.out.println("pfQueue.size = " + pfQueue.size() + " executionFrames = " + pfr.executionFrames);
 			}
+
+			// Swap double buffer
+			workPath = activePath;
+			activePath = (TiledSmoothableGraphPath<FlatTiledNode>)pfr.resultPath;
+
+			isActivePathSmoothed = pfr.smoothEnabled;
+
+			// Release the request
 			requestPool.free(pfr);
 			break;
 		}
@@ -298,7 +310,6 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 				pfRequest.startNode = startNode;
 				pfRequest.endNode = endNode;
 				pfRequest.heuristic = heuristic;
-				pfRequest.resultPath = path;
 				pfRequest.responseMessageCode = PF_RESPONSE;
 				MessageManager.getInstance().dispatchMessage(this, PF_REQUEST, pfRequest);
 // worldMap.startNode = startNode;
@@ -385,25 +396,29 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	}
 
 	class MyPathFinderRequest extends PathFinderRequest<FlatTiledNode> implements Poolable {
+		PathSmootherRequest<FlatTiledNode, Vector2> pathSmootherRequest;
+		boolean smoothEnabled;
 		boolean smoothFinished;
 
 		public MyPathFinderRequest () {
+			this.resultPath = new TiledSmoothableGraphPath<FlatTiledNode>();
+			pathSmootherRequest = new PathSmootherRequest<FlatTiledNode, Vector2>();
 		}
 
 		@Override
 		public boolean initializeSearch (long timeToRun) {
+			resultPath = workPath;
 			resultPath.clear();
+			smoothEnabled = smooth;
+			pathSmootherRequest.refresh((TiledSmoothableGraphPath<FlatTiledNode>)resultPath);
+			smoothFinished = false;
 			worldMap.startNode = startNode;
 			return true;
 		}
 
 		@Override
 		public boolean finalizeSearch (long timeToRun) {
-			if (statusChanged) {
-				pathSmootherRequest.refresh(path);
-				smoothFinished = false;
-			}
-			if (pathFound && smooth && !smoothFinished) {
+			if (pathFound && smoothEnabled && !smoothFinished) {
 				smoothFinished = pathSmoother.smoothPath(pathSmootherRequest, timeToRun);
 				if (!smoothFinished) return false;
 			}
@@ -415,7 +430,6 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 			this.startNode = null;
 			this.endNode = null;
 			this.heuristic = null;
-			this.resultPath = null;
 			this.client = null;
 		}
 	}

@@ -168,11 +168,11 @@ public class PathSmoother<N, V extends Vector<V>> {
 			lastTime = currentTime;
 		}
 
-		// Reached the last input node, always add it to the smoothed path.
+		// Reached the last input node, always add it to the smoothed path
 		path.swapNodes(request.outputIndex, request.inputIndex - 1);
 		path.truncatePath(request.outputIndex + 1);
 
-		// Return the number of removed nodes
+		// Smooth completed
 		return true;
 	}
 
