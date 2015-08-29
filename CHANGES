@@ -1,6 +1,6 @@
 [1.5.1]
 - API Change: now tasks take the blackboard object from the behavior tree they belong to.
-- Updated to libgdx 1.6.5-SNAPSHOT
+- Updated to libgdx 1.6.5
 - Fix: now the wander rate of the wander steering behavior is expressed in radian per second to make it frame rate independent.
 - API Change: now behavior trees support annotations to define attributes and constraints in task classes.
 - Fix: now the reach orientation behavior always chooses the shortest rotation angle.
