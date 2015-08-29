@@ -83,7 +83,7 @@ public class ReachOrientation<T extends Vector<T>> extends SteeringBehavior<T> {
 		float rotationSize = rotation < 0f ? -rotation : rotation;
 
 		// Check if we are there, return no steering
-		if (rotationSize < alignTolerance) return steering.setZero();
+		if (rotationSize <= alignTolerance) return steering.setZero();
 
 		Limiter actualLimiter = getActualLimiter();
 
