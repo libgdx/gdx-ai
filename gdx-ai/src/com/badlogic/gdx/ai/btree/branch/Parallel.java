@@ -91,6 +91,18 @@ public class Parallel<E> extends BranchTask<E> {
 		}
 	}
 
+    @Override
+    public void end() {
+        // end all running children
+        for (int i = 0; i < children.size; i++) {
+            Task<E> child = children.get(i);
+            if (runningTasks[i]) {
+                child.end();
+                runningTasks[i] = false;
+            }
+        }
+    }
+
 	@Override
 	public void childRunning (Task<E> task, Task<E> reporter) {
 		runningTasks[currentChildIndex] = true;
@@ -118,16 +130,7 @@ public class Parallel<E> extends BranchTask<E> {
 		if (noRunningTasks && currentChildIndex == children.size - 1) {
 			fail();
 		} else if(shortCircuit) {
-
-            // end all running children
-            for (int i = 0; i < children.size; i++) {
-                Task<E> child = children.get(i);
-                if (runningTasks[i]) {
-                    child.end();
-                    runningTasks[i] = false;
-                }
-            }
-
+            end();
             fail();
         }
 	}

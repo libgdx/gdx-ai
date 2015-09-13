@@ -74,6 +74,15 @@ public abstract class BranchTask<E> extends Task<E> {
 		runningTask = null;
 	}
 
+    @Override
+    public void end(){
+        // end all running children
+        for (int i = 0; i < children.size; i++) {
+            Task<E> child = children.get(i);
+            child.end();
+        }
+    }
+
 	@Override
 	public void reset () {
 		super.reset();
