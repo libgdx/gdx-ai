@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.btree.branch;
 
 import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.utils.Array;
 
 /** A {@code Parallel} is a special branch task that starts or resumes all children every single time, parallel task will succeed
@@ -34,6 +35,11 @@ public class Parallel<E> extends BranchTask<E> {
 	private boolean success;
 	private boolean noRunningTasks;
 	private int currentChildIndex;
+
+    /** Determines whether the parallel task will fail
+     *  immediately upon failure of a child */
+    @TaskAttribute
+    public boolean shortCircuit = false;
 
 	/** Creates a parallel task with no children */
 	public Parallel () {
@@ -69,7 +75,12 @@ public class Parallel<E> extends BranchTask<E> {
 	public void run () {
 		noRunningTasks = true;
 		for (currentChildIndex = 0; currentChildIndex < children.size; currentChildIndex++) {
-			Task<E> child = children.get(currentChildIndex);
+
+            // If using 'shortCircuit' and a child fails, need to break
+            // the for loop to prevent running the rest of the children
+            if(shortCircuit && !success) break;
+
+            Task<E> child = children.get(currentChildIndex);
 			if (runningTasks[currentChildIndex]) {
 				child.run();
 			} else {
@@ -79,6 +90,18 @@ public class Parallel<E> extends BranchTask<E> {
 			}
 		}
 	}
+
+    @Override
+    public void end() {
+        // end all running children
+        for (int i = 0; i < children.size; i++) {
+            Task<E> child = children.get(i);
+            if (runningTasks[i]) {
+                child.end();
+                runningTasks[i] = false;
+            }
+        }
+    }
 
 	@Override
 	public void childRunning (Task<E> task, Task<E> reporter) {
@@ -106,7 +129,10 @@ public class Parallel<E> extends BranchTask<E> {
 		success = false;
 		if (noRunningTasks && currentChildIndex == children.size - 1) {
 			fail();
-		}
+		} else if(shortCircuit) {
+            end();
+            fail();
+        }
 	}
 
 	@Override

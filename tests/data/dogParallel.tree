@@ -1,0 +1,22 @@
+#
+# Dog2 tree - uses short circuit parallel task
+#
+
+# Alias definitions
+import bark:"com.badlogic.gdx.ai.tests.btree.dog.BarkTask"
+import care:"com.badlogic.gdx.ai.tests.btree.dog.CareTask"
+import mark:"com.badlogic.gdx.ai.tests.btree.dog.MarkTask"
+import walk:"com.badlogic.gdx.ai.tests.btree.dog.WalkTask"
+import play:"com.badlogic.gdx.ai.tests.btree.dog.PlayTask"
+
+# Tree definition (note that root is optional)
+root
+  selector
+    parallel shortCircuit:true
+      care urgentProb:0.8
+      play
+    sequence
+      bark times:"uniform,1,5"
+      walk
+      com.badlogic.gdx.ai.tests.btree.dog.BarkTask # fully qualified task
+      mark

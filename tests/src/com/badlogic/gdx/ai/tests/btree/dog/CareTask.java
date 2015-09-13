@@ -35,7 +35,7 @@ public class CareTask extends LeafTask<Dog> {
 			Dog dog = getObject();
 			dog.brainLog("It's leaking out!!!");
 			dog.setUrgent(true);
-			success();
+			fail();
 		}
 	}
 
