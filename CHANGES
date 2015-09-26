@@ -1,3 +1,6 @@
+[1.6.1]
+- ...
+
 [1.6.0]
 - Updated to libgdx 1.7.0
 - API Change: now tasks take the blackboard object from the behavior tree they belong to.

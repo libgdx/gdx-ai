@@ -90,7 +90,7 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
-	 * the game is realtime, or on entity's turn if the game is turn-based */
+	 * the game is real-time, or on entity's turn if the game is turn-based */
 	public void step () {
 		if (runningTask != null) {
 			runningTask.run();
