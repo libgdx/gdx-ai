@@ -292,6 +292,15 @@ public class BehaviorTreeParser<E> {
 					ret = Character.valueOf(stringValue.charAt(0));
 				} else if (ClassReflection.isAssignableFrom(Distribution.class, type)) {
 					ret = parseDistribution(stringValue, type);
+				} else if (ClassReflection.isAssignableFrom(Enum.class, type)) {
+					Enum<?>[] constants = (Enum<?>[])type.getEnumConstants();
+					for (int i = 0, n = constants.length; i < n; i++) {
+						Enum<?> e = constants[i];
+						if (e.name().equalsIgnoreCase(stringValue)) {
+							ret = e;
+							break;
+						}
+					}
 				}
 			}
 			if (ret == null) throwAttributeTypeException(prevTask.name, field.getName(), type.getSimpleName());
@@ -515,7 +524,7 @@ public class BehaviorTreeParser<E> {
 			boolean required;
 
 			AttrInfo (String fieldName, TaskAttribute annotation) {
-				this(annotation.name(), fieldName , annotation.required());
+				this(annotation.name(), fieldName, annotation.required());
 			}
 
 			AttrInfo (String name, String fieldName, boolean required) {

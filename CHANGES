@@ -1,5 +1,5 @@
 [1.6.1]
-- ...
+- Added enum support in behavior tree files.
 
 [1.6.0]
 - Updated to libgdx 1.7.0
