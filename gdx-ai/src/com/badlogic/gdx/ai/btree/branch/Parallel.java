@@ -90,7 +90,6 @@ public class Parallel<E> extends BranchTask<E> {
 	@Override
 	public void childSuccess (Task<E> runningTask) {
 		runningTasks[currentChildIndex] = false;
-		success = success && true;
 		if (noRunningTasks && currentChildIndex == children.size - 1) {
 			if (success) {
 				success();
