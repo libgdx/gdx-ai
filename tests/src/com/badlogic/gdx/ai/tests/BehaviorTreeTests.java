@@ -49,9 +49,10 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
+	private static String LABEL_FPS = "FPS: ";
+
 	public CollapsableWindow behaviorSelectionWindow;
 	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 	public String helpMessage;
 
 	// @off - disable libgdx formatter
@@ -78,8 +79,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
-		fpsStringBuilder = new StringBuilder();
-
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
 		stage = new Stage();
@@ -102,7 +101,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 		// Set selected test
 		changeTest(0);
 
-		fpsLabel = new Label("FPS: 999", skin);
+		fpsLabel = new Label(LABEL_FPS + "999", skin);
 		stage.addActor(fpsLabel);
 	}
 
@@ -110,9 +109,11 @@ public class BehaviorTreeTests extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		getStatus(fpsStringBuilder);
-		fpsLabel.setText(fpsStringBuilder);
+		StringBuilder sb = fpsLabel.getText();
+		sb.setLength(LABEL_FPS.length());
+		sb.append(Gdx.graphics.getFramesPerSecond());
+		if (helpMessage != null) sb.append("     ").append(helpMessage);
+		fpsLabel.invalidateHierarchy();
 
 		if (currentTest != null) currentTest.render();
 
@@ -134,11 +135,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 		stage.dispose();
 		skin.dispose();
-	}
-
-	protected void getStatus (final StringBuilder stringBuilder) {
-		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-		if (helpMessage != null) stringBuilder.append("     ").append(helpMessage);
 	}
 
 	private List<String> createTestList () {
