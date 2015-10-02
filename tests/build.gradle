@@ -9,6 +9,7 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
     compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
+    compile "com.esotericsoftware:kryo:3.0.3"
 }
 
 eclipse.project {

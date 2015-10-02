@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.ai.btree;
 
+import com.badlogic.gdx.utils.Array;
+
 /** The behavior tree itself.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
@@ -89,16 +91,26 @@ public class BehaviorTree<E> extends Task<E> {
 		throw new IndexOutOfBoundsException("index can't be >= size: " + i + " >= " + getChildCount());
 	}
 
+	@Override
+	public final void childRunning (Task<E> runningTask, Task<E> reporter) {
+	}
+
+	@Override
+	public final void childFail (Task<E> runningTask) {
+	}
+
+	@Override
+	public final void childSuccess (Task<E> runningTask) {
+	}
+
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
 	 * the game is real-time, or on entity's turn if the game is turn-based */
 	public void step () {
-		if (runningTask != null) {
-			runningTask.run();
-		} else {
+		if (rootTask.status != Status.RUNNING) {
 			rootTask.setControl(this);
 			rootTask.start();
-			rootTask.run();
 		}
+		rootTask.run();
 	}
 
 	@Override
@@ -113,4 +125,29 @@ public class BehaviorTree<E> extends Task<E> {
 		return task;
 	}
 
+	public Array<Listener<E>> listeners;
+	
+	public void addListener(Listener<E> listener) {
+		if (listeners == null) listeners = new Array<Listener<E>>();
+		listeners.add(listener);
+	}
+
+	public void removeListener(Listener<E> listener) {
+		if (listeners != null) listeners.removeIndex(listeners.indexOf(listener, true));
+	}
+
+	public void removeListeners() {
+		if (listeners != null) listeners.clear();
+	}
+	
+	public void notifyListeners(Task<E> task, Status previousStatus) {
+		for (Listener<E> listener : listeners) {
+			listener.statusUpdated(task, previousStatus);
+		}
+	}
+	
+	public interface Listener<E> {
+		
+		public void statusUpdated(Task<E> task, Status previousStatus);
+	}
 }

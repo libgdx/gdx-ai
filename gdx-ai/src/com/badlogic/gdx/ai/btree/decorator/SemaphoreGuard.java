@@ -58,7 +58,8 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		}
 		semaphoreAcquired = semaphore.acquire();
 		// System.out.println(object+" Enter START: semaphoreAcquired="+semaphoreAcquired);
-		if (semaphoreAcquired) super.start();
+		//if (semaphoreAcquired)
+			super.start();
 	}
 
 	@Override
@@ -74,26 +75,26 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	@Override
 	public void end () {
 		// System.out.println(object+" Enter END: semaphoreAcquired="+semaphoreAcquired);
-		if (semaphoreAcquired) { // This should never happen
-			super.end();
+		if (semaphoreAcquired) {
 			semaphore.release();
 			semaphoreAcquired = false;
 		}
+		super.end();
 	}
 
-	@Override
-	public void childFail (Task<E> runningTask) {
-		super.childFail(runningTask);
-		semaphore.release();
-		semaphoreAcquired = false;
-	}
-
-	@Override
-	public void childSuccess (Task<E> runningTask) {
-		super.childSuccess(runningTask);
-		semaphore.release();
-		semaphoreAcquired = false;
-	}
+//	@Override
+//	public void childFail (Task<E> runningTask) {
+//		super.childFail(runningTask);
+//		semaphore.release();
+//		semaphoreAcquired = false;
+//	}
+//
+//	@Override
+//	public void childSuccess (Task<E> runningTask) {
+//		super.childSuccess(runningTask);
+//		semaphore.release();
+//		semaphoreAcquired = false;
+//	}
 
 	@Override
 	public void reset () {
@@ -104,13 +105,11 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 
 	@Override
 	protected Task<E> copyTo (Task<E> task) {
-		super.copyTo(task);
-
 		SemaphoreGuard<E> semaphoreGuard = (SemaphoreGuard<E>)task;
 		semaphoreGuard.name = name;
 		semaphoreGuard.semaphore = null;
 		semaphoreGuard.semaphoreAcquired = false;
 
-		return task;
+		return super.copyTo(task);
 	}
 }

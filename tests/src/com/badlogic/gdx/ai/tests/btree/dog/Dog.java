@@ -17,6 +17,8 @@
 package com.badlogic.gdx.ai.tests.btree.dog;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.math.MathUtils;
 
 /** @author implicit-invocation
  * @author davebaol */
@@ -24,49 +26,68 @@ public class Dog {
 
 	public String name;
 	public String brainLog;
+	private BehaviorTree<Dog> behaviorTree;
 
 	public Dog (String name) {
+		this(name, null);
+	}
+
+	public Dog (String name, BehaviorTree<Dog> btree) {
 		this.name = name;
 		this.brainLog = name + " brain";
+		this.behaviorTree = btree;
+		if (btree != null) btree.setObject(this);
+	}
+
+	public BehaviorTree<Dog> getBehaviorTree () {
+		return behaviorTree;
+	}
+
+	public void setBehaviorTree (BehaviorTree<Dog> behaviorTree) {
+		this.behaviorTree = behaviorTree;
 	}
 
 	public void bark () {
-		log("Bow wow!!!");
+		if (MathUtils.randomBoolean())
+			log("Arf arf");
+		else
+			log("Woof");
 	}
 
 	public void startWalking () {
-		log("Dog starts walking");
+		log("Let's find a nice tree");
 	}
 
 	public void randomlyWalk () {
-		log("Dog walks randomly around!");
+		log("SNIFF SNIFF - Dog walks randomly around!");
 	}
 
 	public void stopWalking () {
-		log("Dog stops walking");
+		log("This tree smells good :)");
 	}
 
-	public boolean standBesideATree () {
-		if (Math.random() < 0.5) {
-			log("No tree found :(");
-			return false;
+	public Boolean markATree (int i) {
+		if (i == 0) {
+			log("Swoosh....");
+			return null;
 		}
-		return true;
+		if (MathUtils.randomBoolean()) {
+			log("MUMBLE MUMBLE - Still leaking out");
+			return Boolean.FALSE;
+		}
+		log("I'm ok now :)");
+		return Boolean.TRUE;
 	}
 
-	public void markATree () {
-		log("Dog lifts a leg and pee!");
-	}
-
-	private boolean urgent = false;
-
-	public boolean isUrgent () {
-		return urgent;
-	}
-
-	public void setUrgent (boolean urgent) {
-		this.urgent = urgent;
-	}
+//	private boolean urgent = false;
+//
+//	public boolean isUrgent () {
+//		return urgent;
+//	}
+//
+//	public void setUrgent (boolean urgent) {
+//		this.urgent = urgent;
+//	}
 
 	public void log (String msg) {
 		Gdx.app.log(name, msg);

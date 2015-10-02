@@ -16,9 +16,7 @@
 
 package com.badlogic.gdx.ai.btree;
 
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 /** A branch task defines a behavior tree branch, contains logic of starting or running sub-branches and leaves
@@ -27,13 +25,15 @@ import com.badlogic.gdx.utils.Array;
  * 
  * @author implicit-invocation
  * @author davebaol */
-@TaskConstraint(minChildren=1)
+@TaskConstraint(minChildren = 1)
 public abstract class BranchTask<E> extends Task<E> {
 
-	@TaskAttribute
-	public boolean deterministic = true;
+	protected Array<Task<E>> children;
 
-	protected int actualTask;
+	/** Create a branch task with no children */
+	public BranchTask () {
+		this(new Array<Task<E>>());
+	}
 
 	/** Create a branch task with a list of children
 	 * 
@@ -43,47 +43,23 @@ public abstract class BranchTask<E> extends Task<E> {
 	}
 
 	@Override
-	public void childRunning (Task<E> task, Task<E> reporter) {
-		runningTask = task;
-		control.childRunning(task, this);
+	public void addChild (Task<E> child) {
+		children.add(child);
 	}
 
 	@Override
-	public void run () {
-		if (runningTask != null) {
-			runningTask.run();
-		} else {
-			if (actualTask < children.size) {
-				if (!deterministic) {
-					int lastTask = children.size - 1;
-					if (actualTask < lastTask) children.swap(actualTask, MathUtils.random(actualTask, lastTask));
-				}
-				runningTask = children.get(actualTask);
-				runningTask.setControl(this);
-				runningTask.start();
-				run();
-			} else {
-				end();
-			}
-		}
+	public int getChildCount () {
+		return children.size;
 	}
 
 	@Override
-	public void start () {
-		this.actualTask = 0;
-		runningTask = null;
-	}
-
-	@Override
-	public void reset () {
-		super.reset();
-		this.actualTask = 0;
+	public Task<E> getChild (int i) {
+		return children.get(i);
 	}
 
 	@Override
 	protected Task<E> copyTo (Task<E> task) {
 		BranchTask<E> branch = (BranchTask<E>)task;
-		branch.deterministic = deterministic;
 		if (children != null) {
 			for (int i = 0; i < children.size; i++) {
 				branch.children.add(children.get(i).cloneTask());

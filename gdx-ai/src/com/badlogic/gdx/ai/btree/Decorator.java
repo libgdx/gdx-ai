@@ -34,7 +34,7 @@ public abstract class Decorator<E> extends Task<E> {
 	public Decorator () {
 	}
 
-	/** Creates a decorator that wraps a tree task
+	/** Creates a decorator that wraps the given task.
 	 * 
 	 * @param child the task that will be wrapped */
 	public Decorator (Task<E> child) {
@@ -53,38 +53,32 @@ public abstract class Decorator<E> extends Task<E> {
 
 	@Override
 	public Task<E> getChild (int i) {
-		return child;
+		if (i == 0 && child != null) return child;
+		throw new IndexOutOfBoundsException("index can't be >= size: " + i + " >= " + getChildCount());
 	}
 
 	@Override
 	public void run () {
+		if (child.status != Status.RUNNING) {
+			child.setControl(this);
+			child.start();
+		}
 		child.run();
 	}
 
 	@Override
-	public void end () {
-		child.end();
-	}
-
-	@Override
-	public void start () {
-		child.setControl(this);
-		child.start();
-	}
-
-	@Override
 	public void childRunning (Task<E> runningTask, Task<E> reporter) {
-		control.childRunning(runningTask, this);
+		running();
 	}
 
 	@Override
 	public void childFail (Task<E> runningTask) {
-		control.childFail(this);
+		fail();
 	}
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		control.childSuccess(this);
+		success();
 	}
 
 	@Override

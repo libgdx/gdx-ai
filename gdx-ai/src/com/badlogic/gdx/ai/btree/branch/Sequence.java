@@ -16,20 +16,20 @@
 
 package com.badlogic.gdx.ai.btree.branch;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.SingleRunningChildBranch;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
 
-/** A {@code Sequence} is a branch task that runs every children until one of them fails. If a child task succeeds, the selector will
- * start and run the next child task.
+/** A {@code Sequence} is a branch task that runs every children until one of them fails. If a child task succeeds, the selector
+ * will start and run the next child task.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
-public class Sequence<E> extends BranchTask<E> {
+public class Sequence<E> extends SingleRunningChildBranch<E> {
 
 	public Sequence () {
-		super(new Array<Task<E>>());
+		super();
 	}
 
 	public Sequence (Array<Task<E>> tasks) {
@@ -43,7 +43,7 @@ public class Sequence<E> extends BranchTask<E> {
 	@Override
 	public void childSuccess (Task<E> runningTask) {
 		super.childSuccess(runningTask);
-		if (++actualTask < children.size) {
+		if (++currentChildIndex < children.size) {
 			run();
 		} else {
 			success();
@@ -52,6 +52,7 @@ public class Sequence<E> extends BranchTask<E> {
 
 	@Override
 	public void childFail (Task<E> runningTask) {
+		super.childFail(runningTask);
 		fail();
 	}
 

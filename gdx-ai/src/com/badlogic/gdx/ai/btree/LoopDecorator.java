@@ -16,43 +16,49 @@
 
 package com.badlogic.gdx.ai.btree;
 
-import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 
-/** A {@code LeafTask} is a terminal task of a behavior tree, contains action or condition logic, can not have any child.
+/** A {@code Loop} is an abstract decorator that provides basic functionalities for concrete looping decorators.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
- * @author implicit-invocation
  * @author davebaol */
-@TaskConstraint(minChildren = 0, maxChildren = 0)
-public abstract class LeafTask<E> extends Task<E> {
+public abstract class LoopDecorator<E> extends Decorator<E> {
 
-	@Override
-	public void addChild (Task<E> child) {
-		// Should we throw an UnsupportedOperationException ?
-		// throw new UnsupportedOperationException("A leaf task can not have any child");
+	protected boolean loop;
+
+	/** Creates a loop decorator with no child task. */
+	public LoopDecorator () {
+	}
+
+	/** Creates a loop decorator that wraps the given task.
+	 * 
+	 * @param child the task that will be wrapped */
+	public LoopDecorator (Task<E> child) {
+		super(child);
+	}
+
+	/** Whether the {@link #run()} method must keep looping or not.
+	 * @return {@code true} if it must keep looping; {@code false} otherwise. */
+	public boolean condition () {
+		return loop;
 	}
 
 	@Override
-	public int getChildCount () {
-		return 0;
+	public void run () {
+		loop = true;
+		while (condition()) {
+			if (child.status != Status.RUNNING) {
+				child.setControl(this);
+				child.start();
+			}
+			child.run();
+		}
 	}
 
 	@Override
-	public Task<E> getChild (int i) {
-		throw new IndexOutOfBoundsException("A leaf task can not have any child");
-	}
-
-	@Override
-	public final void childRunning (Task<E> runningTask, Task<E> reporter) {
-	}
-
-	@Override
-	public final void childFail (Task<E> runningTask) {
-	}
-
-	@Override
-	public final void childSuccess (Task<E> runningTask) {
+	public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		super.childRunning(runningTask, reporter);
+		loop = false;
 	}
 
 }

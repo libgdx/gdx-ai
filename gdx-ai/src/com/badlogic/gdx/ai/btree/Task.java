@@ -17,7 +17,6 @@
 package com.badlogic.gdx.ai.btree;
 
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
@@ -29,45 +28,38 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * @author davebaol */
 @TaskConstraint
 public abstract class Task<E> {
+	
+	public enum Status {
+		RUNNING, FAILED, SUCCEEDED, CANCELLED;
+	}
 
 	protected Task<E> control;
-	protected Task<E> runningTask;
-	protected Array<Task<E>> children;
+	protected Status status;
 	protected BehaviorTree<E> tree;
 
 	/** This method will add a child to the list of this task's children
 	 * 
 	 * @param child the child task which will be added */
-	public void addChild (Task<E> child) {
-		children.add(child);
-	}
+	public abstract void addChild (Task<E> child);
 
 	/** Returns the number of children of this task.
 	 * 
 	 * @return an int giving the number of children of this task */
-	public int getChildCount () {
-		return children.size;
-	}
+	public abstract int getChildCount ();
 
 	/** Returns the child at the given index. */
-	public Task<E> getChild (int i) {
-		return children.get(i);
-	}
-
-	/** Resets this task to make it restart from scratch on next run. */
-	public void reset () {
-		runningTask = null;
-		int n = getChildCount();
-		for (int i = 0; i < n; i++) {
-			getChild(i).reset();
-		}
-	}
+	public abstract Task<E> getChild (int i);
 
 	/** Returns the blackboard object of the behavior tree this task belongs to.
 	 * @throws IllegalStateException if this task has never run */
 	public E getObject () {
 		if (tree == null) throw new IllegalStateException("This task has never run");
 		return tree.getObject();
+	}
+
+	/** Returns the status of this task or {@code null} if this task has never run. */
+	public final Status getStatus () {
+		return status;
 	}
 
 	/** This method will set a task as this task's control (parent)
@@ -80,30 +72,44 @@ public abstract class Task<E> {
 
 	/** This method will be called once before this task's first run. */
 	public void start () {
-
+		//System.out.println( "START: " + getClass().getName());
 	}
 
-	/** This method will be called when this task succeeds or fails. */
+	/** This method will be called by {@link #success()}, {@link #fail()} or {@link #cancel()}, meaning that this task's status has
+	 * just been set to {@link Status#SUCCEEDED}, {@link Status#FAILED} or {@link Status#CANCELLED} respectively. */
 	public void end () {
-
+		//System.out.println( "END: " + getClass().getName());
 	}
 
-	/** This method contains update logic of this task. */
+	/** This method contains the update logic of this task. The actual implementation MUST call {@link #running()}, {@link #success()}
+	 * or {@link #fail()} exactly once. */
 	public abstract void run ();
 
 	/** This method will be called in {@link #run()} to inform control that this task needs to run again */
 	public final void running () {
+		Status previousStatus = status;
+		status = Status.RUNNING;
+		if (tree.listeners != null && tree.listeners.size > 0)
+			tree.notifyListeners(this, previousStatus);
 		control.childRunning(this, this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a success result */
-	public void success () {
+	public final void success () {
+		Status previousStatus = status;
+		status = Status.SUCCEEDED;
+		if (tree.listeners != null && tree.listeners.size > 0)
+			tree.notifyListeners(this, previousStatus);
 		end();
 		control.childSuccess(this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a failure result */
-	public void fail () {
+	public final void fail () {
+		Status previousStatus = status;
+		status = Status.FAILED;
+		if (tree.listeners != null && tree.listeners.size > 0)
+			tree.notifyListeners(this, previousStatus);
 		end();
 		control.childFail(this);
 	}
@@ -111,23 +117,44 @@ public abstract class Task<E> {
 	/** This method will be called when one of the children of this task succeeds
 	 * 
 	 * @param task the task that succeeded */
-	public void childSuccess (Task<E> task) {
-		this.runningTask = null;
-	}
+	public abstract void childSuccess (Task<E> task);
 
 	/** This method will be called when one of the children of this task fails
 	 * 
 	 * @param task the task that failed */
-	public void childFail (Task<E> task) {
-		this.runningTask = null;
-	}
+	public abstract void childFail (Task<E> task);
 
 	/** This method will be called when one of the ancestors of this task needs to run again
 	 * 
 	 * @param runningTask the task that needs to run again
 	 * @param reporter the task that reports, usually one of this task's children */
-	public void childRunning (Task<E> runningTask, Task<E> reporter) {
-		this.runningTask = runningTask;
+	public abstract void childRunning (Task<E> runningTask, Task<E> reporter);
+
+	/** Terminates this task and all its running children. This method MUST be called only if this task is running. */
+	public final void cancel () {
+		cancelRunningChildren(0);
+		Status previousStatus = status;
+		status = Status.CANCELLED;
+		if (tree.listeners != null && tree.listeners.size > 0)
+			tree.notifyListeners(this, previousStatus);
+		end();
+	}
+
+	protected void cancelRunningChildren (int fromChildIndex) {
+		for (int i = fromChildIndex, n = getChildCount(); i < n; i++) {
+			Task<E> child = getChild(i);
+			if (child.status == Status.RUNNING)
+				child.cancel();
+		}
+	}
+
+	/** Resets this task to make it restart from scratch on next run. */
+	public void reset () {
+		if (status == Status.RUNNING)
+			cancel();
+		for (int i = 0, n = getChildCount(); i < n; i++) {
+			getChild(i).reset();
+		}
 	}
 
 	/** Clones this task to a new one.

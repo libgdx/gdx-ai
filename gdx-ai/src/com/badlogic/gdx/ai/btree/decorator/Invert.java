@@ -35,12 +35,12 @@ public class Invert<E> extends Decorator<E> {
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		control.childFail(this);
+		super.childFail(runningTask);
 	}
 
 	@Override
 	public void childFail (Task<E> runningTask) {
-		control.childSuccess(this);
+		super.childSuccess(runningTask);
 	}
 
 }

@@ -1,5 +1,11 @@
 [1.6.1]
-- Added enum support in behavior tree files.
+- API Change: Behavior tree API revised and improved
+  * Now tasks have a status that is updated each time they run.
+  * Added enum support in behavior tree files.
+  * Now parallel task can specify sequence or selector policy.
+  * Added cancel method for task termination, mainly used by the parallel task.
+  * Now you can add listeners to the tree in order to be notified when a task has run.
+  * Added some tasks, namely Repeat decorator and Wait leaf.
 
 [1.6.0]
 - Updated to libgdx 1.7.0

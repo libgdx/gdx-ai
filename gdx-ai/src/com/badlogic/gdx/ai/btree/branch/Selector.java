@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.btree.branch;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.SingleRunningChildBranch;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
 
@@ -26,10 +26,10 @@ import com.badlogic.gdx.utils.Array;
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
-public class Selector<E> extends BranchTask<E> {
+public class Selector<E> extends SingleRunningChildBranch<E> {
 
 	public Selector () {
-		super(new Array<Task<E>>());
+		super();
 	}
 
 	public Selector (Task<E>... tasks) {
@@ -43,7 +43,7 @@ public class Selector<E> extends BranchTask<E> {
 	@Override
 	public void childFail (Task<E> runningTask) {
 		super.childFail(runningTask);
-		if (++actualTask < children.size) {
+		if (++currentChildIndex < children.size) {
 			run();
 		} else {
 			fail();
@@ -52,6 +52,7 @@ public class Selector<E> extends BranchTask<E> {
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
+		super.childSuccess(runningTask);
 		success();
 	}
 

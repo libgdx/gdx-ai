@@ -33,9 +33,8 @@ public class CareTask extends LeafTask<Dog> {
 			success();
 		} else {
 			Dog dog = getObject();
-			dog.brainLog("It's leaking out!!!");
-			dog.setUrgent(true);
-			success();
+			dog.brainLog("GASP - Something urgent :/");
+			fail();
 		}
 	}
 

@@ -46,8 +46,7 @@ public class WalkTask extends LeafTask<Dog> {
 
 	@Override
 	public void end () {
-		Dog dog = getObject();
-		dog.stopWalking();
+		getObject().stopWalking();
 	}
 
 	@Override

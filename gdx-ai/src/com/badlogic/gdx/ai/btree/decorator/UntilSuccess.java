@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.btree.decorator;
 
-import com.badlogic.gdx.ai.btree.Decorator;
+import com.badlogic.gdx.ai.btree.LoopDecorator;
 import com.badlogic.gdx.ai.btree.Task;
 
 /** An {@code UntilSuccess} decorator will repeat the wrapped task until that task succeeds. Using {@code UntilSuccess} with
@@ -25,7 +25,7 @@ import com.badlogic.gdx.ai.btree.Task;
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
-public class UntilSuccess<E> extends Decorator<E> {
+public class UntilSuccess<E> extends LoopDecorator<E> {
 
 	public UntilSuccess () {
 	}
@@ -36,12 +36,12 @@ public class UntilSuccess<E> extends Decorator<E> {
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		control.childSuccess(this);
+		success();
+		loop = false;
 	}
 
 	@Override
 	public void childFail (Task<E> runningTask) {
-		start();
-		run();
+		loop = true;
 	}
 }

@@ -18,11 +18,19 @@ package com.badlogic.gdx.ai.btree.branch;
 
 import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.utils.Array;
 
-/** A {@code Parallel} is a special branch task that starts or resumes all children every single time, parallel task will succeed
- * if all the children succeed, fail if one of the children fail. The typical use case: make the game entity react on event while
- * sleeping or wandering.
+/** A {@code Parallel} is a special branch task that starts or resumes all children every single time. The actual behavior of
+ * parallel task depends on its {@link #policy}:
+ * <ul>
+ * <li>{@link Policy#Sequence}: the parallel task fails as soon as one child fails; if all children succeed, then the parallel
+ * task succeeds. This is the default policy.</li>
+ * <li>{@link Policy#Selector}: the parallel task succeeds as soon as one child succeeds; if all children fail, then the parallel
+ * task fails.</li>
+ * </ul>
+ * 
+ * The typical use case: make the game entity react on event while sleeping or wandering.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
@@ -30,92 +38,140 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public class Parallel<E> extends BranchTask<E> {
 
-	private boolean[] runningTasks;
-	private boolean success;
+	@TaskAttribute
+	public Policy policy;
+
 	private boolean noRunningTasks;
+	private Boolean lastResult;
 	private int currentChildIndex;
 
-	/** Creates a parallel task with no children */
+	/** Creates a parallel task with sequence policy no children */
 	public Parallel () {
 		this(new Array<Task<E>>());
 	}
 
-	/** Creates a parallel task with the given children
+	/** Creates a parallel task with sequence policy and the given children
 	 * @param tasks the children */
 	public Parallel (Task<E>... tasks) {
 		this(new Array<Task<E>>(tasks));
 	}
 
-	/** Creates a parallel task with the given children
+	/** Creates a parallel task with sequence policy and the given children
 	 * @param tasks the children */
 	public Parallel (Array<Task<E>> tasks) {
-		super(tasks);
-		this.success = true;
-		this.noRunningTasks = true;
+		this(Policy.Sequence, tasks);
 	}
 
-	@Override
-	public void start () {
-		if (runningTasks == null)
-			runningTasks = new boolean[children.size];
-		else {
-			for (int i = 0; i < runningTasks.length; i++)
-				runningTasks[i] = false;
-		}
-		success = true;
+	/** Creates a parallel task with the given policy and no children
+	 * @param tasks the children */
+	public Parallel (Policy policy) {
+		this(policy, new Array<Task<E>>());
+	}
+
+	/** Creates a parallel task with the given policy and children
+	 * @param tasks the children */
+	public Parallel (Policy policy, Task<E>... tasks) {
+		this(policy, new Array<Task<E>>(tasks));
+	}
+
+	/** Creates a parallel task with the given policy and children
+	 * @param tasks the children */
+	public Parallel (Policy policy, Array<Task<E>> tasks) {
+		super(tasks);
+		this.policy = policy;
+		noRunningTasks = true;
 	}
 
 	@Override
 	public void run () {
 		noRunningTasks = true;
+		lastResult = null;
 		for (currentChildIndex = 0; currentChildIndex < children.size; currentChildIndex++) {
 			Task<E> child = children.get(currentChildIndex);
-			if (runningTasks[currentChildIndex]) {
-				child.run();
-			} else {
+			if (child.getStatus() != Status.RUNNING) {
 				child.setControl(this);
 				child.start();
-				child.run();
+			}
+
+			child.run();
+
+			if (lastResult != null) {
+				cancelRunningChildren(noRunningTasks? currentChildIndex + 1 :  0);
+				if (lastResult)
+					success();
+				else
+					fail();
+				return;
 			}
 		}
+		running();
 	}
 
 	@Override
 	public void childRunning (Task<E> task, Task<E> reporter) {
-		runningTasks[currentChildIndex] = true;
 		noRunningTasks = false;
-		control.childRunning(this, this);
 	}
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		runningTasks[currentChildIndex] = false;
-		if (noRunningTasks && currentChildIndex == children.size - 1) {
-			if (success) {
-				success();
-			} else {
-				fail();
-			}
-		}
+		lastResult = policy.onChildSuccess(this);
 	}
 
 	@Override
 	public void childFail (Task<E> runningTask) {
-		runningTasks[currentChildIndex] = false;
-		success = false;
-		if (noRunningTasks && currentChildIndex == children.size - 1) {
-			fail();
-		}
+		lastResult = policy.onChildFail(this);
 	}
 
 	@Override
 	public void reset () {
 		super.reset();
-		if (runningTasks != null) {
-			for (int i = 0; i < runningTasks.length; i++)
-				runningTasks[i] = false;
-		}
-		success = true;
+		noRunningTasks = true;
 	}
 
+	@Override
+	protected Task<E> copyTo (Task<E> task) {
+		Parallel<E> parallel = (Parallel<E>)task;
+		parallel.policy = policy; // no need to clone since it is immutable
+
+		return super.copyTo(task);
+	}
+
+	public enum Policy {
+		Sequence() {
+			@Override
+			public Boolean onChildSuccess (Parallel<?> parallel) {
+				return parallel.noRunningTasks && parallel.currentChildIndex == parallel.children.size - 1 ? Boolean.TRUE : null;
+			}
+
+			@Override
+			public Boolean onChildFail (Parallel<?> parallel) {
+				return Boolean.FALSE;
+			}
+
+		},
+		Selector() {
+			@Override
+			public Boolean onChildSuccess (Parallel<?> parallel) {
+				return Boolean.TRUE;
+			}
+
+			@Override
+			public Boolean onChildFail (Parallel<?> parallel) {
+				return parallel.noRunningTasks && parallel.currentChildIndex == parallel.children.size - 1 ? Boolean.FALSE : null;
+			}
+		};
+
+		/** Called by parallel task each time one of its children succeeds.
+		 * @param parallel the parallel task
+		 * @return {@code Boolean.TRUE} if parallel must succeed, {@code Boolean.FALSE} if parallel must fail and {@code null} if
+		 *         parallel must keep on running. */
+		public abstract Boolean onChildSuccess (Parallel<?> parallel);
+
+		/** Called by parallel task each time one of its children fails.
+		 * @param parallel the parallel task
+		 * @return {@code Boolean.TRUE} if parallel must succeed, {@code Boolean.FALSE} if parallel must fail and {@code null} if
+		 *         parallel must keep on running. */
+		public abstract Boolean onChildFail (Parallel<?> parallel);
+
+	}
 }

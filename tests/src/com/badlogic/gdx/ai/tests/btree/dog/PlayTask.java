@@ -16,38 +16,31 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 
-/** @author implicit-invocation
- * @author davebaol */
-public class MarkTask extends LeafTask<Dog> {
+public class PlayTask extends LeafTask<Dog> {
 
-	int i;
-	
-	@Override
 	public void start () {
-		i = 0;
-		getObject().log("Dog lifts a leg and pee!");
+		Dog dog = getObject();
+		dog.brainLog("WOW - Lets play!");
 	}
 
 	@Override
 	public void run () {
 		Dog dog = getObject();
-		Boolean result = dog.markATree(i++);
-		if (result == null) {
-			running();
-		}
-		else if (result) {
-			success();
-		} else {
-			fail();
-		}
+		dog.brainLog("PANT PANT - So fun");
+		running();
+	}
+
+	@Override
+	public void end () {
+		Dog dog = getObject();
+		dog.brainLog("SIC - No time to play :(");
 	}
 
 	@Override
 	protected Task<Dog> copyTo (Task<Dog> task) {
 		return task;
 	}
-
 }

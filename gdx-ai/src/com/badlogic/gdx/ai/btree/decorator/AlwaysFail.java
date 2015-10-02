@@ -35,12 +35,7 @@ public class AlwaysFail<E> extends Decorator<E> {
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
-		control.childFail(this);
-	}
-
-	@Override
-	public void childFail (Task<E> runningTask) {
-		control.childFail(this);
+		childFail(runningTask);
 	}
 
 }

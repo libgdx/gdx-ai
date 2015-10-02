@@ -5,18 +5,23 @@
 # Alias definitions
 import bark:"com.badlogic.gdx.ai.tests.btree.dog.BarkTask"
 import care:"com.badlogic.gdx.ai.tests.btree.dog.CareTask"
+import play:"com.badlogic.gdx.ai.tests.btree.dog.PlayTask"
 import mark:"com.badlogic.gdx.ai.tests.btree.dog.MarkTask"
 import walk:"com.badlogic.gdx.ai.tests.btree.dog.WalkTask"
+import rest:"com.badlogic.gdx.ai.tests.btree.dog.RestTask"
 
 # Tree definition (note that root is optional)
 root
   selector
     parallel
       care urgentProb:0.8
-      alwaysFail
-        com.badlogic.gdx.ai.tests.btree.dog.RestTask # fully qualified task
-    sequence
-      bark times:"uniform,1,5"
-      walk
-      com.badlogic.gdx.ai.tests.btree.dog.BarkTask # fully qualified task
-      mark
+      com.badlogic.gdx.ai.tests.btree.dog.PlayTask # fully qualified task
+    selector deterministic:false
+      untilSuccess  # find some trees to pee
+        sequence
+          bark times:"uniform,1,2"
+          walk
+          mark
+      parallel policy:"selector"  # sleep with random timeout
+        wait seconds:"triangular,2.5,5.5"
+        rest

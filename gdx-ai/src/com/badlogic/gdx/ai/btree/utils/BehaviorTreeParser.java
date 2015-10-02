@@ -30,9 +30,11 @@ import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.decorator.Invert;
+import com.badlogic.gdx.ai.btree.decorator.Repeat;
 import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.decorator.UntilFail;
 import com.badlogic.gdx.ai.btree.decorator.UntilSuccess;
+import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.ai.utils.random.Distribution;
 import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
 import com.badlogic.gdx.ai.utils.random.FloatDistribution;
@@ -137,11 +139,13 @@ public class BehaviorTreeParser<E> {
 				Include.class,
 				Invert.class,
 				Parallel.class,
+				Repeat.class,
 				Selector.class,
 				SemaphoreGuard.class,
 				Sequence.class,
 				UntilFail.class,
-				UntilSuccess.class
+				UntilSuccess.class,
+				Wait.class
 			}; // @on - enable libgdx formatter
 			for (Class<?> c : classes) {
 				String fqcn = c.getName();
