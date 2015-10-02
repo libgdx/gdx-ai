@@ -5,6 +5,7 @@
   * Now parallel task can specify sequence or selector policy.
   * Added cancel method for task termination, mainly used by the parallel task.
   * Now you can add listeners to the tree in order to be notified when a task has run.
+  * Now task methods success and fail are final.
   * Added some tasks, namely Repeat decorator and Wait leaf.
 
 [1.6.0]
