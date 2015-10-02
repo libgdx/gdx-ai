@@ -20,7 +20,7 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
-/** A branch task defines a behavior tree branch, contains logic of starting or running sub-branches and leaves
+/** A {@code SingleRunningChildBranch} task is a branch task that supports only one running child at a time.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
@@ -28,17 +28,19 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 
+	/** Optional task attribute specifying whether children are processed in random order ({@code false}) or not ({@code true}, the
+	 * default). */
 	@TaskAttribute public boolean deterministic = true;
 
 	protected Task<E> runningChild;
 	protected int currentChildIndex;
 
-	/** Create a branch task with no children */
+	/** Creates a {@code SingleRunningChildBranch} task with no children */
 	public SingleRunningChildBranch () {
 		super();
 	}
 
-	/** Create a branch task with a list of children
+	/** Creates a {@code SingleRunningChildBranch} task with a list of children
 	 * 
 	 * @param tasks list of this task's children, can be empty */
 	public SingleRunningChildBranch (Array<Task<E>> tasks) {

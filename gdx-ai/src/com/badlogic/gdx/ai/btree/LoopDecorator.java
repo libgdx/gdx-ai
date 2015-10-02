@@ -16,8 +16,7 @@
 
 package com.badlogic.gdx.ai.btree;
 
-
-/** A {@code Loop} is an abstract decorator that provides basic functionalities for concrete looping decorators.
+/** {@code LoopDecorator} is an abstract class providing basic functionalities for concrete looping decorators.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
