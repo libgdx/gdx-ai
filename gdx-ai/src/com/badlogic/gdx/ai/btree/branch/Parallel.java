@@ -63,18 +63,20 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	/** Creates a parallel task with the given policy and no children
-	 * @param tasks the children */
+	 * @param policy the policy */
 	public Parallel (Policy policy) {
 		this(policy, new Array<Task<E>>());
 	}
 
 	/** Creates a parallel task with the given policy and children
+	 * @param policy the policy
 	 * @param tasks the children */
 	public Parallel (Policy policy, Task<E>... tasks) {
 		this(policy, new Array<Task<E>>(tasks));
 	}
 
 	/** Creates a parallel task with the given policy and children
+	 * @param policy the policy
 	 * @param tasks the children */
 	public Parallel (Policy policy, Array<Task<E>> tasks) {
 		super(tasks);
@@ -136,7 +138,10 @@ public class Parallel<E> extends BranchTask<E> {
 		return super.copyTo(task);
 	}
 
+	/** The enumeration of the policies supported by the {@link Parallel} task. */
 	public enum Policy {
+		/** The sequence policy makes the {@link Parallel} task fail as soon as one child fails; if all children succeed, then the
+		 * parallel task succeeds. This is the default policy. */
 		Sequence() {
 			@Override
 			public Boolean onChildSuccess (Parallel<?> parallel) {
@@ -147,8 +152,9 @@ public class Parallel<E> extends BranchTask<E> {
 			public Boolean onChildFail (Parallel<?> parallel) {
 				return Boolean.FALSE;
 			}
-
 		},
+		/** The selector policy makes the {@link Parallel} task succeed as soon as one child succeeds; if all children fail, then the
+		 * parallel task fails. */
 		Selector() {
 			@Override
 			public Boolean onChildSuccess (Parallel<?> parallel) {
