@@ -19,12 +19,15 @@ package com.badlogic.gdx.ai.btree.decorator;
 import com.badlogic.gdx.ai.btree.LoopDecorator;
 import com.badlogic.gdx.ai.btree.Task;
 
-/** An {@code UntilSuccess} decorator will repeat the wrapped task until that task succeeds. Using {@code UntilSuccess} with
- * {@code AlwaysFail} without any ancestor call {@link #running()} will cause {@link StackOverflowError}.
+/** The {@code UntilSuccess} decorator will repeat the wrapped task until that task succeeds, which makes the decorator succeed.
+ * <p>
+ * Notice that a wrapped task that always fails without entering the running status will cause an infinite loop in the current
+ * frame.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
- * @author implicit-invocation */
+ * @author implicit-invocation
+ * @author davebaol */
 public class UntilSuccess<E> extends LoopDecorator<E> {
 
 	public UntilSuccess () {
