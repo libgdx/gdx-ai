@@ -24,7 +24,7 @@ import com.badlogic.gdx.ai.btree.Task;
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author davebaol */
-public class Success<T> extends LeafTask<T> {
+public class Success<E> extends LeafTask<E> {
 
 	/** Creates a {@code Success} task. */
 	public Success () {
@@ -36,7 +36,7 @@ public class Success<T> extends LeafTask<T> {
 	}
 
 	@Override
-	protected Task<T> copyTo (Task<T> task) {
+	protected Task<E> copyTo (Task<E> task) {
 		return task;
 	}
 

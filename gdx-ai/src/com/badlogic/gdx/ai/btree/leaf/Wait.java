@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author davebaol */
-public class Wait<T> extends LeafTask<T> {
+public class Wait<E> extends LeafTask<E> {
 
 	@TaskAttribute(required = true) public FloatDistribution seconds;
 
@@ -69,8 +69,8 @@ public class Wait<T> extends LeafTask<T> {
 	}
 
 	@Override
-	protected Task<T> copyTo (Task<T> task) {
-		((Wait<T>)task).seconds = seconds;
+	protected Task<E> copyTo (Task<E> task) {
+		((Wait<E>)task).seconds = seconds;
 		return task;
 	}
 
