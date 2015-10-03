@@ -7,6 +7,7 @@
   * Now you can add listeners to the tree in order to be notified when a task has run.
   * Now task methods success and fail are final.
   * Added some tasks, namely Repeat decorator and Failure, Success and Wait leaves.
+  * Now the UntilFail decorator succeeds when its child fails. 
 
 [1.6.0]
 - Updated to libgdx 1.7.0
