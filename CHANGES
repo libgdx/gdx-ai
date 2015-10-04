@@ -4,9 +4,11 @@
   * Added enum support in behavior tree files.
   * Now parallel task can specify sequence or selector policy.
   * Added cancel method for task termination, mainly used by the parallel task.
-  * Now you can add listeners to the tree in order to be notified when a task has run.
-  * Now task methods success and fail are final.
-  * Added some tasks, namely Repeat decorator and Failure, Success and Wait leaves.
+  * Now you can add listeners to the tree in order to be notified when a task has run and a child is added.
+  * Now task methods setControl, success and fail are final.
+  * Now method addChild is final and Task's subclasses have to implement addChildToTask.
+  * Added decorator tasks Repeat and Random.
+  * Added leaf tasks Failure, Success and Wait.
   * Now the UntilFail decorator succeeds when its child fails. 
 
 [1.6.0]
