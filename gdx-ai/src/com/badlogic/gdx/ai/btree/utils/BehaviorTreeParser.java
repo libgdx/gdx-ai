@@ -139,11 +139,11 @@ public class BehaviorTreeParser<E> {
 			Class<?>[] classes = new Class<?>[] {// @off - disable libgdx formatter
 				AlwaysFail.class,
 				AlwaysSucceed.class,
-				Random.class,
 				Failure.class,
 				Include.class,
 				Invert.class,
 				Parallel.class,
+				Random.class,
 				Repeat.class,
 				Selector.class,
 				SemaphoreGuard.class,
