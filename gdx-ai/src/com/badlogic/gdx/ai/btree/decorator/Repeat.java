@@ -22,7 +22,8 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.utils.random.ConstantIntegerDistribution;
 import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
 
-/** A {@code Repeat} decorator will repeat the wrapped task a certain number of times, possibly infinite.
+/** A {@code Repeat} decorator will repeat the wrapped task a certain number of times, possibly infinite. This task always succeeds
+ * when reaches the specified number of repetitions.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
@@ -85,12 +86,7 @@ public class Repeat<E> extends LoopDecorator<E> {
 
 	@Override
 	public void childFail (Task<E> runningTask) {
-		if (count > 0) count--;
-		if (count == 0) {
-			super.childFail(runningTask);
-			loop = false;
-		} else
-			loop = true;
+		childSuccess(runningTask);
 	}
 
 	@Override
