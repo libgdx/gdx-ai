@@ -60,23 +60,19 @@ public class Include<E> extends Decorator<E> {
 	}
 
 	/** The first call of this method lazily sets its child to the referenced subtree created through the
-	 * {@link BehaviorTreeLibraryManager}, then invoke the same method of the superclass. Subsequent calls invoke the same method
-	 * of the superclass directly since the child has already been set. A {@link UnsupportedOperationException} is thrown if this
-	 * {@code Include} is eager.
+	 * {@link BehaviorTreeLibraryManager}. Subsequent calls do nothing since the child has already been set. A
+	 * {@link UnsupportedOperationException} is thrown if this {@code Include} is eager.
 	 * 
-	 * @param control the parent task
 	 * @throws UnsupportedOperationException if this {@code Include} is eager */
 	@Override
-	public void setControl (Task<E> control) {
+	public void start () {
 		if (!lazy)
 			throw new UnsupportedOperationException("A non-lazy " + Include.class.getSimpleName() + " isn't meant to be run!");
 
 		if (child == null) {
 			// Lazy include is grafted at run-time
-			child = createSubtreeRootTask();
+			addChild(createSubtreeRootTask());
 		}
-
-		super.setControl(control);
 	}
 
 	/** Returns a clone of the referenced subtree if this {@code Import} is eager; otherwise returns a clone of itself. */

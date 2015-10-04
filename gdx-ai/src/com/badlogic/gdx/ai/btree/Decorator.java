@@ -42,8 +42,10 @@ public abstract class Decorator<E> extends Task<E> {
 	}
 
 	@Override
-	public void addChild (Task<E> child) {
+	protected int addChildToTask (Task<E> child) {
+		if (this.child != null) throw new IllegalStateException("A decorator task cannot have more than one child");
 		this.child = child;
+		return 0;
 	}
 
 	@Override
@@ -83,8 +85,10 @@ public abstract class Decorator<E> extends Task<E> {
 
 	@Override
 	protected Task<E> copyTo (Task<E> task) {
-		Decorator<E> decorator = (Decorator<E>)task;
-		decorator.child = this.child.cloneTask();
+		if (this.child != null) {
+			Decorator<E> decorator = (Decorator<E>)task;
+			decorator.child = this.child.cloneTask();
+		}
 
 		return task;
 	}

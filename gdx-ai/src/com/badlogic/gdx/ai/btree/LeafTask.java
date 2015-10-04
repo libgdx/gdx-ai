@@ -27,10 +27,10 @@ import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 @TaskConstraint(minChildren = 0, maxChildren = 0)
 public abstract class LeafTask<E> extends Task<E> {
 
+	/** Always throws {@code IllegalStateException} because a leaf task cannot have any children. */
 	@Override
-	public void addChild (Task<E> child) {
-		// Should we throw an UnsupportedOperationException ?
-		// throw new UnsupportedOperationException("A leaf task can not have any child");
+	protected int addChildToTask (Task<E> child) {
+		throw new IllegalStateException("A leaf task cannot have any children");
 	}
 
 	@Override

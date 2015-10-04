@@ -70,14 +70,16 @@ public class BehaviorTree<E> extends Task<E> {
 		this.object = object;
 	}
 
-	/** This method will add a child to the list of this task's children
+	/** This method will add a child, namely the root, to this behavior tree.
 	 * 
-	 * @param child the child task which will be added
-	 * @exception IllegalStateException if the root task is already set. */
+	 * @param child the root task to add
+	 * @return the index where the root task has been added (always 0).
+	 * @throws IllegalStateException if the root task is already set. */
 	@Override
-	public void addChild (Task<E> child) {
+	protected int addChildToTask (Task<E> child) {
 		if (this.rootTask != null) throw new IllegalStateException("A behavior tree cannot have more than one root task");
 		this.rootTask = child;
+		return 0;
 	}
 
 	@Override
@@ -140,14 +142,22 @@ public class BehaviorTree<E> extends Task<E> {
 		if (listeners != null) listeners.clear();
 	}
 	
-	public void notifyListeners(Task<E> task, Status previousStatus) {
+	public void notifyStatusUpdated(Task<E> task, Status previousStatus) {
 		for (Listener<E> listener : listeners) {
 			listener.statusUpdated(task, previousStatus);
+		}
+	}
+	
+	public void notifyChildAdded(Task<E> task, int index) {
+		for (Listener<E> listener : listeners) {
+			listener.childAdded(task, index);
 		}
 	}
 	
 	public interface Listener<E> {
 		
 		public void statusUpdated(Task<E> task, Status previousStatus);
+
+		public void childAdded(Task<E> task, int index);
 	}
 }

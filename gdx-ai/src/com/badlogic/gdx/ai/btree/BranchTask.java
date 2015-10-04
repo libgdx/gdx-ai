@@ -43,8 +43,9 @@ public abstract class BranchTask<E> extends Task<E> {
 	}
 
 	@Override
-	public void addChild (Task<E> child) {
+	protected int addChildToTask (Task<E> child) {
 		children.add(child);
+		return children.size - 1;
 	}
 
 	@Override

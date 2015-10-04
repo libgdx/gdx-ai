@@ -39,8 +39,22 @@ public abstract class Task<E> {
 
 	/** This method will add a child to the list of this task's children
 	 * 
-	 * @param child the child task which will be added */
-	public abstract void addChild (Task<E> child);
+	 * @param child the child task which will be added
+	 * @return the index where the child has been added.
+	 * @throws IllegalStateException if the child cannot be added for whatever reason. */
+	public final int addChild (Task<E> child) {
+		int index = addChildToTask(child);
+		if (tree != null && tree.listeners != null)
+			tree.notifyChildAdded(this, index);
+		return index;
+	}
+
+	/** This method will add a child to the list of this task's children
+	 * 
+	 * @param child the child task which will be added
+	 * @return the index where the child has been added.
+	 * @throws IllegalStateException if the child cannot be added for whatever reason. */
+	protected abstract int addChildToTask (Task<E> child);
 
 	/** Returns the number of children of this task.
 	 * 
@@ -65,7 +79,7 @@ public abstract class Task<E> {
 	/** This method will set a task as this task's control (parent)
 	 * 
 	 * @param control the parent task */
-	public void setControl (Task<E> control) {
+	public final void setControl (Task<E> control) {
 		this.control = control;
 		this.tree = control.tree;
 	}
@@ -90,7 +104,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.RUNNING;
 		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyListeners(this, previousStatus);
+			tree.notifyStatusUpdated(this, previousStatus);
 		control.childRunning(this, this);
 	}
 
@@ -99,7 +113,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.SUCCEEDED;
 		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyListeners(this, previousStatus);
+			tree.notifyStatusUpdated(this, previousStatus);
 		end();
 		control.childSuccess(this);
 	}
@@ -109,7 +123,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.FAILED;
 		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyListeners(this, previousStatus);
+			tree.notifyStatusUpdated(this, previousStatus);
 		end();
 		control.childFail(this);
 	}
@@ -136,7 +150,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.CANCELLED;
 		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyListeners(this, previousStatus);
+			tree.notifyStatusUpdated(this, previousStatus);
 		end();
 	}
 

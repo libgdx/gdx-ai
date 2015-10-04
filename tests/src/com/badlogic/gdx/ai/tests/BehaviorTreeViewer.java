@@ -99,6 +99,14 @@ public class BehaviorTreeViewer extends Game implements Screen {
 				TaskNode tn = taskNodes.get(task);
 				tn.updateStatus(previousStatus, step);
 			}
+
+			@Override
+			public void childAdded (Task<Dog> task, int index) {
+				TaskNode parentNode = taskNodes.get(task);
+				Task<Dog> child = task.getChild(index);
+				addToTree (displayTree, parentNode, child, null, 0);
+				displayTree.expandAll();
+			}
 		});
 		KryoUtils.initKryo();
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
