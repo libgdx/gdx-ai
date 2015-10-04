@@ -26,9 +26,13 @@ import com.badlogic.gdx.ai.btree.Task;
  * @author implicit-invocation */
 public class AlwaysFail<E> extends Decorator<E> {
 
+	/** Creates an {@code AlwaysFail} decorator with no child. */
 	public AlwaysFail () {
 	}
 
+	/** Creates an {@code AlwaysFail} decorator with the given child.
+	 * 
+	 * @param task the child task to wrap */
 	public AlwaysFail (Task<E> task) {
 		super(task);
 	}

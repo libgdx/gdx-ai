@@ -30,9 +30,13 @@ import com.badlogic.gdx.ai.btree.Task;
  * @author davebaol */
 public class UntilSuccess<E> extends LoopDecorator<E> {
 
+	/** Creates an {@code UntilSuccess} decorator with no child. */
 	public UntilSuccess () {
 	}
 
+	/** Creates an {@code UntilSuccess} decorator with the given child.
+	 * 
+	 * @param task the child task to wrap */
 	public UntilSuccess (Task<E> task) {
 		super(task);
 	}

@@ -38,17 +38,38 @@ import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
  * @author davebaol */
 public class SemaphoreGuard<E> extends Decorator<E> {
 
-	@TaskAttribute(required=true)
-	public String name;
+	/** The semaphore name. */
+	@TaskAttribute(required = true) public String name;
 
-	protected NonBlockingSemaphore semaphore;
-	protected boolean semaphoreAcquired;
+	private NonBlockingSemaphore semaphore;
+	private boolean semaphoreAcquired;
 
+	/** Creates a {@code SemaphoreGuard} decorator with no child. */
 	public SemaphoreGuard () {
 	}
 
+	/** Creates a {@code SemaphoreGuard} decorator with the given child.
+	 * 
+	 * @param task the child task to wrap */
 	public SemaphoreGuard (Task<E> task) {
 		super(task);
+	}
+
+	/** Creates a {@code SemaphoreGuard} decorator with no child the specified semaphore name.
+	 * 
+	 * @param name the semaphore name */
+	public SemaphoreGuard (String name) {
+		super();
+		this.name = name;
+	}
+
+	/** Creates a {@code SemaphoreGuard} decorator with the specified semaphore name and child.
+	 * 
+	 * @param name the semaphore name
+	 * @param task the child task to wrap */
+	public SemaphoreGuard (String name, Task<E> task) {
+		super(task);
+		this.name = name;
 	}
 
 	@Override
@@ -57,9 +78,7 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 			semaphore = NonBlockingSemaphoreRepository.getSemaphore(name);
 		}
 		semaphoreAcquired = semaphore.acquire();
-		// System.out.println(object+" Enter START: semaphoreAcquired="+semaphoreAcquired);
-		//if (semaphoreAcquired)
-			super.start();
+		super.start();
 	}
 
 	@Override
@@ -67,34 +86,18 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		if (semaphoreAcquired) {
 			super.run();
 		} else {
-			// System.out.println("FAILING");
 			fail();
 		}
 	}
 
 	@Override
 	public void end () {
-		// System.out.println(object+" Enter END: semaphoreAcquired="+semaphoreAcquired);
 		if (semaphoreAcquired) {
 			semaphore.release();
 			semaphoreAcquired = false;
 		}
 		super.end();
 	}
-
-//	@Override
-//	public void childFail (Task<E> runningTask) {
-//		super.childFail(runningTask);
-//		semaphore.release();
-//		semaphoreAcquired = false;
-//	}
-//
-//	@Override
-//	public void childSuccess (Task<E> runningTask) {
-//		super.childSuccess(runningTask);
-//		semaphore.release();
-//		semaphoreAcquired = false;
-//	}
 
 	@Override
 	public void reset () {

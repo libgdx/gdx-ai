@@ -26,9 +26,13 @@ import com.badlogic.gdx.ai.btree.Task;
  * @author implicit-invocation */
 public class AlwaysSucceed<E> extends Decorator<E> {
 
+	/** Creates an {@code AlwaysSucceed} decorator with no child. */
 	public AlwaysSucceed () {
 	}
 
+	/** Creates an {@code AlwaysSucceed} decorator with the given child.
+	 * 
+	 * @param task the child task to wrap */
 	public AlwaysSucceed (Task<E> task) {
 		super(task);
 	}

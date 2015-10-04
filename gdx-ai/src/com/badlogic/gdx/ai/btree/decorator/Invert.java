@@ -26,9 +26,13 @@ import com.badlogic.gdx.ai.btree.Task;
  * @author implicit-invocation */
 public class Invert<E> extends Decorator<E> {
 
+	/** Creates an {@code Invert} decorator with no child. */
 	public Invert () {
 	}
 
+	/** Creates an {@code Invert} decorator with the given child.
+	 * 
+	 * @param task the child task to wrap */
 	public Invert (Task<E> task) {
 		super(task);
 	}
