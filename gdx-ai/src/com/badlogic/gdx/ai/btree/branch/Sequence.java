@@ -28,14 +28,21 @@ import com.badlogic.gdx.utils.Array;
  * @author implicit-invocation */
 public class Sequence<E> extends SingleRunningChildBranch<E> {
 
+	/** Creates a {@code Sequence} branch with no children. */
 	public Sequence () {
 		super();
 	}
 
+	/** Creates a {@code Sequence} branch with the given children.
+	 * 
+	 * @param tasks the children of this task */
 	public Sequence (Array<Task<E>> tasks) {
 		super(tasks);
 	}
 
+	/** Creates a {@code Sequence} branch with the given children.
+	 * 
+	 * @param tasks the children of this task */
 	public Sequence (Task<E>... tasks) {
 		super(new Array<Task<E>>(tasks));
 	}

@@ -38,7 +38,7 @@ import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
  * @author davebaol */
 public class SemaphoreGuard<E> extends Decorator<E> {
 
-	/** The semaphore name. */
+	/** Mandatory task attribute specifying the semaphore name. */
 	@TaskAttribute(required = true) public String name;
 
 	private NonBlockingSemaphore semaphore;

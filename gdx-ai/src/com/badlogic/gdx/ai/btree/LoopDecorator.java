@@ -23,6 +23,7 @@ package com.badlogic.gdx.ai.btree;
  * @author davebaol */
 public abstract class LoopDecorator<E> extends Decorator<E> {
 
+	/** Whether the {@link #run()} method must keep looping or not. */
 	protected boolean loop;
 
 	/** Creates a loop decorator with no child task. */

@@ -25,9 +25,10 @@ import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
  * 
  * @author implicit-invocation
  * @author davebaol */
-@TaskConstraint(minChildren=1, maxChildren=1)
+@TaskConstraint(minChildren = 1, maxChildren = 1)
 public abstract class Decorator<E> extends Task<E> {
 
+	/** The child task wrapped by this decorator */
 	protected Task<E> child;
 
 	/** Creates a decorator with no child task. */
