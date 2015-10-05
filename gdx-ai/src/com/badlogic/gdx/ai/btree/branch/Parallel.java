@@ -38,14 +38,14 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public class Parallel<E> extends BranchTask<E> {
 
-	@TaskAttribute
-	public Policy policy;
+	/** Optional task attribute specifying the parallel policy (defaults to {@link Policy#Sequence}) */
+	@TaskAttribute public Policy policy;
 
 	private boolean noRunningTasks;
 	private Boolean lastResult;
 	private int currentChildIndex;
 
-	/** Creates a parallel task with sequence policy no children */
+	/** Creates a parallel task with sequence policy and no children */
 	public Parallel () {
 		this(new Array<Task<E>>());
 	}
@@ -98,7 +98,7 @@ public class Parallel<E> extends BranchTask<E> {
 			child.run();
 
 			if (lastResult != null) {
-				cancelRunningChildren(noRunningTasks? currentChildIndex + 1 :  0);
+				cancelRunningChildren(noRunningTasks ? currentChildIndex + 1 : 0);
 				if (lastResult)
 					success();
 				else

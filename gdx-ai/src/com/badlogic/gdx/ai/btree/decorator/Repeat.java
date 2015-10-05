@@ -30,10 +30,11 @@ import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
  * @author implicit-invocation */
 public class Repeat<E> extends LoopDecorator<E> {
 
-	/** The integer distribution that determines how many times the wrapped task must be repeated.
+	/** Optional task attribute specifying the integer distribution that determines how many times the wrapped task must be
+	 * repeated. Defaults to {@link ConstantIntegerDistribution#NEGATIVE_ONE} which indicates an infinite number of repetitions.
 	 * 
 	 * @see #start() */
-	@TaskAttribute() public IntegerDistribution times;
+	@TaskAttribute public IntegerDistribution times;
 
 	private int count;
 
@@ -46,16 +47,16 @@ public class Repeat<E> extends LoopDecorator<E> {
 	 * 
 	 * @param child the task that will be wrapped */
 	public Repeat (Task<E> child) {
-		this(child, ConstantIntegerDistribution.NEGATIVE_ONE);
+		this(ConstantIntegerDistribution.NEGATIVE_ONE, child);
 	}
 
 	/** Creates a repeat decorator that executes the given task the number of times (possibly infinite) determined by the given
 	 * distribution. The number of times is drawn from the distribution by the {@link #start()} method. Any negative value means
 	 * forever.
 	 * 
-	 * @param child the task that will be wrapped
-	 * @param times the integer distribution specifying how many times the child must be repeated. */
-	public Repeat (Task<E> child, IntegerDistribution times) {
+	 * @param times the integer distribution specifying how many times the child must be repeated.
+	 * @param child the task that will be wrapped */
+	public Repeat (IntegerDistribution times, Task<E> child) {
 		super(child);
 		this.times = times;
 	}

@@ -32,7 +32,10 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 	 * default). */
 	@TaskAttribute public boolean deterministic = true;
 
+	/** The child in the running status or {@code null} if no child is running. */
 	protected Task<E> runningChild;
+
+	/** The index of the child currently processed. */
 	protected int currentChildIndex;
 
 	/** Creates a {@code SingleRunningChildBranch} task with no children */
@@ -90,8 +93,8 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 	}
 
 	@Override
-	protected void cancelRunningChildren (int fromChildIndex) {
-		super.cancelRunningChildren(fromChildIndex);
+	protected void cancelRunningChildren (int startIndex) {
+		super.cancelRunningChildren(startIndex);
 		runningChild = null;
 	}
 

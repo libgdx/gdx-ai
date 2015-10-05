@@ -72,6 +72,9 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		this.name = name;
 	}
 
+	/** Acquires the semaphore. Also, the first execution of this method retrieves the semaphore by name and stores it locally.
+	 * <p>
+	 * This method is called when the task is entered. */
 	@Override
 	public void start () {
 		if (semaphore == null) {
@@ -81,6 +84,7 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		super.start();
 	}
 
+	/** Runs its child if the semaphore has been successfully acquired; immediately fails otherwise. */
 	@Override
 	public void run () {
 		if (semaphoreAcquired) {
@@ -90,6 +94,9 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		}
 	}
 
+	/** Releases the semaphore.
+	 * <p>
+	 * This method is called when the task exits. */
 	@Override
 	public void end () {
 		if (semaphoreAcquired) {

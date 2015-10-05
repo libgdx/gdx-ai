@@ -30,6 +30,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * @author davebaol */
 public class Wait<E> extends LeafTask<E> {
 
+	/** Mandatory task attribute specifying the random distribution that determines the timeout in seconds. */
 	@TaskAttribute(required = true) public FloatDistribution seconds;
 
 	private long startTime;
@@ -54,6 +55,9 @@ public class Wait<E> extends LeafTask<E> {
 		this.seconds = seconds;
 	}
 
+	/** Draws a value from the distribution that determines the seconds to wait for.
+	 * <p>
+	 * This method is called when the task is entered. */
 	@Override
 	public void start () {
 		timeout = seconds.nextFloat();

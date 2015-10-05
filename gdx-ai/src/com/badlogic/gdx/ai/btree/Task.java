@@ -163,8 +163,10 @@ public abstract class Task<E> {
 		end();
 	}
 
-	protected void cancelRunningChildren (int fromChildIndex) {
-		for (int i = fromChildIndex, n = getChildCount(); i < n; i++) {
+	/** Terminates the running children of this task starting from the specified index up to the end.
+	 * @param startIndex the start index */
+	protected void cancelRunningChildren (int startIndex) {
+		for (int i = startIndex, n = getChildCount(); i < n; i++) {
 			Task<E> child = getChild(i);
 			if (child.status == Status.RUNNING) child.cancel();
 		}

@@ -39,9 +39,9 @@ import com.badlogic.gdx.math.MathUtils;
 @TaskConstraint(minChildren = 0, maxChildren = 1)
 public class Random<E> extends Decorator<E> {
 
-	/** The random distribution that determines the success probability. It defaults to the constant distribution that always return
-	 * 0.5. */
-	@TaskAttribute() public FloatDistribution success;
+	/** Optional task attribute specifying the random distribution that determines the success probability. It defaults to
+	 * {@link ConstantFloatDistribution#ZERO_POINT_FIVE}. */
+	@TaskAttribute public FloatDistribution success;
 
 	private float p;
 
@@ -74,6 +74,9 @@ public class Random<E> extends Decorator<E> {
 		this.success = success;
 	}
 
+	/** Draws a value from the distribution that determines the success probability.
+	 * <p>
+	 * This method is called when the task is entered. */
 	@Override
 	public void start () {
 		p = success.nextFloat();
