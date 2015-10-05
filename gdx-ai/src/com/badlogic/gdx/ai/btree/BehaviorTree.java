@@ -128,36 +128,49 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	public Array<Listener<E>> listeners;
-	
-	public void addListener(Listener<E> listener) {
+
+	public void addListener (Listener<E> listener) {
 		if (listeners == null) listeners = new Array<Listener<E>>();
 		listeners.add(listener);
 	}
 
-	public void removeListener(Listener<E> listener) {
+	public void removeListener (Listener<E> listener) {
 		if (listeners != null) listeners.removeIndex(listeners.indexOf(listener, true));
 	}
 
-	public void removeListeners() {
+	public void removeListeners () {
 		if (listeners != null) listeners.clear();
 	}
-	
-	public void notifyStatusUpdated(Task<E> task, Status previousStatus) {
+
+	public void notifyStatusUpdated (Task<E> task, Status previousStatus) {
 		for (Listener<E> listener : listeners) {
 			listener.statusUpdated(task, previousStatus);
 		}
 	}
-	
-	public void notifyChildAdded(Task<E> task, int index) {
+
+	public void notifyChildAdded (Task<E> task, int index) {
 		for (Listener<E> listener : listeners) {
 			listener.childAdded(task, index);
 		}
 	}
-	
-	public interface Listener<E> {
-		
-		public void statusUpdated(Task<E> task, Status previousStatus);
 
-		public void childAdded(Task<E> task, int index);
+	/** The listener interface for receiving task events. The class that is interested in processing a task event implements this
+	 * interface, and the object created with that class is registered with a behavior tree, using the
+	 * {@link BehaviorTree#addListener(Listener)} method. When a task event occurs, the corresponding method is invoked.
+	 *
+	 * @param <E> type of the blackboard object that tasks use to read or modify game state
+	 * 
+	 * @author davebaol */
+	public interface Listener<E> {
+
+		/** This method is invoked when the task status is set. This does not necessarily mean that the status has changed.
+		 * @param task the task whose status has been set
+		 * @param previousStatus the task's status before the update */
+		public void statusUpdated (Task<E> task, Status previousStatus);
+
+		/** This method is invoked when a child task is added to the children of a parent task.
+		 * @param task the parent task of the newly added child
+		 * @param index the index where the child has been added */
+		public void childAdded (Task<E> task, int index);
 	}
 }

@@ -20,7 +20,8 @@ import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
-/** The {@code Task} of a behavior tree has one control and a list of children.
+/** This is the abstract base class of all behavior tree tasks. The {@code Task} of a behavior tree has a status, one control and a
+ * list of children.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
@@ -28,13 +29,28 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * @author davebaol */
 @TaskConstraint
 public abstract class Task<E> {
-	
+
+	/** The enumeration of the values that a task's status can have.
+	 * 
+	 * @author davebaol */
 	public enum Status {
-		RUNNING, FAILED, SUCCEEDED, CANCELLED;
+		/** Means that the task needs to run again. */
+		RUNNING,
+		/** Means that the task returned a failure result. */
+		FAILED,
+		/** Means that the task returned a success result. */
+		SUCCEEDED,
+		/** Means that the task has been terminated by an ancestor. */
+		CANCELLED;
 	}
 
+	/** The parent of this task */
 	protected Task<E> control;
+
+	/** The status of this task. It's {@code null} if this task has never run. */
 	protected Status status;
+
+	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
 
 	/** This method will add a child to the list of this task's children
@@ -44,8 +60,7 @@ public abstract class Task<E> {
 	 * @throws IllegalStateException if the child cannot be added for whatever reason. */
 	public final int addChild (Task<E> child) {
 		int index = addChildToTask(child);
-		if (tree != null && tree.listeners != null)
-			tree.notifyChildAdded(this, index);
+		if (tree != null && tree.listeners != null) tree.notifyChildAdded(this, index);
 		return index;
 	}
 
@@ -86,25 +101,22 @@ public abstract class Task<E> {
 
 	/** This method will be called once before this task's first run. */
 	public void start () {
-		//System.out.println( "START: " + getClass().getName());
 	}
 
 	/** This method will be called by {@link #success()}, {@link #fail()} or {@link #cancel()}, meaning that this task's status has
 	 * just been set to {@link Status#SUCCEEDED}, {@link Status#FAILED} or {@link Status#CANCELLED} respectively. */
 	public void end () {
-		//System.out.println( "END: " + getClass().getName());
 	}
 
-	/** This method contains the update logic of this task. The actual implementation MUST call {@link #running()}, {@link #success()}
-	 * or {@link #fail()} exactly once. */
+	/** This method contains the update logic of this task. The actual implementation MUST call {@link #running()},
+	 * {@link #success()} or {@link #fail()} exactly once. */
 	public abstract void run ();
 
 	/** This method will be called in {@link #run()} to inform control that this task needs to run again */
 	public final void running () {
 		Status previousStatus = status;
 		status = Status.RUNNING;
-		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyStatusUpdated(this, previousStatus);
+		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		control.childRunning(this, this);
 	}
 
@@ -112,8 +124,7 @@ public abstract class Task<E> {
 	public final void success () {
 		Status previousStatus = status;
 		status = Status.SUCCEEDED;
-		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyStatusUpdated(this, previousStatus);
+		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
 		control.childSuccess(this);
 	}
@@ -122,8 +133,7 @@ public abstract class Task<E> {
 	public final void fail () {
 		Status previousStatus = status;
 		status = Status.FAILED;
-		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyStatusUpdated(this, previousStatus);
+		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
 		control.childFail(this);
 	}
@@ -149,23 +159,20 @@ public abstract class Task<E> {
 		cancelRunningChildren(0);
 		Status previousStatus = status;
 		status = Status.CANCELLED;
-		if (tree.listeners != null && tree.listeners.size > 0)
-			tree.notifyStatusUpdated(this, previousStatus);
+		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
 	}
 
 	protected void cancelRunningChildren (int fromChildIndex) {
 		for (int i = fromChildIndex, n = getChildCount(); i < n; i++) {
 			Task<E> child = getChild(i);
-			if (child.status == Status.RUNNING)
-				child.cancel();
+			if (child.status == Status.RUNNING) child.cancel();
 		}
 	}
 
 	/** Resets this task to make it restart from scratch on next run. */
 	public void reset () {
-		if (status == Status.RUNNING)
-			cancel();
+		if (status == Status.RUNNING) cancel();
 		for (int i = 0, n = getChildCount(); i < n; i++) {
 			getChild(i).reset();
 		}
