@@ -288,7 +288,7 @@ public class BehaviorTreeViewer<T> extends Table {
 		}
 	}
 
-	private void addToTree (Tree displayTree, TaskNode parentNode, Task<T> task, IntArray taskSteps, int taskStepIndex) {
+	private int addToTree (Tree displayTree, TaskNode parentNode, Task<T> task, IntArray taskSteps, int taskStepIndex) {
 		TaskNode node = new TaskNode(task, this, taskSteps == null ? step - 1 : taskSteps.get(taskStepIndex), getSkin());
 		taskNodes.put(task, node);
 		if (parentNode == null) {
@@ -296,10 +296,12 @@ public class BehaviorTreeViewer<T> extends Table {
 		} else {
 			parentNode.add(node);
 		}
+		taskStepIndex++;
 		for (int i = 0; i < task.getChildCount(); i++) {
 			Task<T> child = task.getChild(i);
-			addToTree(displayTree, node, child, taskSteps, taskStepIndex + 1);
+			taskStepIndex = addToTree(displayTree, node, child, taskSteps, taskStepIndex);
 		}
+		return taskStepIndex;
 	}
 
 	static class SaveObject<T> {
@@ -336,7 +338,7 @@ public class BehaviorTreeViewer<T> extends Table {
 		public static void save (Object obj) {
 			output.clear();
 			kryo.writeObjectOrNull(output, obj, obj.getClass());
-			System.out.println(output.total());
+			// System.out.println(output.total());
 		}
 
 		public static <T> T load (Class<T> type) {
