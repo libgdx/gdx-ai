@@ -17,7 +17,6 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.tests.IncludeSubtreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseAndRunTest;
@@ -25,7 +24,6 @@ import com.badlogic.gdx.ai.tests.btree.tests.ParseCloneAndRunTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTest;
 import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
-import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -33,10 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /** Test class for behavior trees.
  * 
@@ -51,71 +50,74 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	private static String LABEL_FPS = "FPS: ";
 
-	public CollapsableWindow behaviorSelectionWindow;
-	Label fpsLabel;
-	public String helpMessage;
+	private Label fpsLabel;
+	private int fps = 0;
+	private Label testDescriptionLabel;
 
 	// @off - disable libgdx formatter
-	BehaviorTreeTestBase [] tests = {
-		new ParseAndRunTest(this),
-		new ParseCloneAndRunTest(this),
-		new IncludeSubtreeTest(this, false),
-		new IncludeSubtreeTest(this, true),
-		new ProgrammaticallyCreatedTest(this, false),
-		new ProgrammaticallyCreatedTest(this, true),
-		new SemaphoreGuardTest(this)
+	BehaviorTreeTestBase[] tests = {
+		new ParseAndRunTest(),
+		new ParseCloneAndRunTest(),
+		new IncludeSubtreeTest(false),
+		new IncludeSubtreeTest(true),
+		new ProgrammaticallyCreatedTest(false),
+		new ProgrammaticallyCreatedTest(true),
+		new SemaphoreGuardTest()
 	};
 	// @on - enable libgdx formatter
 
-	Table testsTable;
 	BehaviorTreeTestBase currentTest;
+
+	Table testTable;
+	SplitPane splitPane;
 
 	public Stage stage;
 	public float stageWidth;
 	public float stageHeight;
 	public Skin skin;
-
+	
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-		stage = new Stage();
+		stage = new Stage(new ScreenViewport());
 		stage.setDebugAll(DEBUG_STAGE);
 		stageWidth = stage.getWidth();
 		stageHeight = stage.getHeight();
 
-		Gdx.input.setInputProcessor(new InputMultiplexer(stage));
+		Gdx.input.setInputProcessor(stage);
 
-		Stack stack = new Stack();
-		stage.addActor(stack);
-		stack.setSize(stageWidth, stageHeight);
-		testsTable = new Table();
-		stack.add(testsTable);
+		// Create split pane
+		ScrollPane leftScrollPane = new ScrollPane(createTestList(), skin);
+		testTable = new Table(skin);
+		ScrollPane rigthScrollPane = new ScrollPane(testTable, skin);
+		splitPane = new SplitPane(leftScrollPane, rigthScrollPane, false, skin, "default-horizontal");
 
-		// Create behavior selection window
-		List<String> testList = createTestList();
-		behaviorSelectionWindow = addBehaviorSelectionWindow("Behavior Tree Tests", testList, 0, -1);
+		Table t = new Table(skin);
+		t.setFillParent(true);
+		t.add(splitPane).colspan(2).grow();
+		t.row();
+		t.add(fpsLabel = new Label(LABEL_FPS + fps, skin)).left();
+		t.add(testDescriptionLabel = new Label("", skin)).center();
+		stage.addActor(t);
 
 		// Set selected test
 		changeTest(0);
-
-		fpsLabel = new Label(LABEL_FPS + "999", skin);
-		stage.addActor(fpsLabel);
 	}
 
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		StringBuilder sb = fpsLabel.getText();
-		sb.setLength(LABEL_FPS.length());
-		sb.append(Gdx.graphics.getFramesPerSecond());
-		if (helpMessage != null) sb.append("     ").append(helpMessage);
-		fpsLabel.invalidateHierarchy();
-
-		if (currentTest != null) currentTest.render();
+		if (fps != Gdx.graphics.getFramesPerSecond()) {
+			fps = Gdx.graphics.getFramesPerSecond();
+			StringBuilder sb = fpsLabel.getText();
+			sb.setLength(LABEL_FPS.length());
+			sb.append(fps);
+			fpsLabel.invalidateHierarchy();
+		}
 
 		stage.act();
 		stage.draw();
@@ -131,69 +133,36 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	@Override
 	public void dispose () {
-		if (currentTest != null) currentTest.dispose();
-
 		stage.dispose();
 		skin.dispose();
 	}
 
 	private List<String> createTestList () {
 		// Create behavior names
-		int numBehaviors = tests.length;
-		String[] behaviorNames = new String[numBehaviors];
-		for (int i = 0; i < numBehaviors; i++) {
-			behaviorNames[i] = tests[i].testName;
+		int numTests = tests.length;
+		String[] testNames = new String[numTests];
+		for (int i = 0; i < numTests; i++) {
+			testNames[i] = tests[i].testName;
 		}
 
-		final List<String> behaviorsList = new List<String>(skin);
-		behaviorsList.setItems(behaviorNames);
-		behaviorsList.addListener(new ClickListener() {
+		final List<String> testList = new List<String>(skin);
+		testList.setItems(testNames);
+		testList.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				if (!behaviorSelectionWindow.isCollapsed() && getTapCount() == 2) {
-					changeTest(behaviorsList.getSelectedIndex());
-					behaviorSelectionWindow.collapse();
-				}
+				changeTest(testList.getSelectedIndex());
 			}
 		});
-		return behaviorsList;
+		return testList;
 	}
 
-	protected CollapsableWindow addBehaviorSelectionWindow (String title, List<String> testList, float x, float y) {
+	private void changeTest (int testIndex) {
+		// Remove and dispose the previous test
+		testTable.clear();
+		if (currentTest != null) currentTest.dispose();
 
-		CollapsableWindow window = new CollapsableWindow(title, skin);
-		window.row();
-
-		ScrollPane pane = new ScrollPane(testList, skin);
-		pane.setFadeScrollBars(false);
-		pane.setScrollX(0);
-		pane.setScrollY(0);
-
-		window.add(pane);
-		window.pack();
-		window.pack();
-		if (window.getHeight() > stage.getHeight()) {
-			window.setHeight(stage.getHeight());
-		}
-		window.setX(x < 0 ? stage.getWidth() - (window.getWidth() - (x + 1)) : x);
-		window.setY(y < 0 ? stage.getHeight() - (window.getHeight() - (y + 1)) : y);
-		window.layout();
-		window.collapse();
-		stage.addActor(window);
-
-		return window;
-	}
-
-	void changeTest (int behaviorIndex) {
-		// Remove the old behavior and its window
-		testsTable.clear();
-		if (currentTest != null) {
-			if (currentTest.getDetailWindow() != null) currentTest.getDetailWindow().remove();
-			currentTest.dispose();
-		}
-
-		// Add the new behavior and its window
-		currentTest = tests[behaviorIndex];
+		// Add the new test
+		currentTest = tests[testIndex];
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
 		Gdx.app.log("BehaviorTreeTests", "Starting test " + currentTest.getClass().getSimpleName());
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
@@ -201,12 +170,13 @@ public class BehaviorTreeTests extends GdxAiTest {
 		if (description != null) {
 			Gdx.app.log("BehaviorTreeTests", description);
 			Gdx.app.log("BehaviorTreeTests", "***********************************************");
+			testDescriptionLabel.setText(description);
 		}
-		currentTest.create(testsTable);
-		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
-		if (im.size() > 1) im.removeProcessor(1);
-		if (currentTest.getInputProcessor() != null) im.addProcessor(currentTest.getInputProcessor());
-		if (currentTest.getDetailWindow() != null) stage.addActor(currentTest.getDetailWindow());
+		else {
+			testDescriptionLabel.setText("Look at the log and see what's happening");
+		}
+		testTable.add(currentTest.createActor(skin)).grow();
+		splitPane.invalidate();
 	}
 
 }

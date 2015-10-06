@@ -21,10 +21,11 @@ import java.io.Reader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.StreamUtils;
 
 /** A simple test to demonstrate behavior tree cloning capabilities.
@@ -32,48 +33,37 @@ import com.badlogic.gdx.utils.StreamUtils;
  * @author davebaol */
 public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 
-	private BehaviorTree<Dog> dogBehaviorTree;
-	private float elapsedTime;
-	private int step;
+	private BehaviorTree<Dog> tree;
 
-	public ParseCloneAndRunTest (BehaviorTreeTests container) {
-		super(container, "Parse, Clone and Run");
+	public ParseCloneAndRunTest () {
+		super("Parse, Clone and Run");
 	}
 
 	@Override
-	public void create (Table table) {
-		elapsedTime = 0;
-		step = 0;
-
-		BehaviorTree<Dog> dogBehaviorTreeArchetype = null;
-
+	public Actor createActor (Skin skin) {
 		Reader reader = null;
 		try {
+			// Parse
 			reader = Gdx.files.internal("data/dog.tree").reader();
 			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
-			dogBehaviorTreeArchetype = parser.parse(reader, null);
+			BehaviorTree<Dog> treeArchetype = parser.parse(reader, null);
+
+			// Clone
+			tree = (BehaviorTree<Dog>)treeArchetype.cloneTask();
+			tree.setObject(new Dog("Cloned Buddy"));
+
+			BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
+			btv.setName(tree.getObject().name);
+
+			return btv;
 		} finally {
 			StreamUtils.closeQuietly(reader);
-		}
-		if (dogBehaviorTreeArchetype != null) {
-			dogBehaviorTree = (BehaviorTree<Dog>)dogBehaviorTreeArchetype.cloneTask();
-			dogBehaviorTree.setObject(new Dog("Cloned Buddy"));
-		}
-	}
-
-	@Override
-	public void render () {
-		elapsedTime += Gdx.graphics.getRawDeltaTime();
-
-		if (elapsedTime > 0.8f) {
-			System.out.println("Step: " + (++step));
-			dogBehaviorTree.step();
-			elapsedTime = 0;
 		}
 	}
 
 	@Override
 	public void dispose () {
+		tree.reset();
 	}
 
 }

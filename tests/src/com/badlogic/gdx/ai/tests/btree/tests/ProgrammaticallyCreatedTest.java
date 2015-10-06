@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.ai.tests.btree.tests;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
@@ -27,8 +26,8 @@ import com.badlogic.gdx.ai.btree.decorator.Include;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.BarkTask;
 import com.badlogic.gdx.ai.tests.btree.dog.CareTask;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
@@ -36,7 +35,8 @@ import com.badlogic.gdx.ai.tests.btree.dog.MarkTask;
 import com.badlogic.gdx.ai.tests.btree.dog.RestTask;
 import com.badlogic.gdx.ai.tests.btree.dog.WalkTask;
 import com.badlogic.gdx.ai.utils.random.TriangularIntegerDistribution;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time) for programmatically created
  * behaviors.
@@ -44,26 +44,32 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
  * @author davebaol */
 public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 
-	private BehaviorTree<Dog> dogBehaviorTree;
-	private float elapsedTime;
-	private int step;
 	private boolean lazy;
 
-	public ProgrammaticallyCreatedTest (BehaviorTreeTests container, boolean lazy) {
-		super(container, "Programmatically Created Tree" + (lazy ? " (lazy)" : ""));
+	private BehaviorTree<Dog> tree;
+
+	public ProgrammaticallyCreatedTest (boolean lazy) {
+		super("Programmatically Created Tree" + (lazy ? " (lazy)" : ""));
 		this.lazy = lazy;
 	}
 
 	@Override
-	public void create (Table table) {
-		elapsedTime = 0;
-		step = 0;
-
+	public Actor createActor (Skin skin) {
 		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
 		BehaviorTreeLibrary library = new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH);
 		registerDogBehavior(library);
 		libraryManager.setLibrary(library);
-		dogBehaviorTree = libraryManager.createBehaviorTree("dog", new Dog("Buddy"));
+		tree = libraryManager.createBehaviorTree("dog", new Dog("Buddy"));
+
+		BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
+		btv.setName(tree.getObject().name);
+
+		return btv;
+	}
+
+	@Override
+	public void dispose () {
+		tree.reset();
 	}
 
 	private void registerDogBehavior (BehaviorTreeLibrary library) {
@@ -78,7 +84,7 @@ public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 		library.registerArchetypeTree("dog.actual", actualBehavior);
 	}
 
-	public static Task<Dog> createDogBehavior () {
+	private static Task<Dog> createDogBehavior () {
 		Selector<Dog> selector = new Selector<Dog>();
 
 		Parallel<Dog> parallel = new Parallel<Dog>();
@@ -101,20 +107,4 @@ public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 
 		return selector;
 	}
-
-	@Override
-	public void render () {
-		elapsedTime += Gdx.graphics.getRawDeltaTime();
-
-		if (elapsedTime > 0.8f) {
-			System.out.println("Step: " + (++step));
-			dogBehaviorTree.step();
-			elapsedTime = 0;
-		}
-	}
-
-	@Override
-	public void dispose () {
-	}
-
 }

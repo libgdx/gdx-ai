@@ -21,11 +21,14 @@ import java.io.Reader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.utils.StreamUtils;
 
 /** A simple test to demonstrate behavior tree
@@ -33,13 +36,11 @@ import com.badlogic.gdx.utils.StreamUtils;
  * @author davebaol */
 public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 
-	private BehaviorTree<Dog> buddyBehaviorTree;
-	private BehaviorTree<Dog> snoopyBehaviorTree;
-	private float elapsedTime;
-	private int step;
+	private BehaviorTree<Dog> buddyTree;
+	private BehaviorTree<Dog> snoopyTree;
 
-	public SemaphoreGuardTest (BehaviorTreeTests container) {
-		super(container, "Semaphore Guard");
+	public SemaphoreGuardTest () {
+		super("Semaphore Guard");
 	}
 
 	@Override
@@ -48,44 +49,42 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 	}
 
 	@Override
-	public void create (Table table) {
-		elapsedTime = 0;
-		step = 0;
+	public Actor createActor (Skin skin) {
+		// Create the semaphore
+		NonBlockingSemaphoreRepository.clear();
+		NonBlockingSemaphoreRepository.addSemaphore("dogSemaphore", 1);
 
 		Reader reader = null;
 		try {
 			// Parse Buddy's tree
 			reader = Gdx.files.internal("data/dogSemaphore.tree").reader();
 			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_HIGH);
-			buddyBehaviorTree = parser.parse(reader, new Dog("Buddy"));
+			buddyTree = parser.parse(reader, new Dog("Buddy"));
 
 			// Clone Buddy's tree for Snoopy
-			snoopyBehaviorTree = (BehaviorTree<Dog>)buddyBehaviorTree.cloneTask();
-			snoopyBehaviorTree.setObject(new Dog("Snoopy"));
+			snoopyTree = (BehaviorTree<Dog>)buddyTree.cloneTask();
+			snoopyTree.setObject(new Dog("Snoopy"));
 
-			// Create the semaphore
-			NonBlockingSemaphoreRepository.clear();
-			NonBlockingSemaphoreRepository.addSemaphore("dogSemaphore", 1);
-			
 			System.out.println();
+
+			// Create split pane
+
+			BehaviorTreeViewer<Dog> buddyBTV = new BehaviorTreeViewer<Dog>(buddyTree, skin);
+			buddyBTV.setName(buddyTree.getObject().name);
+			ScrollPane leftScrollPane = new ScrollPane(buddyBTV, skin);
+			BehaviorTreeViewer<Dog> snoopyBTV = new BehaviorTreeViewer<Dog>(snoopyTree, skin);
+			snoopyBTV.setName(snoopyTree.getObject().name);
+			ScrollPane rigthScrollPane = new ScrollPane(snoopyBTV, skin);
+			SplitPane splitPane = new SplitPane(leftScrollPane, rigthScrollPane, false, skin, "default-horizontal");
+			return splitPane;
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
 	}
 
 	@Override
-	public void render () {
-		elapsedTime += Gdx.graphics.getRawDeltaTime();
-
-		if (elapsedTime > 0.8f) {
-			System.out.println("Step: " + (++step));
-			buddyBehaviorTree.step();
-			snoopyBehaviorTree.step();
-			elapsedTime = 0;
-		}
-	}
-
-	@Override
 	public void dispose () {
+		buddyTree.reset();
+		snoopyTree.reset();
 	}
 }

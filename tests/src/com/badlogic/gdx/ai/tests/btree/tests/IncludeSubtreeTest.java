@@ -16,56 +16,47 @@
 
 package com.badlogic.gdx.ai.tests.btree.tests;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time).
  * 
  * @author davebaol */
 public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 
-	private BehaviorTree<Dog> dogBehaviorTree;
-	private float elapsedTime;
-	private int step;
 	private boolean lazy;
 
-	public IncludeSubtreeTest (BehaviorTreeTests container, boolean lazy) {
-		super(container, "Include Subtree" + (lazy ? " Lazily" : ""));
+	private BehaviorTree<Dog> tree;
+
+	public IncludeSubtreeTest (boolean lazy) {
+		super("Include Subtree" + (lazy ? " Lazily" : ""));
 		this.lazy = lazy;
 	}
 
 	@Override
-	public void create (Table table) {
-		elapsedTime = 0;
-		step = 0;
-
+	public Actor createActor (Skin skin) {
 		BehaviorTreeLibraryManager libraryManager = BehaviorTreeLibraryManager.getInstance();
 		libraryManager.setLibrary(new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH));
 
 		String name = lazy ? "data/dogIncludeLazy.tree" : "data/dogInclude.tree";
-		dogBehaviorTree = libraryManager.createBehaviorTree(name, new Dog("Buddy"));
-	}
+		tree = libraryManager.createBehaviorTree(name, new Dog("Buddy"));
 
-	@Override
-	public void render () {
-		elapsedTime += Gdx.graphics.getRawDeltaTime();
+		BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
+		btv.setName(tree.getObject().name);
 
-		if (elapsedTime > 0.8f) {
-			System.out.println("Step: " + (++step));
-			dogBehaviorTree.step();
-			elapsedTime = 0;
-		}
+		return btv;
 	}
 
 	@Override
 	public void dispose () {
+		tree.reset();
 	}
 
 }

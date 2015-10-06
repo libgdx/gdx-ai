@@ -14,24 +14,16 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests;
-
+package com.badlogic.gdx.ai.tests.btree;
 
 import org.objenesis.strategy.StdInstantiatorStrategy;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.ai.tests.btree.dog.Dog;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -44,22 +36,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.OutputChunked;
 
 /** @author davebaol */
-public class BehaviorTreeViewer extends Game implements Screen {
-
-	public static void main (String[] argv) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.r = config.g = config.b = config.a = 8;
-		config.width = 960;
-		config.height = 600;
-		new LwjglApplication(new BehaviorTreeViewer(), config);
-	}
+public class BehaviorTreeViewer<T> extends Table {
 
 	private static final int SUSPENDED = 0;
 	private static final int RUNNING = 1;
@@ -67,8 +50,10 @@ public class BehaviorTreeViewer extends Game implements Screen {
 
 	private static String LABEL_STEP = "Step: ";
 
-	private Stage stage;
-	private Skin skin;
+	private BehaviorTree<T> tree;
+	private ObjectMap<Task<T>, TaskNode> taskNodes;
+	private int step;
+
 	private Label stepLabel;
 	private Slider runDelaySlider;
 	private TextButton runButton;
@@ -76,40 +61,31 @@ public class BehaviorTreeViewer extends Game implements Screen {
 	private TextButton saveButton;
 	private TextButton loadButton;
 	private Tree displayTree;
-	private Dog dog;
-	private ObjectMap<Task<Dog>, TaskNode> taskNodes;
-	private static int step;
 
 	private int treeStatus;
 	boolean saved;
 
-	public BehaviorTreeViewer () {
-	}
-
-	@Override
-	public void create () {
+	public BehaviorTreeViewer (BehaviorTree<T> tree, Skin skin) {
+		super(skin);
+		this.tree = tree;
 		step = 0;
-		taskNodes = new ObjectMap<Task<Dog>, TaskNode>(); 
-		BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
-		BehaviorTree<Dog> tree = parser.parse(Gdx.files.internal("data/dog.tree"), null);
-		dog = new Dog("Dog 1", tree);
-		tree.addListener(new BehaviorTree.Listener<Dog>() {
+		taskNodes = new ObjectMap<Task<T>, TaskNode>();
+		tree.addListener(new BehaviorTree.Listener<T>() {
 			@Override
-			public void statusUpdated (Task<Dog> task, Task.Status previousStatus) {
+			public void statusUpdated (Task<T> task, Task.Status previousStatus) {
 				TaskNode tn = taskNodes.get(task);
 				tn.updateStatus(previousStatus, step);
 			}
 
 			@Override
-			public void childAdded (Task<Dog> task, int index) {
+			public void childAdded (Task<T> task, int index) {
 				TaskNode parentNode = taskNodes.get(task);
-				Task<Dog> child = task.getChild(index);
-				addToTree (displayTree, parentNode, child, null, 0);
+				Task<T> child = task.getChild(index);
+				addToTree(displayTree, parentNode, child, null, 0);
 				displayTree.expandAll();
 			}
 		});
 		KryoUtils.initKryo();
-		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
 		treeStatus = SUSPENDED;
 
@@ -127,25 +103,20 @@ public class BehaviorTreeViewer extends Game implements Screen {
 
 		stepLabel = new Label(new StringBuilder(LABEL_STEP + step), skin);
 
-		stage = new Stage(new ScreenViewport());
-
-		Table table = new Table();
-		table.row().height(20).fillX();
-		table.add(runDelaySlider);
-		table.add(runButton);
-		table.add(stepButton);
-		table.add(saveButton);
-		table.add(loadButton);
-		table.add(stepLabel);
-		table.row();
+		this.row().height(20).fillX();
+		this.add(runDelaySlider);
+		this.add(runButton);
+		this.add(stepButton);
+		this.add(saveButton);
+		this.add(loadButton);
+		this.add(stepLabel);
+		this.row();
 		displayTree = new Tree(skin);
 
-		redrawTree();
+		rebuildDisplayTree();
 
-		table.add(displayTree).colspan(3).fillX().fillY().expand(true, true);
-
-		stage.addActor(table);
-		table.setFillParent(true);
+		this.add(displayTree).colspan(6).fillX().fillY().expand(true, true);
+//		this.setFillParent(true);
 
 		saveButton.addListener(new ChangeListener() {
 			@Override
@@ -189,68 +160,62 @@ public class BehaviorTreeViewer extends Game implements Screen {
 				}
 			}
 		});
-
-		Gdx.input.setInputProcessor(stage);
-
-		setScreen(this);
 	}
 
 	public void step () {
 		step++;
-		
+
+		Gdx.app.log("BTV(" + getName() + ")", "Step " + step);
+
 		updateStepLabel();
 
-		dog.getBehaviorTree().step();
+		tree.step();
 	}
 
-	private void updateStepLabel() {
-		StringBuilder sb = stepLabel.getText(); 
+	private void updateStepLabel () {
+		StringBuilder sb = stepLabel.getText();
 		sb.setLength(LABEL_STEP.length());
 		sb.append(step);
 		stepLabel.invalidateHierarchy();
 	}
 
 	public void save () {
-		Array<BehaviorTree.Listener<Dog>> listeners = dog.getBehaviorTree().listeners;
-		dog.getBehaviorTree().listeners = null;
-		
+		Array<BehaviorTree.Listener<T>> listeners = tree.listeners;
+		tree.listeners = null;
+
 		IntArray taskSteps = new IntArray();
 		fill(taskSteps, (TaskNode)displayTree.getNodes().get(0));
-		KryoUtils.save(new SaveObject<Dog>(dog, step, taskSteps));
-		
-		dog.getBehaviorTree().listeners = listeners;
-		
+		KryoUtils.save(new SaveObject<T>(tree, step, taskSteps));
+
+		tree.listeners = listeners;
+
 	}
-	
+
 	public void load () {
 		@SuppressWarnings("unchecked")
-		SaveObject<Dog> saveObject = KryoUtils.load(SaveObject.class);
-		Dog oldDog = dog;
-		dog = saveObject.entity;
-		dog.getBehaviorTree().listeners = oldDog.getBehaviorTree().listeners;
+		SaveObject<T> saveObject = KryoUtils.load(SaveObject.class);
+		BehaviorTree<T> oldTree = tree;
+		tree = saveObject.tree;
+		tree.listeners = oldTree.listeners;
 
 		step = saveObject.step;
 		updateStepLabel();
 		rebuildDisplayTree(saveObject.taskSteps);
 	}
 
-	private void fill(IntArray taskSteps, TaskNode taskNode) {
+	private void fill (IntArray taskSteps, TaskNode taskNode) {
 		taskSteps.add(taskNode.step);
 		for (Node child : taskNode.getChildren()) {
 			fill(taskSteps, (TaskNode)child);
 		}
 	}
 
-	@Override
-	public void show () {
-	}
-
 	private float delay;
 
 	@Override
-	public void render (float delta) {
+	public void act (float delta) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		if (treeStatus == RUNNING) {
 			delay += delta;
 			if (delay > runDelaySlider.getValue()) {
@@ -261,40 +226,17 @@ public class BehaviorTreeViewer extends Game implements Screen {
 			step();
 			treeStatus = SUSPENDED;
 		}
-		stage.act(delta);
-		stage.draw();
+		super.act(delta);
 	}
 
-	@Override
-	public void resize (int width, int height) {
-		stage.getViewport().update(width, height, true);
-	}
-
-	@Override
-	public void pause () {
-	}
-
-	@Override
-	public void resume () {
-	}
-
-	@Override
-	public void hide () {
-	}
-
-	@Override
-	public void dispose () {
-		stage.dispose();
-	}
-
-	private void redrawTree () {
+	private void rebuildDisplayTree () {
 		rebuildDisplayTree(null);
 	}
 
 	private void rebuildDisplayTree (IntArray taskSteps) {
 		displayTree.clear();
 		taskNodes.clear();
-		Task<Dog> root = dog.getBehaviorTree().getChild(0);
+		Task<T> root = tree.getChild(0);
 		addToTree(displayTree, null, root, taskSteps, 0);
 		displayTree.expandAll();
 	}
@@ -302,17 +244,19 @@ public class BehaviorTreeViewer extends Game implements Screen {
 	private static class TaskNode extends Tree.Node {
 
 		public Task<?> task;
+		public BehaviorTreeViewer<?> btViewer;
 		public int step;
 
-		public TaskNode (Task<?> task, int step, Skin skin) {
+		public TaskNode (Task<?> task, BehaviorTreeViewer<?> btViewer, int step, Skin skin) {
 			super(new View(task, skin));
 			((View)getActor()).taskNode = this;
 			this.task = task;
+			this.btViewer = btViewer;
 			this.step = step;
 			updateStatus(null, step);
 		}
-		
-		public void updateStatus (Task.Status previousStatus, int step) {
+
+		private void updateStatus (Task.Status previousStatus, int step) {
 			this.step = step;
 			Task.Status status = task.getStatus();
 			if (status != previousStatus) {
@@ -320,29 +264,33 @@ public class BehaviorTreeViewer extends Game implements Screen {
 				view.status.setText(status != null ? status.name() : "");
 			}
 		}
-		
+
+		public boolean isFresh () {
+			return step == btViewer.step;
+		}
+
 		private static class View extends Table {
 			Label name;
 			Label status;
-	      TaskNode taskNode;
+			TaskNode taskNode;
 
-			public View(Task<?> task, Skin skin) {
+			public View (Task<?> task, Skin skin) {
 				super(skin);
 				this.name = new Label(task.getClass().getSimpleName(), skin);
 				this.status = new Label("", skin);
 				add(name);
-				add(status);
+				add(status).padLeft(10);
 			}
-			
+
 			@Override
-			public void act(float delta) {
-				status.setColor(taskNode.step == BehaviorTreeViewer.step? Color.YELLOW : Color.GRAY);
+			public void act (float delta) {
+				status.setColor(taskNode.isFresh() ? Color.YELLOW : Color.GRAY);
 			}
 		}
 	}
 
-	private void addToTree (Tree displayTree, TaskNode parentNode, Task<Dog> task, IntArray taskSteps, int taskStepIndex) {
-		TaskNode node = new TaskNode(task, taskSteps == null ? step - 1 : taskSteps.get(taskStepIndex), skin);
+	private void addToTree (Tree displayTree, TaskNode parentNode, Task<T> task, IntArray taskSteps, int taskStepIndex) {
+		TaskNode node = new TaskNode(task, this, taskSteps == null ? step - 1 : taskSteps.get(taskStepIndex), getSkin());
 		taskNodes.put(task, node);
 		if (parentNode == null) {
 			displayTree.add(node);
@@ -350,23 +298,23 @@ public class BehaviorTreeViewer extends Game implements Screen {
 			parentNode.add(node);
 		}
 		for (int i = 0; i < task.getChildCount(); i++) {
-			Task<Dog> child = task.getChild(i);
+			Task<T> child = task.getChild(i);
 			addToTree(displayTree, node, child, taskSteps, taskStepIndex + 1);
 		}
 	}
-	
+
 	static class SaveObject<T> {
-		T entity;
+		BehaviorTree<T> tree;
 		int step;
 		IntArray taskSteps;
-		
-		SaveObject(T entity, int step, IntArray taskSteps) {
-			this.entity = entity;
+
+		SaveObject (BehaviorTree<T> tree, int step, IntArray taskSteps) {
+			this.tree = tree;
 			this.step = step;
 			this.taskSteps = taskSteps;
 		}
 	}
-	
+
 	public static final class KryoUtils {
 
 		private static Kryo kryo;
@@ -376,12 +324,14 @@ public class BehaviorTreeViewer extends Game implements Screen {
 		}
 
 		public static void initKryo () {
-			kryo = new Kryo();
-			kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
-			kryo.register(Dog.class);
-	// FieldSerializer fieldSerializer = new FieldSerializer(kryo, BehaviorTree.class);
-	// fieldSerializer.removeField("object");
-	// kryo.register(BehaviorTree.class, fieldSerializer);
+			if (kryo == null) {
+				kryo = new Kryo();
+				kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+				kryo.register(BehaviorTree.class);
+				// FieldSerializer fieldSerializer = new FieldSerializer(kryo, BehaviorTree.class);
+				// fieldSerializer.removeField("object");
+				// kryo.register(BehaviorTree.class, fieldSerializer);
+			}
 		}
 
 		public static void save (Object obj) {
