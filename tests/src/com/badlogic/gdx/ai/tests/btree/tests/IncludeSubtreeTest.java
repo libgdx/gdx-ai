@@ -21,7 +21,6 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
-import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -48,10 +47,7 @@ public class IncludeSubtreeTest extends BehaviorTreeTestBase {
 		String name = lazy ? "data/dogIncludeLazy.tree" : "data/dogInclude.tree";
 		tree = libraryManager.createBehaviorTree(name, new Dog("Buddy"));
 
-		BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
-		btv.setName(tree.getObject().name);
-
-		return btv;
+		return createTreeViewer(tree.getObject().name, tree, skin);
 	}
 
 	@Override

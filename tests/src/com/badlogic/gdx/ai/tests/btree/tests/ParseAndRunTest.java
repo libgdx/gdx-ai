@@ -22,7 +22,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
-import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -48,10 +47,7 @@ public class ParseAndRunTest extends BehaviorTreeTestBase {
 			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
 			tree = parser.parse(reader, new Dog("Buddy"));
 
-			BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
-			btv.setName(tree.getObject().name);
-
-			return btv;
+			return createTreeViewer(tree.getObject().name, tree, skin);
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}

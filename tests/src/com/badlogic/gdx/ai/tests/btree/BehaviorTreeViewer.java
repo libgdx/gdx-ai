@@ -115,8 +115,7 @@ public class BehaviorTreeViewer<T> extends Table {
 
 		rebuildDisplayTree();
 
-		this.add(displayTree).colspan(6).fillX().fillY().expand(true, true);
-//		this.setFillParent(true);
+		this.add(displayTree).colspan(6).grow();
 
 		saveButton.addListener(new ChangeListener() {
 			@Override

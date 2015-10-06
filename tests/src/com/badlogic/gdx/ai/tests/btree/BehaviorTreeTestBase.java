@@ -16,7 +16,9 @@
 
 package com.badlogic.gdx.ai.tests.btree;
 
+import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** Base class for individual behavior tree tests.
@@ -24,18 +26,49 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
  * @author davebaol */
 public abstract class BehaviorTreeTestBase {
 
-	public String testName;
+	private String name;
+	private String description;
 
-	public BehaviorTreeTestBase (String testName) {
-		this.testName = testName;
+	public BehaviorTreeTestBase (String name) {
+		this(name, null);
 	}
 
-	public String getDescription () {
-		return null;
+	public BehaviorTreeTestBase (String name, String description) {
+		this.name = name;
+		this.description = description;
 	}
 
 	public abstract Actor createActor (Skin skin);
-	
+
 	public abstract void dispose ();
 
+	public String getName () {
+		return name;
+	}
+
+	public void setName (String name) {
+		this.name = name;
+	}
+
+	public void setDescription (String description) {
+		this.description = description;
+	}
+
+	public String getDescription () {
+		return description;
+	}
+
+	public static Actor createTreeViewer (String name, BehaviorTree<?> tree, Skin skin) {
+		return createTreeViewer(name, tree, skin, true);
+
+	}
+
+	public static Actor createTreeViewer (String name, BehaviorTree<?> tree, Skin skin, boolean scrollable) {
+		@SuppressWarnings({"rawtypes", "unchecked"})
+		BehaviorTreeViewer<?> btv = new BehaviorTreeViewer(tree, skin);
+		btv.setName(name);
+
+		return scrollable ? new ScrollPane(btv, skin) : btv;
+
+	}
 }

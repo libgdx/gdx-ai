@@ -22,11 +22,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
-import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.utils.StreamUtils;
@@ -40,12 +38,7 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 	private BehaviorTree<Dog> snoopyTree;
 
 	public SemaphoreGuardTest () {
-		super("Semaphore Guard");
-	}
-
-	@Override
-	public String getDescription () {
-		return "When Buddy walks Snoopy barks and vice versa";
+		super("Semaphore Guard", "When Buddy walks Snoopy barks and vice versa");
 	}
 
 	@Override
@@ -65,18 +58,10 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 			snoopyTree = (BehaviorTree<Dog>)buddyTree.cloneTask();
 			snoopyTree.setObject(new Dog("Snoopy"));
 
-			System.out.println();
-
 			// Create split pane
-
-			BehaviorTreeViewer<Dog> buddyBTV = new BehaviorTreeViewer<Dog>(buddyTree, skin);
-			buddyBTV.setName(buddyTree.getObject().name);
-			ScrollPane leftScrollPane = new ScrollPane(buddyBTV, skin);
-			BehaviorTreeViewer<Dog> snoopyBTV = new BehaviorTreeViewer<Dog>(snoopyTree, skin);
-			snoopyBTV.setName(snoopyTree.getObject().name);
-			ScrollPane rigthScrollPane = new ScrollPane(snoopyBTV, skin);
-			SplitPane splitPane = new SplitPane(leftScrollPane, rigthScrollPane, false, skin, "default-horizontal");
-			return splitPane;
+			Actor buddyBTV = createTreeViewer(buddyTree.getObject().name, buddyTree, skin);
+			Actor snoopyBTV = createTreeViewer(snoopyTree.getObject().name, snoopyTree, skin);
+			return new SplitPane(buddyBTV, snoopyBTV, true, skin, "default-horizontal");
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}

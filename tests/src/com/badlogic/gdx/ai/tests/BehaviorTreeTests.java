@@ -55,7 +55,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 	private Label testDescriptionLabel;
 
 	// @off - disable libgdx formatter
-	BehaviorTreeTestBase[] tests = {
+	private BehaviorTreeTestBase[] tests = {
 		new ParseAndRunTest(),
 		new ParseCloneAndRunTest(),
 		new IncludeSubtreeTest(false),
@@ -66,15 +66,12 @@ public class BehaviorTreeTests extends GdxAiTest {
 	};
 	// @on - enable libgdx formatter
 
-	BehaviorTreeTestBase currentTest;
+	private BehaviorTreeTestBase currentTest;
 
-	Table testTable;
-	SplitPane splitPane;
+	private SplitPane splitPane;
 
-	public Stage stage;
-	public float stageWidth;
-	public float stageHeight;
-	public Skin skin;
+	private Stage stage;
+	private Skin skin;
 	
 	@Override
 	public void create () {
@@ -84,16 +81,12 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 		stage = new Stage(new ScreenViewport());
 		stage.setDebugAll(DEBUG_STAGE);
-		stageWidth = stage.getWidth();
-		stageHeight = stage.getHeight();
 
 		Gdx.input.setInputProcessor(stage);
 
 		// Create split pane
 		ScrollPane leftScrollPane = new ScrollPane(createTestList(), skin);
-		testTable = new Table(skin);
-		ScrollPane rigthScrollPane = new ScrollPane(testTable, skin);
-		splitPane = new SplitPane(leftScrollPane, rigthScrollPane, false, skin, "default-horizontal");
+		splitPane = new SplitPane(leftScrollPane, new Table(skin), false, skin, "default-horizontal");
 
 		Table t = new Table(skin);
 		t.setFillParent(true);
@@ -125,10 +118,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	@Override
 	public void resize (int width, int height) {
-		super.resize(width, height);
 		stage.getViewport().update(width, height, true);
-		stageWidth = width;
-		stageHeight = height;
 	}
 
 	@Override
@@ -142,7 +132,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 		int numTests = tests.length;
 		String[] testNames = new String[numTests];
 		for (int i = 0; i < numTests; i++) {
-			testNames[i] = tests[i].testName;
+			testNames[i] = tests[i].getName();
 		}
 
 		final List<String> testList = new List<String>(skin);
@@ -157,14 +147,13 @@ public class BehaviorTreeTests extends GdxAiTest {
 	}
 
 	private void changeTest (int testIndex) {
-		// Remove and dispose the previous test
-		testTable.clear();
+		// Dispose the previous test (if any)
 		if (currentTest != null) currentTest.dispose();
 
 		// Add the new test
 		currentTest = tests[testIndex];
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
-		Gdx.app.log("BehaviorTreeTests", "Starting test " + currentTest.getClass().getSimpleName());
+		Gdx.app.log("BehaviorTreeTests", "Starting test " + currentTest.getName());
 		Gdx.app.log("BehaviorTreeTests", "***********************************************");
 		String description = currentTest.getDescription();
 		if (description != null) {
@@ -175,8 +164,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 		else {
 			testDescriptionLabel.setText("Look at the log and see what's happening");
 		}
-		testTable.add(currentTest.createActor(skin)).grow();
-		splitPane.invalidate();
+		splitPane.setSecondWidget(currentTest.createActor(skin));
 	}
 
 }

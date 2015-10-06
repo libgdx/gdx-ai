@@ -27,7 +27,6 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
-import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.BarkTask;
 import com.badlogic.gdx.ai.tests.btree.dog.CareTask;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
@@ -61,10 +60,7 @@ public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 		libraryManager.setLibrary(library);
 		tree = libraryManager.createBehaviorTree("dog", new Dog("Buddy"));
 
-		BehaviorTreeViewer<Dog> btv = new BehaviorTreeViewer<Dog>(tree, skin);
-		btv.setName(tree.getObject().name);
-
-		return btv;
+		return createTreeViewer(tree.getObject().name, tree, skin);
 	}
 
 	@Override
