@@ -33,7 +33,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -73,7 +72,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	private Stage stage;
 	private Skin skin;
-	
+
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
@@ -87,10 +86,9 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 		// Create split pane
 		List<String> testList = createTestList();
-		float w = getIdealWidth(testList) + 10;
 		ScrollPane leftScrollPane = new ScrollPane(testList, skin);
 		splitPane = new SplitPane(leftScrollPane, null, false, skin, "default-horizontal");
-		splitPane.setSplitAmount(Math.min(w / stage.getWidth(), splitPane.getSplit()));
+		splitPane.setSplitAmount(Math.min((testList.getPrefWidth() + 10) / stage.getWidth(), splitPane.getSplit()));
 
 		Table t = new Table(skin);
 		t.setFillParent(true);
@@ -104,18 +102,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 		changeTest(0);
 	}
 
-	// Hack to get the exact width of the widget
-	// If you know a better way, please FIXME
-	private float getIdealWidth(Widget widget) {
-		Table t2 = new Table(skin);
-		t2.setFillParent(true);
-		t2.add(widget);
-		stage.addActor(t2);
-		float w = widget.getPrefWidth();
-		stage.clear();
-		return w;
-	}
-	
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -176,8 +162,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 			Gdx.app.log("BehaviorTreeTests", description);
 			Gdx.app.log("BehaviorTreeTests", "***********************************************");
 			testDescriptionLabel.setText(description);
-		}
-		else {
+		} else {
 			testDescriptionLabel.setText("Look at the log and see what's happening");
 		}
 		splitPane.setSecondWidget(currentTest.createActor(skin));
