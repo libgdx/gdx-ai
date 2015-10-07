@@ -73,5 +73,6 @@ public abstract class BehaviorTreeTestBase {
 	public void dispose () {
 		for (BehaviorTreeViewer<?> treeViewer : treeViewers)
 			treeViewer.getBehaviorTree().reset();
+		treeViewers.clear();
 	}
 }
