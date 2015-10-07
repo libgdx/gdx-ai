@@ -22,9 +22,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.utils.StreamUtils;
@@ -33,9 +35,6 @@ import com.badlogic.gdx.utils.StreamUtils;
  * 
  * @author davebaol */
 public class SemaphoreGuardTest extends BehaviorTreeTestBase {
-
-	private BehaviorTree<Dog> buddyTree;
-	private BehaviorTree<Dog> snoopyTree;
 
 	public SemaphoreGuardTest () {
 		super("Semaphore Guard", "When Buddy walks Snoopy barks and vice versa");
@@ -52,24 +51,20 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 			// Parse Buddy's tree
 			reader = Gdx.files.internal("data/dogSemaphore.tree").reader();
 			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_HIGH);
-			buddyTree = parser.parse(reader, new Dog("Buddy"));
+			BehaviorTree<Dog> buddyTree = parser.parse(reader, new Dog("Buddy"));
 
 			// Clone Buddy's tree for Snoopy
-			snoopyTree = (BehaviorTree<Dog>)buddyTree.cloneTask();
+			BehaviorTree<Dog> snoopyTree = (BehaviorTree<Dog>)buddyTree.cloneTask();
 			snoopyTree.setObject(new Dog("Snoopy"));
 
 			// Create split pane
-			Actor buddyBTV = createTreeViewer(buddyTree.getObject().name, buddyTree, skin);
-			Actor snoopyBTV = createTreeViewer(snoopyTree.getObject().name, snoopyTree, skin);
-			return new SplitPane(buddyBTV, snoopyBTV, true, skin, "default-horizontal");
+			BehaviorTreeViewer<?> buddyTreeViewer = createTreeViewer(buddyTree.getObject().name, buddyTree, false, skin);
+			BehaviorTreeViewer<?> snoopyTreeViewer = createTreeViewer(snoopyTree.getObject().name, snoopyTree, false, skin);
+			return new SplitPane(new ScrollPane(buddyTreeViewer, skin), new ScrollPane(snoopyTreeViewer, skin), true, skin,
+				"default-horizontal");
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
 	}
 
-	@Override
-	public void dispose () {
-		buddyTree.reset();
-		snoopyTree.reset();
-	}
 }

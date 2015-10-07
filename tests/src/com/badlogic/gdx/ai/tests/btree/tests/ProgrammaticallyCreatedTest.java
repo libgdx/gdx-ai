@@ -27,6 +27,7 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.dog.BarkTask;
 import com.badlogic.gdx.ai.tests.btree.dog.CareTask;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
@@ -35,6 +36,7 @@ import com.badlogic.gdx.ai.tests.btree.dog.RestTask;
 import com.badlogic.gdx.ai.tests.btree.dog.WalkTask;
 import com.badlogic.gdx.ai.utils.random.TriangularIntegerDistribution;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time) for programmatically created
@@ -44,8 +46,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 
 	private boolean lazy;
-
-	private BehaviorTree<Dog> tree;
 
 	public ProgrammaticallyCreatedTest (boolean lazy) {
 		super("Programmatically Created Tree" + (lazy ? " (lazy)" : ""));
@@ -58,14 +58,10 @@ public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
 		BehaviorTreeLibrary library = new BehaviorTreeLibrary(BehaviorTreeParser.DEBUG_HIGH);
 		registerDogBehavior(library);
 		libraryManager.setLibrary(library);
-		tree = libraryManager.createBehaviorTree("dog", new Dog("Buddy"));
+		BehaviorTree<Dog> tree = libraryManager.createBehaviorTree("dog", new Dog("Buddy"));
+		BehaviorTreeViewer<?> treeViewer = createTreeViewer(tree.getObject().name, tree, true, skin);
 
-		return createTreeViewer(tree.getObject().name, tree, skin);
-	}
-
-	@Override
-	public void dispose () {
-		tree.reset();
+		return new ScrollPane(treeViewer, skin);
 	}
 
 	private void registerDogBehavior (BehaviorTreeLibrary library) {

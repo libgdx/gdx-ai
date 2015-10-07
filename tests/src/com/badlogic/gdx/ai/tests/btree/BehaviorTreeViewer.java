@@ -42,7 +42,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.OutputChunked;
 
 /** @author davebaol */
-public class BehaviorTreeViewer<T> extends Table {
+public class BehaviorTreeViewer<E> extends Table {
 
 	private static final int SUSPENDED = 0;
 	private static final int RUNNING = 1;
@@ -50,8 +50,8 @@ public class BehaviorTreeViewer<T> extends Table {
 
 	private static String LABEL_STEP = "Step: ";
 
-	private BehaviorTree<T> tree;
-	private ObjectMap<Task<T>, TaskNode> taskNodes;
+	private BehaviorTree<E> tree;
+	private ObjectMap<Task<E>, TaskNode> taskNodes;
 	private int step;
 
 	private Label stepLabel;
@@ -65,22 +65,26 @@ public class BehaviorTreeViewer<T> extends Table {
 	private int treeStatus;
 	boolean saved;
 
-	public BehaviorTreeViewer (BehaviorTree<T> tree, Skin skin) {
+	public BehaviorTreeViewer (BehaviorTree<E> tree, Skin skin) {
+		this(tree, true, skin);
+	}
+
+	public BehaviorTreeViewer (BehaviorTree<E> tree, boolean loadAndSave, Skin skin) {
 		super(skin);
 		this.tree = tree;
 		step = 0;
-		taskNodes = new ObjectMap<Task<T>, TaskNode>();
-		tree.addListener(new BehaviorTree.Listener<T>() {
+		taskNodes = new ObjectMap<Task<E>, TaskNode>();
+		tree.addListener(new BehaviorTree.Listener<E>() {
 			@Override
-			public void statusUpdated (Task<T> task, Task.Status previousStatus) {
+			public void statusUpdated (Task<E> task, Task.Status previousStatus) {
 				TaskNode tn = taskNodes.get(task);
 				tn.updateStatus(previousStatus, step);
 			}
 
 			@Override
-			public void childAdded (Task<T> task, int index) {
+			public void childAdded (Task<E> task, int index) {
 				TaskNode parentNode = taskNodes.get(task);
-				Task<T> child = task.getChild(index);
+				Task<E> child = task.getChild(index);
 				addToTree(displayTree, parentNode, child, null, 0);
 				displayTree.expandAll();
 			}
@@ -96,10 +100,26 @@ public class BehaviorTreeViewer<T> extends Table {
 
 		stepButton = new TextButton("Step", skin);
 
-		loadButton = new TextButton("Load", skin);
-		loadButton.setDisabled(true);
+		if (loadAndSave) {
+			loadButton = new TextButton("Load", skin);
+			loadButton.setDisabled(true);
+			loadButton.addListener(new ChangeListener() {
+				@Override
+				public void changed (ChangeEvent event, Actor actor) {
+					load();
+				}
+			});
 
-		saveButton = new TextButton("Save", skin);
+			saveButton = new TextButton("Save", skin);
+			saveButton.addListener(new ChangeListener() {
+				@Override
+				public void changed (ChangeEvent event, Actor actor) {
+					save();
+					saved = true;
+					loadButton.setDisabled(false);
+				}
+			});
+		}
 
 		stepLabel = new Label(new StringBuilder(LABEL_STEP + step), skin);
 
@@ -107,31 +127,19 @@ public class BehaviorTreeViewer<T> extends Table {
 		this.add(runDelaySlider);
 		this.add(runButton);
 		this.add(stepButton);
-		this.add(saveButton);
-		this.add(loadButton);
+		if (loadAndSave) {
+			this.add(saveButton);
+			this.add(loadButton);
+		}
 		this.add(stepLabel);
 		this.row();
 		displayTree = new Tree(skin);
 
 		rebuildDisplayTree();
 
-		this.add(displayTree).colspan(6).grow();
+		this.add(displayTree).colspan(loadAndSave ? 6 : 4).grow();
 
-		saveButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				save();
-				saved = true;
-				loadButton.setDisabled(false);
-			}
-		});
 
-		loadButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				load();
-			}
-		});
 
 		stepButton.addListener(new ChangeListener() {
 			@Override
@@ -148,17 +156,21 @@ public class BehaviorTreeViewer<T> extends Table {
 					delay = runDelaySlider.getValue(); // this makes it start immediately
 					runButton.setText("Suspend");
 					stepButton.setDisabled(true);
-					saveButton.setDisabled(true);
-					loadButton.setDisabled(true);
+					if (saveButton != null) saveButton.setDisabled(true);
+					if (loadButton != null) loadButton.setDisabled(true);
 				} else {
 					treeStatus = SUSPENDED;
 					runButton.setText("Run");
 					stepButton.setDisabled(false);
-					saveButton.setDisabled(false);
-					loadButton.setDisabled(!saved);
+					if (saveButton != null) saveButton.setDisabled(false);
+					if (loadButton != null) loadButton.setDisabled(!saved);
 				}
 			}
 		});
+	}
+
+	public BehaviorTree<E> getBehaviorTree() {
+		return tree;
 	}
 
 	public void step () {
@@ -179,12 +191,12 @@ public class BehaviorTreeViewer<T> extends Table {
 	}
 
 	public void save () {
-		Array<BehaviorTree.Listener<T>> listeners = tree.listeners;
+		Array<BehaviorTree.Listener<E>> listeners = tree.listeners;
 		tree.listeners = null;
 
 		IntArray taskSteps = new IntArray();
 		fill(taskSteps, (TaskNode)displayTree.getNodes().get(0));
-		KryoUtils.save(new SaveObject<T>(tree, step, taskSteps));
+		KryoUtils.save(new SaveObject<E>(tree, step, taskSteps));
 
 		tree.listeners = listeners;
 
@@ -192,8 +204,8 @@ public class BehaviorTreeViewer<T> extends Table {
 
 	public void load () {
 		@SuppressWarnings("unchecked")
-		SaveObject<T> saveObject = KryoUtils.load(SaveObject.class);
-		BehaviorTree<T> oldTree = tree;
+		SaveObject<E> saveObject = KryoUtils.load(SaveObject.class);
+		BehaviorTree<E> oldTree = tree;
 		tree = saveObject.tree;
 		tree.listeners = oldTree.listeners;
 
@@ -235,7 +247,7 @@ public class BehaviorTreeViewer<T> extends Table {
 	private void rebuildDisplayTree (IntArray taskSteps) {
 		displayTree.clear();
 		taskNodes.clear();
-		Task<T> root = tree.getChild(0);
+		Task<E> root = tree.getChild(0);
 		addToTree(displayTree, null, root, taskSteps, 0);
 		displayTree.expandAll();
 	}
@@ -288,7 +300,7 @@ public class BehaviorTreeViewer<T> extends Table {
 		}
 	}
 
-	private int addToTree (Tree displayTree, TaskNode parentNode, Task<T> task, IntArray taskSteps, int taskStepIndex) {
+	private int addToTree (Tree displayTree, TaskNode parentNode, Task<E> task, IntArray taskSteps, int taskStepIndex) {
 		TaskNode node = new TaskNode(task, this, taskSteps == null ? step - 1 : taskSteps.get(taskStepIndex), getSkin());
 		taskNodes.put(task, node);
 		if (parentNode == null) {
@@ -298,7 +310,7 @@ public class BehaviorTreeViewer<T> extends Table {
 		}
 		taskStepIndex++;
 		for (int i = 0; i < task.getChildCount(); i++) {
-			Task<T> child = task.getChild(i);
+			Task<E> child = task.getChild(i);
 			taskStepIndex = addToTree(displayTree, node, child, taskSteps, taskStepIndex);
 		}
 		return taskStepIndex;
