@@ -21,8 +21,7 @@ import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.TimeUtils;
 
-/** A {@code PathFinderRequestControl} manages execution and resume of any interruptible 
- * {@link PathFinderRequest}.
+/** A {@code PathFinderRequestControl} manages execution and resume of any interruptible {@link PathFinderRequest}.
  * 
  * @param <N> Type of node
  * 
@@ -59,7 +58,7 @@ public class PathFinderRequestControl<N> {
 				request.changeStatus(PathFinderRequest.SEARCH_INITIALIZED);
 				lastTime = currentTime;
 			}
-	
+
 			// Should perform search path?
 			if (request.status == PathFinderRequest.SEARCH_INITIALIZED) {
 				long currentTime = TimeUtils.nanoTime();
@@ -70,7 +69,7 @@ public class PathFinderRequestControl<N> {
 				request.changeStatus(PathFinderRequest.SEARCH_DONE);
 				lastTime = currentTime;
 			}
-	
+
 			// Should perform search end?
 			if (request.status == PathFinderRequest.SEARCH_DONE) {
 				long currentTime = TimeUtils.nanoTime();
@@ -79,15 +78,15 @@ public class PathFinderRequestControl<N> {
 				if (DEBUG) System.out.println("search end");
 				if (!request.finalizeSearch(timeToRun)) return false;
 				request.changeStatus(PathFinderRequest.SEARCH_FINALIZED);
-	
+
 				// Search finished, send result to the client
 				if (server != null) {
 					MessageDispatcher dispatcher = request.dispatcher != null ? request.dispatcher : MessageManager.getInstance();
 					dispatcher.dispatchMessage(server, request.client, request.responseMessageCode, request);
 				}
-	
+
 				lastTime = currentTime;
-				
+
 				if (request.statusChanged && request.status == PathFinderRequest.SEARCH_NEW) {
 					if (DEBUG) System.out.println("search renew");
 					continue;

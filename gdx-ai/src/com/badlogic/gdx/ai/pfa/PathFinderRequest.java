@@ -49,7 +49,8 @@ public class PathFinderRequest<N> {
 	public PathFinderRequest () {
 	}
 
-	/** Creates a {@code PathFinderRequest} with the given arguments that uses the singleton message dispatcher provided by {@link MessageManager}. */
+	/** Creates a {@code PathFinderRequest} with the given arguments that uses the singleton message dispatcher provided by
+	 * {@link MessageManager}. */
 	public PathFinderRequest (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> resultPath) {
 		this(startNode, endNode, heuristic, resultPath, MessageManager.getInstance());
 	}
@@ -67,8 +68,8 @@ public class PathFinderRequest<N> {
 		this.status = SEARCH_NEW;
 		this.statusChanged = false;
 	}
-	
-	public void changeStatus(int newStatus) {
+
+	public void changeStatus (int newStatus) {
 		this.status = newStatus;
 		this.statusChanged = true;
 	}

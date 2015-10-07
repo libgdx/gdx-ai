@@ -18,7 +18,6 @@ package com.badlogic.gdx.ai.pfa;
 
 import com.badlogic.gdx.utils.TimeUtils;
 
-
 /** A {@code HierarchicalPathFinder} can find a path in an arbitrary {@link HierarchicalGraph} using the given {@link PathFinder},
  * known as level path finder, on each level of the hierarchy.
  * <p>
@@ -36,12 +35,11 @@ import com.badlogic.gdx.utils.TimeUtils;
  * @author davebaol */
 public class HierarchicalPathFinder<N> implements PathFinder<N> {
 	public static boolean DEBUG = false;
-	
+
 	HierarchicalGraph<N> graph;
 	PathFinder<N> levelPathFinder;
 	LevelPathFinderRequest<N> levelRequest;
 	PathFinderRequestControl<N> levelRequestControl;
-
 
 	public HierarchicalPathFinder (HierarchicalGraph<N> graph, PathFinder<N> levelPathFinder) {
 		this.graph = graph;
@@ -167,7 +165,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 			// Prepare the the level request control
 			levelRequestControl.lastTime = TimeUtils.nanoTime(); // Keep track of the current time
-			levelRequestControl.timeToRun = timeToRun; 
+			levelRequestControl.timeToRun = timeToRun;
 			levelRequestControl.timeTolerance = PathFinderQueue.TIME_TOLERANCE;
 			levelRequestControl.server = null;
 			levelRequestControl.pathFinder = levelPathFinder;
@@ -187,19 +185,21 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 		while (levelRequest.currentLevel >= 0) {
 //			if (DEBUG) System.out.println("currentLevel = "+levelRequest.currentLevel);
-			
+
 			boolean finished = levelRequestControl.execute(levelRequest);
 //			if (DEBUG) System.out.println("finished = "+finished);
 //			if (DEBUG) System.out.println("pathFound = "+levelRequest.pathFound);
 
 //			if (finished && !levelRequest.pathFound) return true;
-			if (!finished) return false;
+			if (!finished) {
+				return false;
+			}
 			else {
 				levelRequest.executionFrames = 0;
 //				levelRequest.pathFound = false;
 				levelRequest.status = PathFinderRequest.SEARCH_NEW;
 				levelRequest.statusChanged = true;
-			
+
 				if (!levelRequest.pathFound) return true;
 			}
 		}
@@ -212,7 +212,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 	static class LevelPathFinderRequest<N> extends PathFinderRequest<N> {
 		HierarchicalPathFinder<N> hpf;
 		PathFinderRequest<N> hpfRequest;
-		
+
 		int levelOfNodes;
 		int currentLevel;
 
