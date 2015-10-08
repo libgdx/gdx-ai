@@ -178,6 +178,9 @@ public abstract class Task<E> {
 		for (int i = 0, n = getChildCount(); i < n; i++) {
 			getChild(i).reset();
 		}
+		status = null;
+		tree = null;
+		control= null;
 	}
 
 	/** Clones this task to a new one.

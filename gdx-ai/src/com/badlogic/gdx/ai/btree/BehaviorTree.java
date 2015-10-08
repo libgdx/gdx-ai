@@ -120,6 +120,12 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
+	public void reset () {
+		super.reset();
+		tree = this;
+	}
+
+	@Override
 	protected Task<E> copyTo (Task<E> task) {
 		BehaviorTree<E> tree = (BehaviorTree<E>)task;
 		tree.rootTask = rootTask.cloneTask();
