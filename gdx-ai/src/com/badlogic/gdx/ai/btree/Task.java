@@ -58,7 +58,7 @@ public abstract class Task<E> {
 	 *       Kryo kryo;
 	 *       
 	 *       {@literal @}Override
-	 *       public <T> Task<T> cloneTask (Task<T> task) {
+	 *       public {@code <T> Task<T> cloneTask (Task<T>} task) {
 	 *          if (kryo == null) {
 	 *             kryo = new Kryo();
 	 *             kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
