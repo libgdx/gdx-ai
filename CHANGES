@@ -9,7 +9,8 @@
   * Now method addChild is final and Task's subclasses have to implement addChildToTask.
   * Added decorator tasks Repeat and Random.
   * Added leaf tasks Failure, Success and Wait.
-  * Now the UntilFail decorator succeeds when its child fails. 
+  * Now the UntilFail decorator succeeds when its child fails.
+  * Added ability to clone tasks through third-party libraries like Kryo. 
 
 [1.6.0]
 - Updated to libgdx 1.7.0
