@@ -264,7 +264,7 @@ public class BehaviorTreeViewer<E> extends Table {
 			this.task = task;
 			this.btViewer = btViewer;
 			this.step = step;
-			updateStatus(null, step);
+			updateStatus(task.getStatus(), step);
 		}
 
 		private void updateStatus (Task.Status previousStatus, int step) {
@@ -272,7 +272,7 @@ public class BehaviorTreeViewer<E> extends Table {
 			Task.Status status = task.getStatus();
 			if (status != previousStatus) {
 				View view = (View)getActor();
-				view.status.setText(status != null ? status.name() : "");
+				view.status.setText(status == Task.Status.FRESH ? "" : status.name());
 			}
 		}
 

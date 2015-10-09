@@ -34,6 +34,8 @@ public abstract class Task<E> {
 	 * 
 	 * @author davebaol */
 	public enum Status {
+		/** Means that the task has never run or has been reset. */
+		FRESH,
 		/** Means that the task needs to run again. */
 		RUNNING,
 		/** Means that the task returned a failure result. */
@@ -47,8 +49,8 @@ public abstract class Task<E> {
 	/** The parent of this task */
 	protected Task<E> control;
 
-	/** The status of this task. It's {@code null} if this task has never run. */
-	protected Status status;
+	/** The status of this task. */
+	protected Status status = Status.FRESH;
 
 	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
@@ -86,7 +88,7 @@ public abstract class Task<E> {
 		return tree.getObject();
 	}
 
-	/** Returns the status of this task or {@code null} if this task has never run. */
+	/** Returns the status of this task. */
 	public final Status getStatus () {
 		return status;
 	}
@@ -178,7 +180,7 @@ public abstract class Task<E> {
 		for (int i = 0, n = getChildCount(); i < n; i++) {
 			getChild(i).reset();
 		}
-		status = null;
+		status = Status.FRESH;
 		tree = null;
 		control= null;
 	}
