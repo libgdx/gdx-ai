@@ -46,11 +46,35 @@ public abstract class Task<E> {
 		CANCELLED;
 	}
 
-	/** The parent of this task */
-	protected Task<E> control;
+	/** The clone strategy (if any) that {@link #cloneTask()} will use. Defaults to {@code null}, meaning that {@link #copyTo(Task)}
+	 * is used instead. In this case, properly overriding this method in each task is developer's responsibility but this gives you
+	 * the opportunity to target GWT.
+	 * <p>
+	 * For instance, you can let Kryo make a deep copy for you like that
+	 * 
+	 * <pre>
+	 * <code>
+	 *    Task.TASK_CLONER = new TaskCloner() {
+	 *       Kryo kryo;
+	 *       
+	 *       {@literal @}Override
+	 *       public <T> Task<T> cloneTask (Task<T> task) {
+	 *          if (kryo == null) {
+	 *             kryo = new Kryo();
+	 *             kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+	 *          }
+	 *          return kryo.copy(task);
+	 *       }
+	 *    };
+	 * </code>
+	 * </pre> */
+	public static TaskCloner TASK_CLONER = null;
 
 	/** The status of this task. */
 	protected Status status = Status.FRESH;
+
+	/** The parent of this task */
+	protected Task<E> control;
 
 	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
@@ -182,14 +206,21 @@ public abstract class Task<E> {
 		}
 		status = Status.FRESH;
 		tree = null;
-		control= null;
+		control = null;
 	}
 
-	/** Clones this task to a new one.
+	/** Clones this task to a new one. You can specify the clone strategy through {@link #TASK_CLONER}.
 	 * @return the cloned task
 	 * @throws TaskCloneException if the task cannot be successfully cloned. */
 	@SuppressWarnings("unchecked")
 	public Task<E> cloneTask () {
+		if (TASK_CLONER != null) {
+			try {
+				return TASK_CLONER.cloneTask(this);
+			} catch (Throwable t) {
+				throw new TaskCloneException(t);
+			}
+		}
 		try {
 			return copyTo(ClassReflection.newInstance(this.getClass()));
 		} catch (ReflectionException e) {

@@ -18,8 +18,12 @@ package com.badlogic.gdx.ai.tests.btree.tests;
 
 import java.io.Reader;
 
+import org.objenesis.strategy.StdInstantiatorStrategy;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.TaskCloner;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
@@ -28,14 +32,18 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.StreamUtils;
+import com.esotericsoftware.kryo.Kryo;
 
 /** A simple test to demonstrate behavior tree cloning capabilities.
  * 
  * @author davebaol */
 public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 
-	public ParseCloneAndRunTest () {
-		super("Parse, Clone and Run");
+	boolean useKryo;
+
+	public ParseCloneAndRunTest (boolean useKryo) {
+		super("Parse, Clone and Run (" + (useKryo ? "Kryo" : "no") + " cloner)");
+		this.useKryo = useKryo;
 	}
 
 	@Override
@@ -48,6 +56,18 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 			BehaviorTree<Dog> treeArchetype = parser.parse(reader, null);
 
 			// Clone
+			Task.TASK_CLONER = !useKryo ? null : new TaskCloner() {
+				Kryo kryo;
+
+				@Override
+				public <T> Task<T> cloneTask (Task<T> task) {
+					if (kryo == null) {
+						kryo = new Kryo();
+						kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+					}
+					return kryo.copy(task);
+				}
+			};
 			BehaviorTree<Dog> tree = (BehaviorTree<Dog>)treeArchetype.cloneTask();
 			tree.setObject(new Dog("Cloned Buddy"));
 			BehaviorTreeViewer<?> treeViewer = createTreeViewer(tree.getObject().name, tree, true, skin);
@@ -56,6 +76,12 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
+	}
+
+	@Override
+	public void dispose () {
+		super.dispose();
+		Task.TASK_CLONER = null;
 	}
 
 }

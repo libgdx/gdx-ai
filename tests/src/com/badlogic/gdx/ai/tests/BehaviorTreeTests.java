@@ -57,7 +57,8 @@ public class BehaviorTreeTests extends GdxAiTest {
 	// @off - disable libgdx formatter
 	private BehaviorTreeTestBase[] tests = {
 		new ParseAndRunTest(),
-		new ParseCloneAndRunTest(),
+		new ParseCloneAndRunTest(false),
+		new ParseCloneAndRunTest(true),
 		new IncludeSubtreeTest(false),
 		new IncludeSubtreeTest(true),
 		new ProgrammaticallyCreatedTest(false),
