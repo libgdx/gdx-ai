@@ -98,8 +98,33 @@ public class BehaviorTreeViewer<E> extends Table {
 		runDelaySlider.setValue(.5f);
 
 		runButton = new TextButton("Run", skin);
+		runButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				if (treeStatus == SUSPENDED) {
+					treeStatus = RUNNING;
+					delay = runDelaySlider.getValue(); // this makes it start immediately
+					runButton.setText("Suspend");
+					stepButton.setDisabled(true);
+					if (saveButton != null) saveButton.setDisabled(true);
+					if (loadButton != null) loadButton.setDisabled(true);
+				} else {
+					treeStatus = SUSPENDED;
+					runButton.setText("Run");
+					stepButton.setDisabled(false);
+					if (saveButton != null) saveButton.setDisabled(false);
+					if (loadButton != null) loadButton.setDisabled(!saved);
+				}
+			}
+		});
 
 		stepButton = new TextButton("Step", skin);
+		stepButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				treeStatus = STEP;
+			}
+		});
 
 		if (loadAndSave) {
 			loadButton = new TextButton("Load", skin);
@@ -139,33 +164,6 @@ public class BehaviorTreeViewer<E> extends Table {
 		rebuildDisplayTree();
 
 		this.add(displayTree).colspan(loadAndSave ? 6 : 4).grow();
-
-		stepButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				treeStatus = STEP; // step();
-			}
-		});
-
-		runButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				if (treeStatus == SUSPENDED) {
-					treeStatus = RUNNING;
-					delay = runDelaySlider.getValue(); // this makes it start immediately
-					runButton.setText("Suspend");
-					stepButton.setDisabled(true);
-					if (saveButton != null) saveButton.setDisabled(true);
-					if (loadButton != null) loadButton.setDisabled(true);
-				} else {
-					treeStatus = SUSPENDED;
-					runButton.setText("Run");
-					stepButton.setDisabled(false);
-					if (saveButton != null) saveButton.setDisabled(false);
-					if (loadButton != null) loadButton.setDisabled(!saved);
-				}
-			}
-		});
 	}
 
 	public BehaviorTree<E> getBehaviorTree () {
@@ -263,7 +261,7 @@ public class BehaviorTreeViewer<E> extends Table {
 			this.task = task;
 			this.btViewer = btViewer;
 			this.step = step;
-			updateStatus(task.getStatus(), step);
+			updateStatus(null, step);
 		}
 
 		private void updateStatus (Task.Status previousStatus, int step) {
@@ -275,7 +273,7 @@ public class BehaviorTreeViewer<E> extends Table {
 			}
 		}
 
-		public boolean isFresh () {
+		public boolean hasJustRun () {
 			return step == btViewer.step;
 		}
 
@@ -294,7 +292,7 @@ public class BehaviorTreeViewer<E> extends Table {
 
 			@Override
 			public void act (float delta) {
-				status.setColor(taskNode.isFresh() ? Color.YELLOW : Color.GRAY);
+				status.setColor(taskNode.hasJustRun() ? Color.YELLOW : Color.GRAY);
 			}
 		}
 	}
