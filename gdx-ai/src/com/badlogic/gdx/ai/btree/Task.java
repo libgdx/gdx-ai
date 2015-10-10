@@ -50,7 +50,7 @@ public abstract class Task<E> {
 	 * is used instead. In this case, properly overriding this method in each task is developer's responsibility but this gives you
 	 * the opportunity to target GWT.
 	 * <p>
-	 * For instance, you can let Kryo make a deep copy for you like that
+	 * For instance, if you don't care about GWT, you can let Kryo make a deep copy for you like that
 	 * 
 	 * <pre>
 	 * <code>
@@ -61,7 +61,7 @@ public abstract class Task<E> {
 	 *       public {@code <T> Task<T> cloneTask (Task<T>} task) {
 	 *          if (kryo == null) {
 	 *             kryo = new Kryo();
-	 *             kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+	 *             kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
 	 *          }
 	 *          return kryo.copy(task);
 	 *       }

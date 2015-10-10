@@ -37,6 +37,7 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.OutputChunked;
@@ -139,8 +140,6 @@ public class BehaviorTreeViewer<E> extends Table {
 
 		this.add(displayTree).colspan(loadAndSave ? 6 : 4).grow();
 
-
-
 		stepButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
@@ -169,7 +168,7 @@ public class BehaviorTreeViewer<E> extends Table {
 		});
 	}
 
-	public BehaviorTree<E> getBehaviorTree() {
+	public BehaviorTree<E> getBehaviorTree () {
 		return tree;
 	}
 
@@ -339,7 +338,7 @@ public class BehaviorTreeViewer<E> extends Table {
 		public static void initKryo () {
 			if (kryo == null) {
 				kryo = new Kryo();
-				kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+				kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
 				kryo.register(BehaviorTree.class);
 				// FieldSerializer fieldSerializer = new FieldSerializer(kryo, BehaviorTree.class);
 				// fieldSerializer.removeField("object");
