@@ -9,6 +9,7 @@
   * Now method addChild is final and Task's subclasses have to implement addChildToTask.
   * Added decorator tasks Repeat and Random.
   * Added leaf tasks Failure, Success and Wait.
+  * Added branch tasks RandomSelector and RandomSequence; removed deterministic attribute from Selector and Sequence. 
   * Now the UntilFail decorator succeeds when its child fails.
   * Added ability to clone tasks through third-party libraries like Kryo. 
 
