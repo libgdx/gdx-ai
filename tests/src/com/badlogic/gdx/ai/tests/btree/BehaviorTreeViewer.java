@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.ai.tests.btree;
 
-import org.objenesis.strategy.StdInstantiatorStrategy;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
@@ -36,11 +34,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy;
-import com.esotericsoftware.kryo.io.ByteBufferInput;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.OutputChunked;
 
 /** @author davebaol */
 public class BehaviorTreeViewer<E> extends Table {
@@ -90,7 +83,6 @@ public class BehaviorTreeViewer<E> extends Table {
 				displayTree.expandAll();
 			}
 		});
-		KryoUtils.initKryo();
 
 		treeStatus = SUSPENDED;
 
@@ -196,7 +188,6 @@ public class BehaviorTreeViewer<E> extends Table {
 		KryoUtils.save(new SaveObject<E>(tree, step, taskSteps));
 
 		tree.listeners = listeners;
-
 	}
 
 	public void load () {
@@ -322,37 +313,6 @@ public class BehaviorTreeViewer<E> extends Table {
 			this.tree = tree;
 			this.step = step;
 			this.taskSteps = taskSteps;
-		}
-	}
-
-	public static final class KryoUtils {
-
-		private static Kryo kryo;
-		private static final OutputChunked output = new OutputChunked();
-
-		private KryoUtils () {
-		}
-
-		public static void initKryo () {
-			if (kryo == null) {
-				kryo = new Kryo();
-				kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
-				kryo.register(BehaviorTree.class);
-				// FieldSerializer fieldSerializer = new FieldSerializer(kryo, BehaviorTree.class);
-				// fieldSerializer.removeField("object");
-				// kryo.register(BehaviorTree.class, fieldSerializer);
-			}
-		}
-
-		public static void save (Object obj) {
-			output.clear();
-			kryo.writeObjectOrNull(output, obj, obj.getClass());
-			// System.out.println(output.total());
-		}
-
-		public static <T> T load (Class<T> type) {
-			Input input = new ByteBufferInput(output.getBuffer());
-			return kryo.readObjectOrNull(input, type);
 		}
 	}
 }

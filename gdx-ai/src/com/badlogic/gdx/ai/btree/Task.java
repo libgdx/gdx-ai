@@ -209,7 +209,8 @@ public abstract class Task<E> {
 		control = null;
 	}
 
-	/** Clones this task to a new one. You can specify the clone strategy through {@link #TASK_CLONER}.
+	/** Clones this task to a new one. If you don't specify a clone strategy through {@link #TASK_CLONER} the new task is
+	 * instantiated via reflection and {@link #copyTo(Task)} is invoked.
 	 * @return the cloned task
 	 * @throws TaskCloneException if the task cannot be successfully cloned. */
 	@SuppressWarnings("unchecked")
@@ -228,7 +229,8 @@ public abstract class Task<E> {
 		}
 	}
 
-	/** Copies this task to the given task.
+	/** Copies this task to the given task. This method is invoked by {@link #cloneTask()} only if {@link #TASK_CLONER} is
+	 * {@code null} which is its default value.
 	 * @param task the task to be filled
 	 * @return the given task for chaining
 	 * @throws TaskCloneException if the task cannot be successfully copied. */

@@ -18,8 +18,6 @@ package com.badlogic.gdx.ai.tests.btree.tests;
 
 import java.io.Reader;
 
-import org.objenesis.strategy.StdInstantiatorStrategy;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
@@ -27,12 +25,12 @@ import com.badlogic.gdx.ai.btree.TaskCloner;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
+import com.badlogic.gdx.ai.tests.btree.KryoUtils;
 import com.badlogic.gdx.ai.tests.btree.dog.Dog;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.StreamUtils;
-import com.esotericsoftware.kryo.Kryo;
 
 /** A simple test to demonstrate behavior tree cloning capabilities.
  * 
@@ -57,15 +55,9 @@ public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
 
 			// Clone
 			Task.TASK_CLONER = !useKryo ? null : new TaskCloner() {
-				Kryo kryo;
-
 				@Override
 				public <T> Task<T> cloneTask (Task<T> task) {
-					if (kryo == null) {
-						kryo = new Kryo();
-						kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
-					}
-					return kryo.copy(task);
+					return KryoUtils.copy(task);
 				}
 			};
 			BehaviorTree<Dog> tree = (BehaviorTree<Dog>)treeArchetype.cloneTask();
