@@ -16,7 +16,7 @@ root
     parallel
       care urgentProb:0.8
       com.badlogic.gdx.ai.tests.btree.dog.PlayTask # fully qualified task
-    selector deterministic:false
+    randomSelector
       untilSuccess  # find some trees to pee
         sequence
           bark times:"uniform,1,2"

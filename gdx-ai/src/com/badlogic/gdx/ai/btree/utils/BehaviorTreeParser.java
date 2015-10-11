@@ -24,6 +24,8 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
+import com.badlogic.gdx.ai.btree.branch.RandomSelector;
+import com.badlogic.gdx.ai.btree.branch.RandomSequence;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysFail;
@@ -144,6 +146,8 @@ public class BehaviorTreeParser<E> {
 				Invert.class,
 				Parallel.class,
 				Random.class,
+				RandomSelector.class,
+				RandomSequence.class,
 				Repeat.class,
 				Selector.class,
 				SemaphoreGuard.class,
