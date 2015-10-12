@@ -30,7 +30,7 @@ import com.badlogic.gdx.ai.utils.NonBlockingSemaphoreRepository;
  * pathfinders, for example, meaning at most 5 characters can be pathfinding at a time. Or you can associate a semaphore to the
  * player character to ensure that at most 3 enemies can simultaneously attack him.
  * <p>
- * This decorator fails when it cannot acquire the semaphore. This allows a select task higher up the tree to find a different
+ * This decorator fails when it cannot acquire the semaphore. This allows a selector task higher up the tree to find a different
  * action that doesn't involve the contested resource.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
@@ -41,7 +41,7 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	/** Mandatory task attribute specifying the semaphore name. */
 	@TaskAttribute(required = true) public String name;
 
-	private NonBlockingSemaphore semaphore;
+	private transient NonBlockingSemaphore semaphore;
 	private boolean semaphoreAcquired;
 
 	/** Creates a {@code SemaphoreGuard} decorator with no child. */
@@ -100,6 +100,9 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	@Override
 	public void end () {
 		if (semaphoreAcquired) {
+			if (semaphore == null) {
+				semaphore = NonBlockingSemaphoreRepository.getSemaphore(name);
+			}
 			semaphore.release();
 			semaphoreAcquired = false;
 		}
