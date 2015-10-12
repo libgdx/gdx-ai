@@ -40,14 +40,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** A simple test to demonstrate subtree inclusion both eager (at clone-time) and lazy (at run-time) for programmatically created
- * behaviors.
+ * behavior trees.
  * 
  * @author davebaol */
-public class ProgrammaticallyCreatedTest extends BehaviorTreeTestBase {
+public class ProgrammaticallyCreatedTreeTest extends BehaviorTreeTestBase {
 
 	private boolean lazy;
 
-	public ProgrammaticallyCreatedTest (boolean lazy) {
+	public ProgrammaticallyCreatedTreeTest (boolean lazy) {
 		super("Programmatically Created Tree" + (lazy ? " (lazy)" : ""));
 		this.lazy = lazy;
 	}

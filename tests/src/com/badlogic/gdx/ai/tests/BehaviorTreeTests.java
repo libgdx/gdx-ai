@@ -19,9 +19,9 @@ package com.badlogic.gdx.ai.tests;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.tests.IncludeSubtreeTest;
-import com.badlogic.gdx.ai.tests.btree.tests.ParseAndRunTest;
-import com.badlogic.gdx.ai.tests.btree.tests.ParseCloneAndRunTest;
-import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTest;
+import com.badlogic.gdx.ai.tests.btree.tests.ParseTreeTest;
+import com.badlogic.gdx.ai.tests.btree.tests.ParseAndCloneTreeTest;
+import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.graphics.GL20;
@@ -56,13 +56,13 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	// @off - disable libgdx formatter
 	private BehaviorTreeTestBase[] tests = {
-		new ParseAndRunTest(),
-		new ParseCloneAndRunTest(false),
-		new ParseCloneAndRunTest(true),
+		new ParseTreeTest(),
+		new ParseAndCloneTreeTest(false),
+		new ParseAndCloneTreeTest(true),
 		new IncludeSubtreeTest(false),
 		new IncludeSubtreeTest(true),
-		new ProgrammaticallyCreatedTest(false),
-		new ProgrammaticallyCreatedTest(true),
+		new ProgrammaticallyCreatedTreeTest(false),
+		new ProgrammaticallyCreatedTreeTest(true),
 		new SemaphoreGuardTest()
 	};
 	// @on - enable libgdx formatter

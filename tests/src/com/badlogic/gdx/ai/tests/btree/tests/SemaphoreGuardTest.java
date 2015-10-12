@@ -20,6 +20,7 @@ import java.io.Reader;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.decorator.SemaphoreGuard;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
@@ -31,7 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.utils.StreamUtils;
 
-/** A simple test to demonstrate behavior tree
+/** A simple test to demonstrate the {@link SemaphoreGuard} task.
  * 
  * @author davebaol */
 public class SemaphoreGuardTest extends BehaviorTreeTestBase {
@@ -65,6 +66,12 @@ public class SemaphoreGuardTest extends BehaviorTreeTestBase {
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
+	}
+
+	@Override
+	public void dispose () {
+		super.dispose();
+		NonBlockingSemaphoreRepository.clear();
 	}
 
 }

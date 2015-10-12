@@ -29,16 +29,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.StreamUtils;
 
-/** A simple test to demonstrate behavior tree
+/** A simple test to demonstrate behavior tree parsing.
  * 
  * @author implicit-invocation
  * @author davebaol */
-public class ParseAndRunTest extends BehaviorTreeTestBase {
+public class ParseTreeTest extends BehaviorTreeTestBase {
 
 	private BehaviorTreeViewer<?> treeViewer;
 
-	public ParseAndRunTest () {
-		super("Parse and Run");
+	public ParseTreeTest () {
+		super("Parse Tree");
 	}
 
 	@Override
@@ -54,11 +54,6 @@ public class ParseAndRunTest extends BehaviorTreeTestBase {
 		} finally {
 			StreamUtils.closeQuietly(reader);
 		}
-	}
-
-	@Override
-	public void dispose () {
-		treeViewer.getBehaviorTree().reset();
 	}
 
 }

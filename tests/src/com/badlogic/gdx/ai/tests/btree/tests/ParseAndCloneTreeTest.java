@@ -35,12 +35,12 @@ import com.badlogic.gdx.utils.StreamUtils;
 /** A simple test to demonstrate behavior tree cloning capabilities.
  * 
  * @author davebaol */
-public class ParseCloneAndRunTest extends BehaviorTreeTestBase {
+public class ParseAndCloneTreeTest extends BehaviorTreeTestBase {
 
 	boolean useKryo;
 
-	public ParseCloneAndRunTest (boolean useKryo) {
-		super("Parse, Clone and Run (" + (useKryo ? "Kryo" : "no") + " cloner)");
+	public ParseAndCloneTreeTest (boolean useKryo) {
+		super("Parse and Clone Tree (" + (useKryo ? "Kryo" : "no") + " cloner)");
 		this.useKryo = useKryo;
 	}
 
