@@ -32,6 +32,7 @@ Currently supported features are:
 * [Read the wiki](https://github.com/libgdx/gdx-ai/wiki)
 * [Refer to the javadocs](http://libgdx.badlogicgames.com/gdx-ai/docs/)
 * [Read the examples](https://github.com/libgdx/gdx-ai/tree/master/tests)
+* [Useful Links and Resources](https://github.com/libgdx/gdx-ai/wiki/Useful-Links-and-Resources)
 
 
 ### News & Community
