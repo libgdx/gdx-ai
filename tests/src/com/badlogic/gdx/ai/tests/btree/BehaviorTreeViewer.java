@@ -35,12 +35,15 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StringBuilder;
 
-/** @author davebaol */
+/** A simple behavior tree viewer actor with serialization capability that lets you play with task navigation. This should make
+ * learning and debugging easier.
+ * 
+ * @author davebaol */
 public class BehaviorTreeViewer<E> extends Table {
 
-	private static final int SUSPENDED = 0;
-	private static final int RUNNING = 1;
-	private static final int STEP = 2;
+	private static final int BT_SUSPENDED = 0;
+	private static final int BT_RUNNING = 1;
+	private static final int BT_STEP = 2;
 
 	private static String LABEL_STEP = "Step: ";
 
@@ -52,6 +55,7 @@ public class BehaviorTreeViewer<E> extends Table {
 	private Slider runDelaySlider;
 	private TextButton runButton;
 	private TextButton stepButton;
+	private TextButton resetButton;
 	private TextButton saveButton;
 	private TextButton loadButton;
 	private Tree displayTree;
@@ -84,7 +88,7 @@ public class BehaviorTreeViewer<E> extends Table {
 			}
 		});
 
-		treeStatus = SUSPENDED;
+		treeStatus = BT_SUSPENDED;
 
 		runDelaySlider = new Slider(0, 5, 0.01f, false, skin);
 		runDelaySlider.setValue(.5f);
@@ -93,15 +97,15 @@ public class BehaviorTreeViewer<E> extends Table {
 		runButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				if (treeStatus == SUSPENDED) {
-					treeStatus = RUNNING;
-					delay = runDelaySlider.getValue(); // this makes it start immediately
+				if (treeStatus == BT_SUSPENDED) {
+					treeStatus = BT_RUNNING;
+					runDelayAccumulator = runDelaySlider.getValue(); // this makes it start immediately
 					runButton.setText("Suspend");
 					stepButton.setDisabled(true);
 					if (saveButton != null) saveButton.setDisabled(true);
 					if (loadButton != null) loadButton.setDisabled(true);
 				} else {
-					treeStatus = SUSPENDED;
+					treeStatus = BT_SUSPENDED;
 					runButton.setText("Run");
 					stepButton.setDisabled(false);
 					if (saveButton != null) saveButton.setDisabled(false);
@@ -114,7 +118,16 @@ public class BehaviorTreeViewer<E> extends Table {
 		stepButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				treeStatus = STEP;
+				treeStatus = BT_STEP;
+			}
+		});
+
+		resetButton = new TextButton("Reset", skin);
+		resetButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				BehaviorTreeViewer.this.tree.reset();
+				rebuildDisplayTree();
 			}
 		});
 
@@ -141,10 +154,11 @@ public class BehaviorTreeViewer<E> extends Table {
 
 		stepLabel = new Label(new StringBuilder(LABEL_STEP + step), skin);
 
-		this.row().height(20).fillX();
+		this.row().height(26).fillX();
 		this.add(runDelaySlider);
 		this.add(runButton);
 		this.add(stepButton);
+		this.add(resetButton);
 		if (loadAndSave) {
 			this.add(saveButton);
 			this.add(loadButton);
@@ -155,7 +169,7 @@ public class BehaviorTreeViewer<E> extends Table {
 
 		rebuildDisplayTree();
 
-		this.add(displayTree).colspan(loadAndSave ? 6 : 4).grow();
+		this.add(displayTree).colspan(5 + (loadAndSave ? 2 : 0)).grow();
 	}
 
 	public BehaviorTree<E> getBehaviorTree () {
@@ -209,21 +223,21 @@ public class BehaviorTreeViewer<E> extends Table {
 		}
 	}
 
-	private float delay;
+	private float runDelayAccumulator;
 
 	@Override
 	public void act (float delta) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if (treeStatus == RUNNING) {
-			delay += delta;
-			if (delay > runDelaySlider.getValue()) {
-				delay = 0;
+		if (treeStatus == BT_RUNNING) {
+			runDelayAccumulator += delta;
+			if (runDelayAccumulator > runDelaySlider.getValue()) {
+				runDelayAccumulator = 0;
 				step();
 			}
-		} else if (treeStatus == STEP) {
+		} else if (treeStatus == BT_STEP) {
 			step();
-			treeStatus = SUSPENDED;
+			treeStatus = BT_SUSPENDED;
 		}
 		super.act(delta);
 	}
