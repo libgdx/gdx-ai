@@ -232,7 +232,7 @@ case 1:
 						break outer;
 					} else { // number
 						try {
-							if (value.indexOf('.') != -1) {
+							if (containsFloatingPointCharacters(value)) {
 								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Double(value));
 								break outer;
@@ -405,7 +405,7 @@ case 4:
 						break outer;
 					} else { // number
 						try {
-							if (value.indexOf('.') != -1) {
+							if (containsFloatingPointCharacters(value)) {
 								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Double(value));
 								break outer;
@@ -588,7 +588,19 @@ static final int btree_en_main = 4;
 
 // line 284 "BehaviorTreeReader.rl"
 
-	private String unescape (String value) {
+	private static boolean containsFloatingPointCharacters (String value) {
+		for (int i = 0, n = value.length(); i < n; i++) {
+			switch (value.charAt(i)) {
+			case '.':
+			case 'E':
+			case 'e':
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static String unescape (String value) {
 		int length = value.length();
 		StringBuilder buffer = new StringBuilder(length + 16);
 		for (int i = 0; i < length;) {
