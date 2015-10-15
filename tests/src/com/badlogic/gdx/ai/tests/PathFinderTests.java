@@ -49,9 +49,11 @@ public class PathFinderTests extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
+	private static String LABEL_FPS = "FPS: ";
+
 	public CollapsableWindow algorithmSelectionWindow;
+	private int fps = 0;
 	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 
 	// @off - disable libgdx formatter
 	PathFinderTestBase [] tests = {
@@ -73,8 +75,6 @@ public class PathFinderTests extends GdxAiTest {
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
-
-		fpsStringBuilder = new StringBuilder();
 
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -103,7 +103,7 @@ public class PathFinderTests extends GdxAiTest {
 		changeTest(0);
 
 		fpsLabel = new Label("FPS: 999", skin);
-// updateLabel();
+
 		stage.addActor(fpsLabel);
 	}
 
@@ -111,9 +111,13 @@ public class PathFinderTests extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		updateStatusBarText(fpsStringBuilder);
-		fpsLabel.setText(fpsStringBuilder);
+		if (fps != Gdx.graphics.getFramesPerSecond()) {
+			fps = Gdx.graphics.getFramesPerSecond();
+			StringBuilder sb = fpsLabel.getText();
+			sb.setLength(LABEL_FPS.length());
+			sb.append(fps);
+			fpsLabel.invalidateHierarchy();
+		}
 
 		if (currentTest != null) currentTest.render();
 
@@ -127,10 +131,6 @@ public class PathFinderTests extends GdxAiTest {
 		stage.getViewport().update(width, height, true);
 		stageWidth = width;
 		stageHeight = height;
-	}
-
-	protected void updateStatusBarText (final StringBuilder stringBuilder) {
-		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 	}
 
 	private List<String> createTestList () {

@@ -78,9 +78,11 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 	private static final String[] ENGINES = {"Scene2d", "Box2d", "Bullet"};
 
+	private static String LABEL_FPS = "FPS: ";
+
 	public CollapsableWindow behaviorSelectionWindow;
+	private int fps = 0;
 	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 	public String helpMessage;
 
 	// @off - disable libgdx formatter
@@ -144,8 +146,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
-		fpsStringBuilder = new StringBuilder();
-
 		greenFish = new TextureRegion(new Texture("data/green_fish.png"));
 		cloud = new TextureRegion(new Texture("data/particle-cloud.png"));
 		badlogicSmall = new TextureRegion(new Texture("data/badlogicsmall.jpg"));
@@ -176,7 +176,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		// Set selected behavior
 		changeBehavior(0, 0);
 
-		fpsLabel = new Label("FPS: 999", skin);
+		fpsLabel = new Label(LABEL_FPS + fps, skin);
 		stage.addActor(fpsLabel);
 	}
 
@@ -184,9 +184,14 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		getStatus(fpsStringBuilder);
-		fpsLabel.setText(fpsStringBuilder);
+		if (fps != Gdx.graphics.getFramesPerSecond()) {
+			fps = Gdx.graphics.getFramesPerSecond();
+			StringBuilder sb = fpsLabel.getText();
+			sb.setLength(LABEL_FPS.length());
+			sb.append(fps);
+			if (helpMessage != null) sb.append("     ").append(helpMessage);
+			fpsLabel.invalidateHierarchy();
+		}
 
 		if (currentBehavior != null) currentBehavior.render();
 
@@ -214,11 +219,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		cloud.getTexture().dispose();
 		badlogicSmall.getTexture().dispose();
 		target.getTexture().dispose();
-	}
-
-	protected void getStatus (final StringBuilder stringBuilder) {
-		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-		if (helpMessage != null) stringBuilder.append("     ").append(helpMessage);
 	}
 
 	private List<String> createBehaviorList (final int engineIndex) {

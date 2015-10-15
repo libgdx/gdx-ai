@@ -42,7 +42,6 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 
 	Stage stage;
 	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 	int msgCounter;
 	float msgTimeStamp;
 	boolean timerEnabled;
@@ -52,8 +51,6 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
 		timerEnabled = true;
-
-		fpsStringBuilder = new StringBuilder();
 
 		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -97,9 +94,10 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		fpsStringBuilder.append("Counter: ").append(msgCounter).append("; timestamp: ").append(msgTimeStamp);
-		fpsLabel.setText(fpsStringBuilder);
+		StringBuilder sb = fpsLabel.getText();
+		sb.setLength(0);
+		sb.append("Counter: ").append(msgCounter).append("; timestamp: ").append(msgTimeStamp);
+		fpsLabel.invalidateHierarchy();
 
 		stage.act();
 		stage.draw();
