@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.tests.IncludeSubtreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseTreeTest;
@@ -107,6 +108,10 @@ public class BehaviorTreeTests extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// Update time
+		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
+
+		// Update FPS label
 		if (fps != Gdx.graphics.getFramesPerSecond()) {
 			fps = Gdx.graphics.getFramesPerSecond();
 			StringBuilder sb = fpsLabel.getText();

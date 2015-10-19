@@ -43,7 +43,7 @@ public class SteeringBulletEntity extends BulletEntity implements Steerable<Vect
 
 	private static final Quaternion tmpQuaternion = new Quaternion();
 	private static final Matrix4 tmpMatrix4 = new Matrix4();
-	private static final Vector3 tmpVector3 = new Vector3();
+	private final Vector3 tmpVector3 = new Vector3();
 
 	private static final Vector3 ANGULAR_LOCK = new Vector3(0, 1, 0);
 

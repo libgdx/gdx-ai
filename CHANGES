@@ -1,4 +1,8 @@
 [1.6.1]
+- API Addition: added GdxAI service locator with Timepiece, Logger and FileSystem providers. This reduces
+  coupling with libgdx and allows you to use gdx-ai out of a libgdx application without having to initialize
+  libgdx environment, so avoiding the waste of resources and the need of native libraries.
+- API Change: removed delta time argument from the update method of the MessageDispatcher; the new GdxAI.getTimepiece().getTime() is internally used instead.
 - API Change: Behavior tree API revised and improved
   * Now tasks have a status that is updated each time they run.
   * Added enum support in behavior tree files.
@@ -11,7 +15,7 @@
   * Added leaf tasks Failure, Success and Wait.
   * Added branch tasks RandomSelector and RandomSequence; removed deterministic attribute from Selector and Sequence. 
   * Now the UntilFail decorator succeeds when its child fails.
-  * Added ability to clone tasks through third-party libraries like Kryo. 
+  * Added ability to clone tasks through third-party libraries like Kryo.
 
 [1.6.0]
 - Updated to libgdx 1.7.0

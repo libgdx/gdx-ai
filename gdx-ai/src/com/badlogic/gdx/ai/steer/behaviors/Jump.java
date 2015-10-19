@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.steer.behaviors;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteerableAdapter;
@@ -93,16 +93,16 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 
 		// Check if the owner has reached target position and velocity with acceptable tolerance
 		if (owner.getPosition().epsilonEquals(target.getPosition(), takeoffPositionTolerance)) {
-			if (DEBUG_ENABLED) Gdx.app.log("Jump", "Good position!!!");
+			if (DEBUG_ENABLED) GdxAI.getLogger().info("Jump", "Good position!!!");
 			if (owner.getLinearVelocity().epsilonEquals(target.getLinearVelocity(), takeoffVelocityTolerance)) {
-				if (DEBUG_ENABLED) Gdx.app.log("Jump", "Good Velocity!!!");
+				if (DEBUG_ENABLED) GdxAI.getLogger().info("Jump", "Good Velocity!!!");
 				isJumpAchievable = false;
 				// Perform the jump, and return no steering (the owner is airborne, no need to steer).
 				callback.takeoff(maxVerticalVelocity, airborneTime);
 				return steering.setZero();
 			} else {
 				if (DEBUG_ENABLED)
-					Gdx.app.log("Jump",
+					GdxAI.getLogger().info("Jump",
 						"Bad Velocity: Speed diff. = "
 							+ planarVelocity.set(target.getLinearVelocity()).sub(owner.getLinearVelocity()).len() + ", diff = ("
 							+ planarVelocity + ")");
@@ -142,13 +142,13 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 		float sqrtTerm = (float)Math.sqrt(2f * g * gravityComponentHandler.getComponent(jumpDescriptor.delta)
 			+ maxVerticalVelocity * maxVerticalVelocity);
 		float time = (-maxVerticalVelocity + sqrtTerm) / g;
-		if (DEBUG_ENABLED) Gdx.app.log("Jump", "1st jump time = " + time);
+		if (DEBUG_ENABLED) GdxAI.getLogger().info("Jump", "1st jump time = " + time);
 
 		// Check if we can use it
 		if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 			// Otherwise try the other time
 			time = (-maxVerticalVelocity - sqrtTerm) / g;
-			if (DEBUG_ENABLED) Gdx.app.log("Jump", "2nd jump time = " + time);
+			if (DEBUG_ENABLED) GdxAI.getLogger().info("Jump", "2nd jump time = " + time);
 			if (!checkAirborneTimeAndCalculateVelocity(outVelocity, time, jumpDescriptor, maxLinearSpeed)) {
 				return -1f; // Unachievable jump
 			}
@@ -168,7 +168,7 @@ public class Jump<T extends Vector<T>> extends MatchVelocity<T> {
 			float verticalValue = gravityComponentHandler.getComponent(outVelocity);
 			gravityComponentHandler.setComponent(outVelocity.set(planarVelocity), verticalValue);
 			if (DEBUG_ENABLED)
-				Gdx.app.log("Jump", "targetLinearVelocity = " + outVelocity + "; targetLinearSpeed = " + outVelocity.len());
+				GdxAI.getLogger().info("Jump", "targetLinearVelocity = " + outVelocity + "; targetLinearSpeed = " + outVelocity.len());
 			return true;
 		}
 		return false;

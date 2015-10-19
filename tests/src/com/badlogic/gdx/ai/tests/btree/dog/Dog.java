@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -90,11 +90,11 @@ public class Dog {
 //	}
 
 	public void log (String msg) {
-		Gdx.app.log(name, msg);
+		GdxAI.getLogger().info(name, msg);
 	}
 
 	public void brainLog (String msg) {
-		Gdx.app.log(brainLog, msg);
+		GdxAI.getLogger().info(brainLog, msg);
 	}
 
 }

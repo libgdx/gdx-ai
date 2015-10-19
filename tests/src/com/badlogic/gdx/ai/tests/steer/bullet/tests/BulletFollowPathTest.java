@@ -16,10 +16,14 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath.LinePathParam;
+import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
+import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
+import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
@@ -35,10 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
-import com.badlogic.gdx.ai.tests.steer.bullet.SteeringBulletEntity;
-import com.badlogic.gdx.ai.tests.utils.bullet.BulletEntity;
 import com.badlogic.gdx.utils.Array;
 
 /** A class to test and experiment with the {@link FollowPath} behavior.
@@ -204,7 +204,7 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update(Gdx.graphics.getDeltaTime());
+		character.update(GdxAI.getTimepiece().getDeltaTime());
 
 		super.render(true);
 

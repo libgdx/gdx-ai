@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.bullet.BulletSteeringTest;
@@ -80,7 +80,7 @@ public class BulletSeekTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update(Gdx.graphics.getDeltaTime());
+		character.update(GdxAI.getTimepiece().getDeltaTime());
 
 		super.render(true);
 	}

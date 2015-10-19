@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.pfa.PathFinderTestBase;
 import com.badlogic.gdx.ai.tests.pfa.tests.FlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.HierarchicalTiledAStarTest;
@@ -110,6 +111,9 @@ public class PathFinderTests extends GdxAiTest {
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		// Update time
+		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 		if (fps != Gdx.graphics.getFramesPerSecond()) {
 			fps = Gdx.graphics.getFramesPerSecond();

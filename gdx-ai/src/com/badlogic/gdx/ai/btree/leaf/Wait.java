@@ -16,12 +16,12 @@
 
 package com.badlogic.gdx.ai.btree.leaf;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.utils.random.ConstantFloatDistribution;
 import com.badlogic.gdx.ai.utils.random.FloatDistribution;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /** {@code Wait} is a leaf that keeps running for the specified amount of time then succeeds.
  * 
@@ -33,7 +33,7 @@ public class Wait<E> extends LeafTask<E> {
 	/** Mandatory task attribute specifying the random distribution that determines the timeout in seconds. */
 	@TaskAttribute(required = true) public FloatDistribution seconds;
 
-	private long startTime;
+	private float startTime;
 	private float timeout;
 
 	/** Creates a {@code Wait} task that immediately succeeds. */
@@ -61,12 +61,12 @@ public class Wait<E> extends LeafTask<E> {
 	@Override
 	public void start () {
 		timeout = seconds.nextFloat();
-		startTime = TimeUtils.nanoTime();
+		startTime = GdxAI.getTimepiece().getTime();
 	}
 
 	@Override
 	public void run () {
-		if ((TimeUtils.nanoTime() - startTime) / 1000000000f < timeout)
+		if (GdxAI.getTimepiece().getTime() - startTime < timeout)
 			running();
 		else
 			success();

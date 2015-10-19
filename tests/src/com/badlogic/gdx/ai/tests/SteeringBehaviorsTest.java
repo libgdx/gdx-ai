@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dArriveTest;
 import com.badlogic.gdx.ai.tests.steer.box2d.tests.Box2dCollisionAvoidanceTest;
@@ -184,6 +185,10 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// Update time
+		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
+
+		// Update FPS label
 		if (fps != Gdx.graphics.getFramesPerSecond()) {
 			fps = Gdx.graphics.getFramesPerSecond();
 			StringBuilder sb = fpsLabel.getText();
@@ -193,6 +198,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 			fpsLabel.invalidateHierarchy();
 		}
 
+		// Render current steering behavior test
 		if (currentBehavior != null) currentBehavior.render();
 
 		stage.act();

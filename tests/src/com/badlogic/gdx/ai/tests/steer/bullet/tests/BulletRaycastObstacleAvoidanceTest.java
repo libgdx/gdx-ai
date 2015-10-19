@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
@@ -176,7 +177,7 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	@Override
 	public void render () {
-		character.update(Gdx.graphics.getDeltaTime());
+		character.update(GdxAI.getTimepiece().getDeltaTime());
 
 		super.render(true);
 
