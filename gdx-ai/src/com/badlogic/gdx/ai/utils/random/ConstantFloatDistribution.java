@@ -39,4 +39,9 @@ public final class ConstantFloatDistribution extends FloatDistribution {
 		return value;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "constant," + value;
+	}
+
 }

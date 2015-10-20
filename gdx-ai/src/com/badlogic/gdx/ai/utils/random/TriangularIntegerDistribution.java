@@ -61,4 +61,9 @@ public final class TriangularIntegerDistribution extends IntegerDistribution {
 		return mode;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "triangular," + low + "," + high + "," + mode;
+	}
+
 }

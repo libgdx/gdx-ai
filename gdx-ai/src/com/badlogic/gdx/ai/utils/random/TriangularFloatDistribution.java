@@ -57,4 +57,9 @@ public final class TriangularFloatDistribution extends FloatDistribution {
 		return mode;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "triangular," + low + "," + high + "," + mode;
+	}
+
 }

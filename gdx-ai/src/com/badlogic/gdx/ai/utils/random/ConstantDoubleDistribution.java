@@ -38,4 +38,9 @@ public final class ConstantDoubleDistribution extends DoubleDistribution {
 		return value;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "constant," + value;
+	}
+
 }

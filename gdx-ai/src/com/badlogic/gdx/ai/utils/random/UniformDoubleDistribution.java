@@ -45,4 +45,9 @@ public final class UniformDoubleDistribution extends DoubleDistribution {
 		return high;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "uniform," + low + "," + high;
+	}
+
 }
