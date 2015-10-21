@@ -28,7 +28,7 @@ public final class TriangularLongDistribution extends LongDistribution {
 	}
 
 	public TriangularLongDistribution (long low, long high) {
-		this(low, high, (high - low) * .5);
+		this(low, high, (low + high) * .5);
 	}
 
 	public TriangularLongDistribution (long low, long high, double mode) {

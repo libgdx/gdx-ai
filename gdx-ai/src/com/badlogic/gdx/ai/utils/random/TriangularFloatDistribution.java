@@ -30,7 +30,7 @@ public final class TriangularFloatDistribution extends FloatDistribution {
 	}
 
 	public TriangularFloatDistribution (float low, float high) {
-		this(low, high, (high - low) * .5f);
+		this(low, high, (low + high) * .5f);
 	}
 
 	public TriangularFloatDistribution (float low, float high, float mode) {

@@ -30,7 +30,7 @@ public final class TriangularIntegerDistribution extends IntegerDistribution {
 	}
 
 	public TriangularIntegerDistribution (int low, int high) {
-		this(low, high, (high - low) * .5f);
+		this(low, high, (low + high) * .5f);
 	}
 
 	public TriangularIntegerDistribution (int low, int high, float mode) {
