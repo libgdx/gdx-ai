@@ -23,7 +23,6 @@ import com.badlogic.gdx.ai.utils.random.ConstantFloatDistribution;
 import com.badlogic.gdx.ai.utils.random.ConstantIntegerDistribution;
 import com.badlogic.gdx.ai.utils.random.ConstantLongDistribution;
 import com.badlogic.gdx.ai.utils.random.Distribution;
-import com.badlogic.gdx.ai.utils.random.DistributionFormatException;
 import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
 import com.badlogic.gdx.ai.utils.random.FloatDistribution;
 import com.badlogic.gdx.ai.utils.random.GaussianDoubleDistribution;
@@ -43,6 +42,48 @@ import com.badlogic.gdx.utils.ObjectMap;
 /** @author davebaol */
 public class DistributionAdapters {
 
+	/** Thrown to indicate that the application has attempted to convert a string to one of the distribution types, but that the
+	 * string does not have the appropriate format.
+	 * 
+	 * @author davebaol */
+	public static class DistributionFormatException extends RuntimeException {
+
+		/** Constructs an <code>IllegalArgumentException</code> with no detail message. */
+		public DistributionFormatException () {
+			super();
+		}
+
+		/** Constructs an <code>IllegalArgumentException</code> with the specified detail message.
+		 *
+		 * @param s the detail message. */
+		public DistributionFormatException (String s) {
+			super(s);
+		}
+
+		/** Constructs a new exception with the specified detail message and cause.
+		 * <p>
+		 * Note that the detail message associated with <code>cause</code> is <i>not</i> automatically incorporated in this
+		 * exception's detail message.
+		 *
+		 * @param message the detail message (which is saved for later retrieval by the {@link Throwable#getMessage()} method).
+		 * @param cause the cause (which is saved for later retrieval by the {@link Throwable#getCause()} method). (A <tt>null</tt>
+		 *           value is permitted, and indicates that the cause is nonexistent or unknown.) */
+		public DistributionFormatException (String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		/** Constructs a new exception with the specified cause and a detail message of
+		 * <tt>(cause==null ? null : cause.toString())</tt> (which typically contains the class and detail message of <tt>cause</tt>
+		 * ). This constructor is useful for exceptions that are little more than wrappers for other throwables.
+		 *
+		 * @param cause the cause (which is saved for later retrieval by the {@link Throwable#getCause()} method). (A <tt>null</tt>
+		 *           value is permitted, and indicates that the cause is nonexistent or unknown.) */
+		public DistributionFormatException (Throwable cause) {
+			super(cause);
+		}
+
+	}
+
 	public abstract static class Adapter<D extends Distribution> {
 		final String category;
 		final Class<?> type;
@@ -52,7 +93,7 @@ public class DistributionAdapters {
 			this.type = type;
 		}
 
-		public abstract D toDistribution (String[] args) throws DistributionFormatException;
+		public abstract D toDistribution (String[] args);
 
 		public abstract String[] toParameters (D distribution);
 
@@ -123,8 +164,8 @@ public class DistributionAdapters {
 		adapters.put(ConstantDoubleDistribution.class, new DoubleAdapter<ConstantDoubleDistribution>("constant") {
 
 			@Override
-			public ConstantDoubleDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 1) throw new DistributionFormatException();
+			public ConstantDoubleDistribution toDistribution (String[] args) {
+				if (args.length != 1) throw invalidNumberOfArgumentsException(args.length, 1);
 				return new ConstantDoubleDistribution(parseDouble(args[0]));
 			}
 
@@ -137,8 +178,8 @@ public class DistributionAdapters {
 		adapters.put(ConstantFloatDistribution.class, new FloatAdapter<ConstantFloatDistribution>("constant") {
 
 			@Override
-			public ConstantFloatDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 1) throw new DistributionFormatException();
+			public ConstantFloatDistribution toDistribution (String[] args) {
+				if (args.length != 1) throw invalidNumberOfArgumentsException(args.length, 1);
 				return new ConstantFloatDistribution(parseFloat(args[0]));
 			}
 
@@ -151,8 +192,8 @@ public class DistributionAdapters {
 		adapters.put(ConstantIntegerDistribution.class, new IntegerAdapter<ConstantIntegerDistribution>("constant") {
 
 			@Override
-			public ConstantIntegerDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 1) throw new DistributionFormatException();
+			public ConstantIntegerDistribution toDistribution (String[] args) {
+				if (args.length != 1) throw invalidNumberOfArgumentsException(args.length, 1);
 				return new ConstantIntegerDistribution(parseInteger(args[0]));
 			}
 
@@ -165,8 +206,8 @@ public class DistributionAdapters {
 		adapters.put(ConstantLongDistribution.class, new LongAdapter<ConstantLongDistribution>("constant") {
 
 			@Override
-			public ConstantLongDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 1) throw new DistributionFormatException();
+			public ConstantLongDistribution toDistribution (String[] args) {
+				if (args.length != 1) throw invalidNumberOfArgumentsException(args.length, 1);
 				return new ConstantLongDistribution(parseLong(args[0]));
 			}
 
@@ -183,8 +224,8 @@ public class DistributionAdapters {
 		adapters.put(GaussianDoubleDistribution.class, new DoubleAdapter<GaussianDoubleDistribution>("gaussian") {
 
 			@Override
-			public GaussianDoubleDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 2) throw new DistributionFormatException();
+			public GaussianDoubleDistribution toDistribution (String[] args) {
+				if (args.length != 2) throw invalidNumberOfArgumentsException(args.length, 2);
 				return new GaussianDoubleDistribution(parseDouble(args[0]), parseDouble(args[1]));
 			}
 
@@ -197,8 +238,8 @@ public class DistributionAdapters {
 		adapters.put(GaussianFloatDistribution.class, new FloatAdapter<GaussianFloatDistribution>("gaussian") {
 
 			@Override
-			public GaussianFloatDistribution toDistribution (String[] args) throws DistributionFormatException {
-				if (args.length != 2) throw new DistributionFormatException();
+			public GaussianFloatDistribution toDistribution (String[] args) {
+				if (args.length != 2) throw invalidNumberOfArgumentsException(args.length, 2);
 				return new GaussianFloatDistribution(parseFloat(args[0]), parseFloat(args[1]));
 			}
 
@@ -215,7 +256,7 @@ public class DistributionAdapters {
 		adapters.put(TriangularDoubleDistribution.class, new DoubleAdapter<TriangularDoubleDistribution>("triangular") {
 
 			@Override
-			public TriangularDoubleDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public TriangularDoubleDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new TriangularDoubleDistribution(parseDouble(args[0]));
@@ -224,7 +265,7 @@ public class DistributionAdapters {
 				case 3:
 					return new TriangularDoubleDistribution(parseDouble(args[0]), parseDouble(args[1]), parseDouble(args[2]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2, 3);
 				}
 			}
 
@@ -238,7 +279,7 @@ public class DistributionAdapters {
 		adapters.put(TriangularFloatDistribution.class, new FloatAdapter<TriangularFloatDistribution>("triangular") {
 
 			@Override
-			public TriangularFloatDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public TriangularFloatDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new TriangularFloatDistribution(parseFloat(args[0]));
@@ -247,8 +288,7 @@ public class DistributionAdapters {
 				case 3:
 					return new TriangularFloatDistribution(parseFloat(args[0]), parseFloat(args[1]), parseFloat(args[2]));
 				default:
-					throw new DistributionFormatException(
-						"Wrong number of arguments in triangular distribution; expected one, two or three");
+					throw invalidNumberOfArgumentsException(args.length, 1, 2, 3);
 				}
 			}
 
@@ -262,7 +302,7 @@ public class DistributionAdapters {
 		adapters.put(TriangularIntegerDistribution.class, new IntegerAdapter<TriangularIntegerDistribution>("triangular") {
 
 			@Override
-			public TriangularIntegerDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public TriangularIntegerDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new TriangularIntegerDistribution(parseInteger(args[0]));
@@ -271,7 +311,7 @@ public class DistributionAdapters {
 				case 3:
 					return new TriangularIntegerDistribution(parseInteger(args[0]), parseInteger(args[1]), Float.valueOf(args[2]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2, 3);
 				}
 			}
 
@@ -285,7 +325,7 @@ public class DistributionAdapters {
 		adapters.put(TriangularLongDistribution.class, new LongAdapter<TriangularLongDistribution>("triangular") {
 
 			@Override
-			public TriangularLongDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public TriangularLongDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new TriangularLongDistribution(parseLong(args[0]));
@@ -294,7 +334,7 @@ public class DistributionAdapters {
 				case 3:
 					return new TriangularLongDistribution(parseLong(args[0]), parseLong(args[1]), parseDouble(args[2]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2, 3);
 				}
 			}
 
@@ -312,14 +352,14 @@ public class DistributionAdapters {
 		adapters.put(UniformDoubleDistribution.class, new DoubleAdapter<UniformDoubleDistribution>("uniform") {
 
 			@Override
-			public UniformDoubleDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public UniformDoubleDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new UniformDoubleDistribution(parseDouble(args[0]));
 				case 2:
 					return new UniformDoubleDistribution(parseDouble(args[0]), parseDouble(args[1]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2);
 				}
 			}
 
@@ -332,14 +372,14 @@ public class DistributionAdapters {
 		adapters.put(UniformFloatDistribution.class, new FloatAdapter<UniformFloatDistribution>("uniform") {
 
 			@Override
-			public UniformFloatDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public UniformFloatDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new UniformFloatDistribution(parseFloat(args[0]));
 				case 2:
 					return new UniformFloatDistribution(parseFloat(args[0]), parseFloat(args[1]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2);
 				}
 			}
 
@@ -352,14 +392,14 @@ public class DistributionAdapters {
 		adapters.put(UniformIntegerDistribution.class, new IntegerAdapter<UniformIntegerDistribution>("uniform") {
 
 			@Override
-			public UniformIntegerDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public UniformIntegerDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new UniformIntegerDistribution(parseInteger(args[0]));
 				case 2:
 					return new UniformIntegerDistribution(parseInteger(args[0]), parseInteger(args[1]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2);
 				}
 			}
 
@@ -372,14 +412,14 @@ public class DistributionAdapters {
 		adapters.put(UniformLongDistribution.class, new LongAdapter<UniformLongDistribution>("uniform") {
 
 			@Override
-			public UniformLongDistribution toDistribution (String[] args) throws DistributionFormatException {
+			public UniformLongDistribution toDistribution (String[] args) {
 				switch (args.length) {
 				case 1:
 					return new UniformLongDistribution(parseLong(args[0]));
 				case 2:
 					return new UniformLongDistribution(parseLong(args[0]), parseLong(args[1]));
 				default:
-					throw new DistributionFormatException();
+					throw invalidNumberOfArgumentsException(args.length, 1, 2);
 				}
 			}
 
@@ -412,7 +452,7 @@ public class DistributionAdapters {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Distribution> T toDistribution (String value, Class<T> clazz) throws DistributionFormatException {
+	public <T extends Distribution> T toDistribution (String value, Class<T> clazz) {
 		StringTokenizer st = new StringTokenizer(value, ", \t\f");
 		if (!st.hasMoreTokens()) throw new DistributionFormatException("Missing ditribution type");
 		String type = st.nextToken();
@@ -434,13 +474,21 @@ public class DistributionAdapters {
 		for (String a : args)
 			out += "," + a;
 		return out;
-
 	}
 
-	public static void main (String[] args) {
-		DistributionAdapters ds = new DistributionAdapters();
-		Distribution d = ds.toDistribution("triangular,re", FloatDistribution.class);
-		System.out.println(d);
-		System.out.println(ds.toString(d));
+	private static DistributionFormatException invalidNumberOfArgumentsException (int found, int... expected) {
+		String message = "Found " + found + " arguments in triangular distribution; expected ";
+		if (expected.length < 2)
+			message += expected.length;
+		else {
+			String sep = "";
+			int i = 0;
+			while (i < expected.length - 1) {
+				message += sep + expected[i++];
+				sep = ", ";
+			}
+			message += " or " + expected[i];
+		}
+		return new DistributionFormatException(message);
 	}
 }
