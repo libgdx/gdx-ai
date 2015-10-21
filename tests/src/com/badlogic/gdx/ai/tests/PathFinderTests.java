@@ -26,18 +26,17 @@ import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleFlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleHierarchicalTiledAStarTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.StringBuilder;
 
 /** Test class for pathfinding algorithms.
  * 
@@ -50,11 +49,7 @@ public class PathFinderTests extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
-	private static String LABEL_FPS = "FPS: ";
-
 	public CollapsableWindow algorithmSelectionWindow;
-	private int fps = 0;
-	Label fpsLabel;
 
 	// @off - disable libgdx formatter
 	PathFinderTestBase [] tests = {
@@ -103,9 +98,7 @@ public class PathFinderTests extends GdxAiTest {
 		// Set selected test
 		changeTest(0);
 
-		fpsLabel = new Label("FPS: 999", skin);
-
-		stage.addActor(fpsLabel);
+		stage.addActor(new FpsLabel("FPS: ", skin));
 	}
 
 	@Override
@@ -114,14 +107,6 @@ public class PathFinderTests extends GdxAiTest {
 
 		// Update time
 		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
-
-		if (fps != Gdx.graphics.getFramesPerSecond()) {
-			fps = Gdx.graphics.getFramesPerSecond();
-			StringBuilder sb = fpsLabel.getText();
-			sb.setLength(LABEL_FPS.length());
-			sb.append(fps);
-			fpsLabel.invalidateHierarchy();
-		}
 
 		if (currentTest != null) currentTest.render();
 

@@ -20,11 +20,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.tests.IncludeSubtreeTest;
-import com.badlogic.gdx.ai.tests.btree.tests.ParseTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseAndCloneTreeTest;
+import com.badlogic.gdx.ai.tests.btree.tests.ParseTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,7 +36,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /** Test class for behavior trees.
@@ -49,10 +49,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
-	private static String LABEL_FPS = "FPS: ";
-
-	private Label fpsLabel;
-	private int fps = 0;
 	private Label testDescriptionLabel;
 
 	// @off - disable libgdx formatter
@@ -96,7 +92,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 		t.setFillParent(true);
 		t.add(splitPane).colspan(2).grow();
 		t.row();
-		t.add(fpsLabel = new Label(LABEL_FPS + fps, skin)).left();
+		t.add(new FpsLabel("FPS: ", skin)).left();
 		t.add(testDescriptionLabel = new Label("", skin)).center();
 		stage.addActor(t);
 
@@ -110,15 +106,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 		// Update time
 		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
-
-		// Update FPS label
-		if (fps != Gdx.graphics.getFramesPerSecond()) {
-			fps = Gdx.graphics.getFramesPerSecond();
-			StringBuilder sb = fpsLabel.getText();
-			sb.setLength(LABEL_FPS.length());
-			sb.append(fps);
-			fpsLabel.invalidateHierarchy();
-		}
 
 		stage.act();
 		stage.draw();
