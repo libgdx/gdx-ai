@@ -41,10 +41,6 @@ import com.badlogic.gdx.ai.btree.leaf.Failure;
 import com.badlogic.gdx.ai.btree.leaf.Success;
 import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.ai.utils.random.Distribution;
-import com.badlogic.gdx.ai.utils.random.DoubleDistribution;
-import com.badlogic.gdx.ai.utils.random.FloatDistribution;
-import com.badlogic.gdx.ai.utils.random.IntegerDistribution;
-import com.badlogic.gdx.ai.utils.random.LongDistribution;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -68,6 +64,7 @@ public class BehaviorTreeParser<E> {
 	public static final int DEBUG_HIGH = 2;
 
 	public int debug;
+	public DistributionAdapters distributionAdapters;
 
 	private ConcreteBehaviorTreeReader<E> btReader;
 
@@ -75,7 +72,16 @@ public class BehaviorTreeParser<E> {
 		this(DEBUG_NONE);
 	}
 
+	public BehaviorTreeParser (DistributionAdapters distributionAdapters) {
+		this(distributionAdapters, DEBUG_NONE);
+	}
+
 	public BehaviorTreeParser (int debug) {
+		this(new DistributionAdapters(), debug);
+	}
+
+	public BehaviorTreeParser (DistributionAdapters distributionAdapters, int debug) {
+		this.distributionAdapters = distributionAdapters;
 		this.debug = debug;
 		btReader = new ConcreteBehaviorTreeReader<E>(this);
 	}
@@ -293,7 +299,9 @@ public class BehaviorTreeParser<E> {
 				else if (type == byte.class || type == Byte.class)
 					ret = numberValue.byteValue();
 				else if (ClassReflection.isAssignableFrom(Distribution.class, type)) {
-					ret = parseDistribution("constant," + numberValue, type);
+					@SuppressWarnings("unchecked")
+					Class<Distribution> distributionType = (Class<Distribution>)type;
+					ret = btParser.distributionAdapters.toDistribution("constant," + numberValue, distributionType);
 				}
 			} else if (value instanceof Boolean) {
 				if (type == boolean.class || type == Boolean.class) ret = value;
@@ -305,7 +313,9 @@ public class BehaviorTreeParser<E> {
 					if (stringValue.length() != 1) throw new GdxRuntimeException("Invalid character '" + value + "'");
 					ret = Character.valueOf(stringValue.charAt(0));
 				} else if (ClassReflection.isAssignableFrom(Distribution.class, type)) {
-					ret = parseDistribution(stringValue, type);
+					@SuppressWarnings("unchecked")
+					Class<Distribution> distributionType = (Class<Distribution>)type;
+					ret = btParser.distributionAdapters.toDistribution(stringValue, distributionType);
 				} else if (ClassReflection.isAssignableFrom(Enum.class, type)) {
 					Enum<?>[] constants = (Enum<?>[])type.getEnumConstants();
 					for (int i = 0, n = constants.length; i < n; i++) {
@@ -318,21 +328,6 @@ public class BehaviorTreeParser<E> {
 				}
 			}
 			if (ret == null) throwAttributeTypeException(prevTask.name, field.getName(), type.getSimpleName());
-			return ret;
-		}
-
-		private Object parseDistribution (String stringValue, Class<?> type) {
-			Object ret;
-			if (ClassReflection.isAssignableFrom(IntegerDistribution.class, type))
-				ret = IntegerDistribution.parse(stringValue);
-			else if (ClassReflection.isAssignableFrom(FloatDistribution.class, type))
-				ret = FloatDistribution.parse(stringValue);
-			else if (ClassReflection.isAssignableFrom(LongDistribution.class, type))
-				ret = LongDistribution.parse(stringValue);
-			else if (ClassReflection.isAssignableFrom(DoubleDistribution.class, type))
-				ret = DoubleDistribution.parse(stringValue);
-			else
-				ret = null;
 			return ret;
 		}
 
