@@ -19,6 +19,9 @@ package com.badlogic.gdx.ai.tests.btree;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
+import com.badlogic.gdx.ai.btree.utils.DistributionAdapters;
+import com.badlogic.gdx.ai.utils.random.Distribution;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -34,6 +38,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.reflect.Annotation;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Field;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 /** A simple behavior tree viewer actor with serialization capability that lets you play with task navigation. This should make
  * learning and debugging easier.
@@ -293,12 +301,53 @@ public class BehaviorTreeViewer<E> extends Table {
 				this.status = new Label("", skin);
 				add(name);
 				add(status).padLeft(10);
+				StringBuilder attrs = new StringBuilder(task.getClass().getSimpleName()).append('\n');
+				addListener(new TextTooltip(appendTaskAttributes(attrs, task).toString(), skin));
 			}
 
 			@Override
 			public void act (float delta) {
 				status.setColor(taskNode.hasJustRun() ? Color.YELLOW : Color.GRAY);
 			}
+
+			private static StringBuilder appendTaskAttributes (StringBuilder attrs, Task<?> task) {
+				Class<?> aClass = task.getClass();
+				Field[] fields = ClassReflection.getFields(aClass);
+				for (Field f : fields) {
+					Annotation a = f.getDeclaredAnnotation(TaskAttribute.class);
+					if (a == null) continue;
+					TaskAttribute annotation = a.getAnnotation(TaskAttribute.class);
+					attrs.append('\n');
+					appendFieldString(attrs, task, annotation, f);
+				}
+				return attrs;
+			}
+
+			// TODO: should be configurable
+			private static DistributionAdapters DAs = new DistributionAdapters();
+			
+			private static void appendFieldString (StringBuilder sb, Task<?> task, TaskAttribute ann, Field field) {
+				// prefer name from annotation if there is one
+				String name = ann.name();
+				if (name == null || name.length() == 0) name = field.getName();
+				Object value;
+				try {
+					field.setAccessible(true);
+					value = field.get(task);
+				} catch (ReflectionException e) {
+					Gdx.app.error("", "Failed to get field", e);
+					return;
+				}
+				sb.append(name).append(":");
+				Class<?> fieldType = field.getType();
+				if (fieldType.isEnum() || fieldType == String.class) {
+					sb.append('\"').append(value).append('\"');
+				} else if (Distribution.class.isAssignableFrom(fieldType)) {
+					sb.append('\"').append(DAs.toString((Distribution)value)).append('\"');
+				} else
+					sb.append(value);
+			}
+
 		}
 	}
 
