@@ -50,6 +50,11 @@ public abstract class Box2dSteeringTest extends SteeringTestBase {
 		super(container, "Box2d", name, inputProcessor);
 	}
 
+	@Override
+	public String getHelpMessage() {
+		return "";
+	}
+
 	/** Instantiate a new World with no gravity and tell it to sleep when possible. */
 	public World createWorld () {
 		return createWorld(0);

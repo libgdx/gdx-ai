@@ -94,8 +94,15 @@ public abstract class BulletSteeringTest extends SteeringTestBase {
 
 	protected final static Vector3 tmpV1 = new Vector3(), tmpV2 = new Vector3();
 
+	protected boolean spaceToMoveTarget;
+
 	public BulletSteeringTest (SteeringBehaviorsTest container, String name) {
 		super(container, "Bullet", name);
+	}
+
+	@Override
+	public String getHelpMessage() {
+		return spaceToMoveTarget ? "Keep SPACE pressed to move the target" : "";
 	}
 
 	public BulletWorld createWorld () {
@@ -106,8 +113,7 @@ public abstract class BulletSteeringTest extends SteeringTestBase {
 		BulletTargetInputProcessor bulletTargetInputProcessor = new BulletTargetInputProcessor(target, offset, viewport,
 			world.collisionWorld);
 		setInputProcessor(new InputMultiplexer(bulletTargetInputProcessor, cameraController));
-
-		container.helpMessage = "Keep SPACE pressed to move the target";
+		spaceToMoveTarget = true;
 	}
 
 	@Override

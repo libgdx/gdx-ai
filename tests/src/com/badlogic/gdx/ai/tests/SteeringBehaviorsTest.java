@@ -50,6 +50,7 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dSeekTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dWanderTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -64,7 +65,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.StringBuilder;
 
 /** Test class for steering behaviors.
  * 
@@ -79,12 +79,8 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 	private static final String[] ENGINES = {"Scene2d", "Box2d", "Bullet"};
 
-	private static String LABEL_FPS = "FPS: ";
-
 	public CollapsableWindow behaviorSelectionWindow;
-	private int fps = 0;
-	Label fpsLabel;
-	public String helpMessage;
+	Label testHelpLabel;
 
 	// @off - disable libgdx formatter
 	// Keep it sorted!
@@ -174,11 +170,15 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		}
 		behaviorSelectionWindow = addBehaviorSelectionWindow("Behaviors", ENGINES, engineBehaviors, 0, -1);
 
+		// Create status bar
+		Table statusBar = new Table(skin);
+		statusBar.left().bottom();
+		statusBar.add(new FpsLabel("FPS: ", skin));
+		statusBar.add(testHelpLabel = new Label("", skin)).padLeft(15);
+		stage.addActor(statusBar);
+
 		// Set selected behavior
 		changeBehavior(0, 0);
-
-		fpsLabel = new Label(LABEL_FPS + fps, skin);
-		stage.addActor(fpsLabel);
 	}
 
 	@Override
@@ -187,16 +187,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 		// Update time
 		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
-
-		// Update FPS label
-		if (fps != Gdx.graphics.getFramesPerSecond()) {
-			fps = Gdx.graphics.getFramesPerSecond();
-			StringBuilder sb = fpsLabel.getText();
-			sb.setLength(LABEL_FPS.length());
-			sb.append(fps);
-			if (helpMessage != null) sb.append("     ").append(helpMessage);
-			fpsLabel.invalidateHierarchy();
-		}
 
 		// Render current steering behavior test
 		if (currentBehavior != null) currentBehavior.render();
@@ -290,6 +280,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		// Add the new behavior and its window
 		currentBehavior = behaviors[engineIndex][behaviorIndex];
 		currentBehavior.create(behaviorTable);
+		testHelpLabel.setText(currentBehavior.getHelpMessage());
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);
 		if (currentBehavior.getInputProcessor() != null) im.addProcessor(currentBehavior.getInputProcessor());

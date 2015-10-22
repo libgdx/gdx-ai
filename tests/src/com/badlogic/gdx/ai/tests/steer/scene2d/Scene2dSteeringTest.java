@@ -42,6 +42,11 @@ public abstract class Scene2dSteeringTest extends SteeringTestBase {
 		super(container, "Scene2d", name, inputProcessor);
 	}
 
+	@Override
+	public String getHelpMessage() {
+		return "";
+	}
+
 	protected void addMaxLinearAccelerationController (Table table, Limiter limiter) {
 		addMaxLinearAccelerationController(table, limiter, 0, 500, 10);
 	}
