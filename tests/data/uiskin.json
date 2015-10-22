@@ -10,7 +10,8 @@ com.badlogic.gdx.graphics.Color: {
 	black: { a: 1, b: 0, g: 0, r: 0 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
-	dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } }
+	dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } },
+	translucent: { name: white, color: { r:  0.75, g:  0.75, b:  0.75, a: 0.75 } }
 },
 
 com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane$TabbedPaneStyle: {

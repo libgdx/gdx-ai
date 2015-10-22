@@ -27,14 +27,19 @@ import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -49,6 +54,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	private static final boolean DEBUG_STAGE = false;
 
+	TextButton pauseButton;
 	private Label testDescriptionLabel;
 
 	// @off - disable libgdx formatter
@@ -88,12 +94,20 @@ public class BehaviorTreeTests extends GdxAiTest {
 		splitPane = new SplitPane(leftScrollPane, null, false, skin, "default-horizontal");
 		splitPane.setSplitAmount(Math.min((testList.getPrefWidth() + 10) / stage.getWidth(), splitPane.getSplit()));
 
+		// Create layout
 		Table t = new Table(skin);
 		t.setFillParent(true);
-		t.add(splitPane).colspan(2).grow();
+		t.add(splitPane).colspan(3).grow();
 		t.row();
+		t.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
+		pauseButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				pauseButton.setText(pauseButton.isChecked() ? "Resume AI" : "Pause AI");
+			}
+		});
 		t.add(new FpsLabel("FPS: ", skin)).left();
-		t.add(testDescriptionLabel = new Label("", skin)).center();
+		t.add(testDescriptionLabel = new Label("", skin)).left();
 		stage.addActor(t);
 
 		// Set selected test
@@ -103,9 +117,6 @@ public class BehaviorTreeTests extends GdxAiTest {
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		// Update time
-		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 		stage.act();
 		stage.draw();
@@ -156,9 +167,25 @@ public class BehaviorTreeTests extends GdxAiTest {
 			Gdx.app.log("BehaviorTreeTests", "***********************************************");
 			testDescriptionLabel.setText(description);
 		} else {
-			testDescriptionLabel.setText("Look at the log and see what's happening");
+			testDescriptionLabel.setText("Run the tree, look at the log and see what happens");
 		}
-		splitPane.setSecondWidget(currentTest.createActor(skin));
+		Stack testStack = new Stack() {
+			@Override
+			public void act (float delta) {
+				boolean paused = pauseButton.isChecked();
+				getChildren().peek().setVisible(paused);
+				if (!paused) {
+					// Update AI time
+					GdxAI.getTimepiece().update(delta);
+					
+					// Call super
+					super.act(delta);
+				}
+			}
+		};
+		testStack.add(currentTest.createActor(skin));
+		testStack.add(new Image(skin, "translucent"));
+		splitPane.setSecondWidget(testStack);
 	}
 
 }
