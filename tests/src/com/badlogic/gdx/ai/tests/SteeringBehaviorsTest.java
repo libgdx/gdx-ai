@@ -58,6 +58,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -159,6 +160,12 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage));
 
+		// Add translucent panel (it's only visible when AI is paused)
+		final Image translucentPanel = new Image(skin, "translucent");
+		translucentPanel.setSize(stageWidth, stageHeight);
+		translucentPanel.setVisible(false);
+		stage.addActor(translucentPanel);
+		
 		// Create behavior selection window
 		Array<List<String>> engineBehaviors = new Array<List<String>>();
 		for (int k = 0; k < behaviors.length; k++) {
@@ -174,7 +181,9 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		pauseButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				pauseButton.setText(pauseButton.isChecked() ? "Resume AI" : "Pause AI");
+				boolean pause = pauseButton.isChecked();
+				pauseButton.setText(pause ? "Resume AI" : "Pause AI");
+				translucentPanel.setVisible(pause);
 			}
 		});
 		statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
