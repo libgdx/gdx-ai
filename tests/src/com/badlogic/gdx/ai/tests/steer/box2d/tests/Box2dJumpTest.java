@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.box2d.tests;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.behaviors.Jump;
 import com.badlogic.gdx.ai.steer.behaviors.Jump.GravityComponentHandler;
@@ -41,7 +41,6 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -75,7 +74,6 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
-	private World world;
 	private Batch spriteBatch;
 	private Body leftPlatform;
 	private Body rightPlatform;
@@ -95,7 +93,9 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		Jump.DEBUG_ENABLED = true; 
 
 		drawDebug = true;
@@ -105,7 +105,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		spriteBatch = new SpriteBatch();
 
 		// Instantiate a new World with gravity
-		world = createWorld(-9.81f);
+		world.setGravity(new Vector2(0, -9.81f));
 		
 		setContactListener();
 
@@ -328,8 +328,8 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+	public void update () {
+		super.update();
 		
 		// Should the character switch to Jump behavior?
 		if (character.getSteeringBehavior() == seekSB) {
@@ -346,7 +346,12 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 			}
 		}
 
-		world.step(deltaTime, 8, 3);
+		// Update the character
+		character.update(GdxAI.getTimepiece().getDeltaTime());
+	}
+
+	@Override
+	public void draw () {
 
 		// Draw platforms
 		renderBox(shapeRenderer, leftPlatform, PLATFORM_HALF_WIDTH, PLATFORM_HALF_HEIGHT);
@@ -369,8 +374,7 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 		drawPad(shapeRenderer, jumpDescriptor.landingPosition, jumpSB.getTakeoffPositionTolerance()+t*jumpSB.getTakeoffVelocityTolerance());
 		shapeRenderer.end();
 
-		// Update and draw the character
-		character.update(deltaTime);
+		// Draw the character
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();
@@ -388,8 +392,8 @@ public class Box2dJumpTest extends Box2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
-		world.dispose();
 		spriteBatch.dispose();
 	}
 

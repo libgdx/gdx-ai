@@ -25,7 +25,6 @@ import com.badlogic.gdx.ai.tests.steer.box2d.Box2dTargetInputProcessor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /** A class to test and experiment with the {@link Seek} behavior.
@@ -36,7 +35,6 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 	Box2dSteeringEntity character;
 	Box2dSteeringEntity target;
 
-	private World world;
 	private Batch spriteBatch;
 
 	public Box2dSeekTest (SteeringBehaviorsTest container) {
@@ -44,11 +42,10 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
-		spriteBatch = new SpriteBatch();
+	public void create () {
+		super.create();
 
-		// Instantiate a new World with no gravity
-		world = createWorld();
+		spriteBatch = new SpriteBatch();
 
 		// Create character
 		character = createSteeringEntity(world, container.greenFish);
@@ -79,13 +76,16 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+	public void update () {
+		super.update();
 
-		world.step(deltaTime, 8, 3);
+		// Update the character
+		character.update(Gdx.graphics.getDeltaTime());
+	}
 
-		// Update and draw the character
-		character.update(deltaTime);
+	@Override
+	public void draw () {
+		// Draw the character and the target
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		target.draw(spriteBatch);
@@ -94,7 +94,7 @@ public class Box2dSeekTest extends Box2dSteeringTest {
 
 	@Override
 	public void dispose () {
-		world.dispose();
+		super.dispose();
 		spriteBatch.dispose();
 	}
 

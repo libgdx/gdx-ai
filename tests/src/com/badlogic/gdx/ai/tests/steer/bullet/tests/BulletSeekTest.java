@@ -40,8 +40,8 @@ public class BulletSeekTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
-		super.create(table);
+	public void create () {
+		super.create();
 
 		BulletEntity ground = world.add("ground", 0f, 0f, 0f);
 		ground.setColor(0.25f + 0.5f * (float)Math.random(), 0.25f + 0.5f * (float)Math.random(),
@@ -79,10 +79,15 @@ public class BulletSeekTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void update () {
 		character.update(GdxAI.getTimepiece().getDeltaTime());
 
-		super.render(true);
+		super.update();
+	}
+
+	@Override
+	public void draw () {
+		super.draw();
 	}
 
 	@Override

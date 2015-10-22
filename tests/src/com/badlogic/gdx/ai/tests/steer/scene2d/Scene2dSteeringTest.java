@@ -17,12 +17,14 @@
 package com.badlogic.gdx.ai.tests.steer.scene2d;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.tests.SteeringBehaviorsTest;
 import com.badlogic.gdx.ai.tests.steer.SteeringTestBase;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -34,6 +36,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author davebaol */
 public abstract class Scene2dSteeringTest extends SteeringTestBase {
 
+	private float lastUpdateTime;
+	private Stack testStack;
+	protected Table testTable;
+
 	public Scene2dSteeringTest (SteeringBehaviorsTest container, String name) {
 		super(container, "Scene2d", name, null);
 	}
@@ -43,8 +49,41 @@ public abstract class Scene2dSteeringTest extends SteeringTestBase {
 	}
 
 	@Override
-	public String getHelpMessage() {
+	public String getHelpMessage () {
 		return "";
+	}
+
+	@Override
+	public void create () {
+		lastUpdateTime = 0;
+		testStack = new Stack();
+		container.stage.getRoot().addActorAt(0, testStack);
+		testStack.setSize(container.stageWidth, container.stageHeight);
+		testStack.add(testTable = new Table() {
+			@Override
+			public void act (float delta) {
+				float time = GdxAI.getTimepiece().getTime();
+				if (lastUpdateTime != time) {
+					lastUpdateTime = time;
+					super.act(GdxAI.getTimepiece().getDeltaTime());
+				}
+			}
+		});
+		testStack.layout();
+	}
+
+	@Override
+	public void update () {
+	}
+
+	@Override
+	public void draw () {
+	}
+
+	@Override
+	public void dispose () {
+		testStack.remove();
+		testStack = null;
 	}
 
 	protected void addMaxLinearAccelerationController (Table table, Limiter limiter) {

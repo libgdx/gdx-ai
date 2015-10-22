@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.scene2d.tests;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
@@ -75,7 +75,9 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -119,7 +121,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 
 		character.setSteeringBehavior(prioritySteeringSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		inputProcessor = null;
 
@@ -188,8 +190,13 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		world.step(Gdx.graphics.getDeltaTime(), 8, 3);
+	public void update () {
+		super.update();
+		world.step(GdxAI.getTimepiece().getDeltaTime(), 8, 3);
+	}
+
+	@Override
+	public void draw () {
 
 		// Draw the walls
 		for (int i = 0; i < walls.length; i++) {
@@ -212,6 +219,7 @@ public class Scene2dRaycastObstacleAvoidanceTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 		world.dispose();
 	}

@@ -61,7 +61,9 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -72,12 +74,12 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 			SteeringActor obstacle = new SteeringActor(MathUtils.randomBoolean() ? container.badlogicSmall : container.cloud, false);
 			setRandomNonOverlappingPosition(obstacle, obstacles, 100);
 			obstacles.add(obstacle);
-			table.addActor(obstacle);
+			testTable.addActor(obstacle);
 		}
 
 		// Create target
 		target = new SteeringActor(container.target);
-		table.addActor(target);
+		testTable.addActor(target);
 
 		// Create hiding character
 		character = new SteeringActor(container.greenFish, false) {
@@ -126,7 +128,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 
 		character.setSteeringBehavior(blendedSteeringSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		inputProcessor = new Scene2dTargetInputProcessor(target);
 
@@ -192,7 +194,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 // if (drawDebug) {
 // Steerable<Vector2> steerable = characters.get(0);
 // shapeRenderer.begin(ShapeType.Line);
@@ -211,6 +213,7 @@ public class Scene2dHideTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

@@ -46,7 +46,9 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		character = new SteeringActor(container.badlogicSmall, true);
 		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 		character.setMaxLinearAcceleration(100);
@@ -75,8 +77,8 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 			.add(lookWhereYouAreGoingSB, 1f);
 		character.setSteeringBehavior(blendedSteering);
 
-		table.addActor(character);
-		table.addActor(target);
+		testTable.addActor(character);
+		testTable.addActor(target);
 
 		Table detailTable = new Table(container.skin);
 
@@ -141,11 +143,12 @@ public class Scene2dLookWhereYouAreGoingTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }

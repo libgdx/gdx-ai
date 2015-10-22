@@ -54,7 +54,9 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -92,7 +94,7 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 
 			setRandomNonOverlappingPosition(character, characters, 5);
 
-			table.addActor(character);
+			testTable.addActor(character);
 
 			characters.add(character);
 		}
@@ -172,7 +174,7 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 		if (drawDebug) {
 			Steerable<Vector2> steerable = characters.get(0);
 			shapeRenderer.begin(ShapeType.Line);
@@ -184,6 +186,7 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

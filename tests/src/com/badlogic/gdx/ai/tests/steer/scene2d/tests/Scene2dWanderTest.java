@@ -49,7 +49,9 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -71,7 +73,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 			.setWanderRate(MathUtils.PI2 * 4);
 		character.setSteeringBehavior(wanderSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 
@@ -159,7 +161,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 		if (drawDebug) {
 			// Draw circle
 			shapeRenderer.begin(ShapeType.Line);
@@ -177,6 +179,7 @@ public class Scene2dWanderTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

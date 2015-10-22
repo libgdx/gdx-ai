@@ -60,7 +60,9 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 		shapeRenderer = new ShapeRenderer();
 
@@ -95,7 +97,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 
 		character.setSteeringBehavior(followPathSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		character.setPosition(wayPoints.first().x, wayPoints.first().y, Align.center);
 
@@ -197,7 +199,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 		// Draw path
 		shapeRenderer.begin(ShapeType.Line);
 		shapeRenderer.setColor(0, 1, 0, 1);
@@ -219,6 +221,7 @@ public class Scene2dFollowPathTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

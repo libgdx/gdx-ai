@@ -52,7 +52,9 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -63,7 +65,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 			SteeringActor obstacle = new SteeringActor(container.cloud, false);
 			setRandomNonOverlappingPosition(obstacle, obstacles, 100);
 			obstacles.add(obstacle);
-			table.addActor(obstacle);
+			testTable.addActor(obstacle);
 		}
 
 		character = new SteeringActor(container.badlogicSmall, false);
@@ -74,7 +76,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 		final FollowFlowField<Vector2> followFlowFieldSB = new FollowFlowField<Vector2>(character, flowField);
 		character.setSteeringBehavior(followFlowFieldSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 
@@ -124,7 +126,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 	Vector2 tmp2 = new Vector2();
 
 	@Override
-	public void render () {
+	public void draw () {
 		if (drawDebug) {
 			shapeRenderer.begin(ShapeType.Line);
 			shapeRenderer.setColor(0, 1, 0, 1);
@@ -150,6 +152,7 @@ public class Scene2dFollowFlowFieldTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

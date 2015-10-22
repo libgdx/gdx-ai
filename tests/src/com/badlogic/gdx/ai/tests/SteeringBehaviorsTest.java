@@ -55,14 +55,16 @@ import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
@@ -81,6 +83,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 	public CollapsableWindow behaviorSelectionWindow;
 	Label testHelpLabel;
+	TextButton pauseButton;
 
 	// @off - disable libgdx formatter
 	// Keep it sorted!
@@ -125,7 +128,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 	};
 	// @on - enable libgdx formatter
 
-	Table behaviorTable;
 	SteeringTestBase currentBehavior;
 
 	public Stage stage;
@@ -157,12 +159,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage));
 
-		Stack stack = new Stack();
-		stage.addActor(stack);
-		stack.setSize(stageWidth, stageHeight);
-		behaviorTable = new Table();
-		stack.add(behaviorTable);
-
 		// Create behavior selection window
 		Array<List<String>> engineBehaviors = new Array<List<String>>();
 		for (int k = 0; k < behaviors.length; k++) {
@@ -173,7 +169,15 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		// Create status bar
 		Table statusBar = new Table(skin);
 		statusBar.left().bottom();
-		statusBar.add(new FpsLabel("FPS: ", skin));
+		statusBar.row().height(26);
+		statusBar.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
+		pauseButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				pauseButton.setText(pauseButton.isChecked() ? "Resume AI" : "Pause AI");
+			}
+		});
+		statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
 		statusBar.add(testHelpLabel = new Label("", skin)).padLeft(15);
 		stage.addActor(statusBar);
 
@@ -185,11 +189,18 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// Update time
-		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
-
 		// Render current steering behavior test
-		if (currentBehavior != null) currentBehavior.render();
+		if (currentBehavior != null) {
+			if (!pauseButton.isChecked()) {
+				// Update AI time
+				GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
+
+				// Update test
+				currentBehavior.update();
+			}
+			// Draw test
+			currentBehavior.draw();
+		}
 
 		stage.act();
 		stage.draw();
@@ -271,7 +282,6 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 	void changeBehavior (int engineIndex, int behaviorIndex) {
 		// Remove the old behavior and its window
-		behaviorTable.clear();
 		if (currentBehavior != null) {
 			if (currentBehavior.getDetailWindow() != null) currentBehavior.getDetailWindow().remove();
 			currentBehavior.dispose();
@@ -279,7 +289,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 
 		// Add the new behavior and its window
 		currentBehavior = behaviors[engineIndex][behaviorIndex];
-		currentBehavior.create(behaviorTable);
+		currentBehavior.create();
 		testHelpLabel.setText(currentBehavior.getHelpMessage());
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);

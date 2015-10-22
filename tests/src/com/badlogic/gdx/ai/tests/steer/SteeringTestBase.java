@@ -48,9 +48,11 @@ public abstract class SteeringTestBase {
 		this.inputProcessor = inputProcessor;
 	}
 
-	public abstract void create (Table table);
+	public abstract void create ();
 
-	public abstract void render ();
+	public abstract void update ();
+
+	public abstract void draw ();
 
 	public abstract void dispose ();
 

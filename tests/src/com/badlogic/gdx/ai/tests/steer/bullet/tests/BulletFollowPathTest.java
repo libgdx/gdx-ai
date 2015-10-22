@@ -62,8 +62,8 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
-		super.create(table);
+	public void create () {
+		super.create();
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -203,10 +203,15 @@ public class BulletFollowPathTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void update () {
 		character.update(GdxAI.getTimepiece().getDeltaTime());
 
-		super.render(true);
+		super.update();
+	}
+
+	@Override
+	public void draw () {
+		super.draw();
 
 		if (drawDebug) {
 			// Draw path

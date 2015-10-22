@@ -42,7 +42,9 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		character = new SteeringActor(container.badlogicSmall, true);
 		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 		character.setMaxAngularAcceleration(100);
@@ -59,8 +61,8 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 			.setDecelerationRadius(MathUtils.degreesToRadians * 180);
 		character.setSteeringBehavior(faceSB);
 
-		table.addActor(character);
-		table.addActor(target);
+		testTable.addActor(character);
+		testTable.addActor(target);
 
 		Table detailTable = new Table(container.skin);
 
@@ -123,11 +125,12 @@ public class Scene2dFaceTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }
