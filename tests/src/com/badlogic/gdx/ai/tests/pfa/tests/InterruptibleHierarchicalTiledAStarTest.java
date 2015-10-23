@@ -101,7 +101,7 @@ public class InterruptibleHierarchicalTiledAStarTest extends PathFinderTestBase 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void create (Table table) {
+	public void create () {
 		lastEndTileX = -1;
 		lastEndTileY = -1;
 		startTileX = 1;

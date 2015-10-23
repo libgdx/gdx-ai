@@ -179,7 +179,7 @@ public class PathFinderTests extends GdxAiTest {
 
 		// Add the new behavior and its window
 		currentTest = tests[index];
-		currentTest.create(testsTable);
+		currentTest.create();
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);
 		if (currentTest.getInputProcessor() != null) im.addProcessor(currentTest.getInputProcessor());

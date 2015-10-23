@@ -97,7 +97,7 @@ public class InterruptibleFlatTiledAStarTest extends PathFinderTestBase implemen
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
 		lastEndTileX = -1;
 		lastEndTileY = -1;
 		startTileX = 1;

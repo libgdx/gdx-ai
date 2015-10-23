@@ -76,7 +76,7 @@ public class FlatTiledAStarTest extends PathFinderTestBase {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
 		lastEndTileX = -1;
 		lastEndTileY = -1;
 		startTileX = 1;
