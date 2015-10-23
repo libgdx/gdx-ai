@@ -76,13 +76,13 @@ public class MessageDispatcher {
 		// Dispatch messages from registered providers
 		Array<TelegramProvider> providers = msgProviders.get(msg);
 		if (providers != null) {
-			for (int i = 0; i < providers.size; i++) {
+			for (int i = 0, n = providers.size; i < n; i++) {
 				TelegramProvider provider = providers.get(i);
 				Object info = provider.provideMessageInfo(msg, listener);
-				if (info != null) if (ClassReflection.isInstance(Telegraph.class, provider))
-					dispatchMessage(0, (Telegraph)provider, listener, msg, info);
-				else
-					dispatchMessage(0, null, listener, msg, info);
+				if (info != null) {
+					Telegraph sender = ClassReflection.isInstance(Telegraph.class, provider) ? (Telegraph)provider : null;
+					dispatchMessage(0, sender, listener, msg, info);
+				}
 			}
 		}
 	}
