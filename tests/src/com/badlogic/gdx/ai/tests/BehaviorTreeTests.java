@@ -129,6 +129,7 @@ public class BehaviorTreeTests extends GdxAiTest {
 
 	@Override
 	public void dispose () {
+		if (currentTest != null) currentTest.dispose();
 		stage.dispose();
 		skin.dispose();
 	}

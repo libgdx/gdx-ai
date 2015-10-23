@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.StringBuilder;
 public class FpsLabel extends Label {
 
 	int fps;
-	int appendAt;
+	int appendIndex;
 
 	public FpsLabel (CharSequence text, Skin skin) {
 		this(text, skin.get(LabelStyle.class));
@@ -49,7 +49,7 @@ public class FpsLabel extends Label {
 	public FpsLabel (CharSequence text, LabelStyle style) {
 		super(text, style);
 		this.fps = 0;
-		this.appendAt = text.length();
+		this.appendIndex = text.length();
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class FpsLabel extends Label {
 		if (fps != Gdx.graphics.getFramesPerSecond()) {
 			fps = Gdx.graphics.getFramesPerSecond();
 			StringBuilder sb = getText();
-			sb.setLength(appendAt);
+			sb.setLength(appendIndex);
 			sb.append(fps);
 			invalidateHierarchy();
 		}
