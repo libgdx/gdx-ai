@@ -131,4 +131,14 @@ public abstract class Scene2dSteeringTest extends SteeringTestBase {
 		}
 		throw new GdxRuntimeException("Probable infinite loop detected");
 	}
+
+	protected void setRandomOrientation (SteeringActor character) {
+		float orientation = MathUtils.random(-MathUtils.PI, MathUtils.PI);
+		character.setOrientation(orientation);
+		if (!character.isIndependentFacing()) {
+			// Set random initial non-zero linear velocity since independent facing is off
+			character.angleToVector(character.getLinearVelocity(), orientation).scl(character.getMaxLinearSpeed()/5);
+		}
+	}
+
 }

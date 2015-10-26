@@ -82,7 +82,7 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 				// No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
 				.setLimiter(new LinearAccelerationLimiter(30)) //
 				.setWanderOffset(60) //
-				.setWanderOrientation(10) //
+				.setWanderOrientation(0) //
 				.setWanderRadius(40) //
 				.setWanderRate(MathUtils.PI2 * 4);
 
@@ -93,6 +93,7 @@ public class Scene2dCollisionAvoidanceTest extends Scene2dSteeringTest {
 			character.setSteeringBehavior(prioritySteeringSB);
 
 			setRandomNonOverlappingPosition(character, characters, 5);
+			setRandomOrientation(character);
 
 			testTable.addActor(character);
 
