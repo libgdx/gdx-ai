@@ -42,7 +42,9 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		character = new SteeringActor(container.badlogicSmall, false);
 		target = new SteeringActor(container.target);
 		inputProcessor = new Scene2dTargetInputProcessor(target);
@@ -57,8 +59,8 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 			.setDecelerationRadius(80);
 		character.setSteeringBehavior(arriveSB);
 
-		table.addActor(character);
-		table.addActor(target);
+		testTable.addActor(character);
+		testTable.addActor(target);
 
 		character.setPosition(container.stageWidth / 2, container.stageHeight / 2, Align.center);
 		target.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
@@ -124,11 +126,12 @@ public class Scene2dArriveTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }

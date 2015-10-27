@@ -14,23 +14,19 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.utils.random;
+package com.badlogic.gdx.ai;
 
 /** @author davebaol */
-public abstract class IntegerDistribution implements Distribution {
+public interface Timepiece {
 
-	@Override
-	public long nextLong () {
-		return (long)nextInt();
-	}
+	/** Returns the time accumulated up to the current frame in seconds. */
+	public float getTime ();
 
-	@Override
-	public float nextFloat () {
-		return (float)nextInt();
-	}
+	/** Returns the time span between the current frame and the last frame in seconds. */
+	public float getDeltaTime ();
 
-	@Override
-	public double nextDouble () {
-		return (double)nextInt();
-	}
+	/** Updates this timepiece with the given delta time.
+	 * @param deltaTime the time in seconds since the last frame. */
+	public void update (float deltaTime);
+
 }

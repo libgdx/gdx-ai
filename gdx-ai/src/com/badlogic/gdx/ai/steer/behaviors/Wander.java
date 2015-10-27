@@ -16,13 +16,13 @@
 
 package com.badlogic.gdx.ai.steer.behaviors;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /** {@code Wander} behavior is designed to produce a steering acceleration that will give the impression of a random walk through
  * the agent's environment. You'll often find it a useful ingredient when creating an agent's behavior.
@@ -63,9 +63,9 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 
 	/** The rate, expressed in radian per second, at which the wander orientation can change */
 	protected float wanderRate;
-	
+
 	/** The last time the orientation of the wander target has been updated */
-	protected long lastTime;
+	protected float lastTime;
 
 	/** The current orientation of the wander target */
 	protected float wanderOrientation;
@@ -89,10 +89,12 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Update the wander orientation
-		long now = TimeUtils.nanoTime();
-		float delta = (now - lastTime) / 1000000000f;
+		float now = GdxAI.getTimepiece().getTime();
+		if (lastTime > 0) {
+			float delta = now - lastTime;
+			wanderOrientation += MathUtils.randomTriangular(wanderRate * delta);
+		}
 		lastTime = now;
-		wanderOrientation += MathUtils.randomTriangular(wanderRate * delta);
 
 		// Calculate the combined target orientation
 		float targetOrientation = wanderOrientation + owner.getOrientation();

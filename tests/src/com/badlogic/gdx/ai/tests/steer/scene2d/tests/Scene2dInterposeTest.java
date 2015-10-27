@@ -49,7 +49,9 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+		
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -100,9 +102,9 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 			setWanderRate(MathUtils.PI2 * 5);
 		c2.setSteeringBehavior(wanderSB2);
 
-		table.addActor(character);
-		table.addActor(c1);
-		table.addActor(c2);
+		testTable.addActor(character);
+		testTable.addActor(c1);
+		testTable.addActor(c2);
 
 		Table detailTable = new Table(container.skin);
 
@@ -150,7 +152,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 	Vector2 point = new Vector2();
 
 	@Override
-	public void render () {
+	public void draw () {
 		if (drawDebug) {
 			Vector2 posA = interposeSB.getAgentA().getPosition();
 			Vector2 posB = interposeSB.getAgentB().getPosition();
@@ -178,6 +180,7 @@ public class Scene2dInterposeTest extends Scene2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
 	}
 

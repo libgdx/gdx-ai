@@ -42,7 +42,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -64,8 +63,6 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	boolean drawDebug;
 	ShapeRenderer shapeRenderer;
 
-	private World world;
-
 	private Body[] walls;
 	private int[] walls_hw;
 	private int[] walls_hh;
@@ -79,14 +76,13 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
 		spriteBatch = new SpriteBatch();
-
-		// Instantiate a new World with no gravity
-		world = createWorld();
 
 		createRandomWalls(8);
 
@@ -191,11 +187,15 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+	public void update () {
+		super.update();
 
-		world.step(deltaTime, 8, 3);
+		// Update the character
+		character.update(Gdx.graphics.getDeltaTime());
+	}
 
+	@Override
+	public void draw () {
 		// Draw the walls
 		for (int i = 0; i < walls.length; i++) {
 			renderBox(shapeRenderer, walls[i], walls_hw[i], walls_hh[i]);
@@ -220,8 +220,7 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 			shapeRenderer.end();
 		}
 
-		// Update and draw the character
-		character.update(deltaTime);
+		// Draw the character
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();
@@ -229,8 +228,8 @@ public class Box2dRaycastObstacleAvoidanceTest extends Box2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
-		world.dispose();
 		spriteBatch.dispose();
 	}
 

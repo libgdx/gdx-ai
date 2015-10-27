@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -86,8 +86,8 @@ public class BulletJumpTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
-		super.create(table);
+	public void create () {
+		super.create();
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -323,12 +323,16 @@ public class BulletJumpTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
-		MessageManager.getInstance().update(deltaTime);
-		character.update(deltaTime);
+	public void update () {
+		MessageManager.getInstance().update();
+		character.update(GdxAI.getTimepiece().getDeltaTime());
 
-		super.render(true);
+		super.update();
+	}
+
+	@Override
+	public void draw () {
+		super.draw();
 
 		if (drawDebug) {
 			// Draw path

@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.tests.steer.bullet.tests;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
@@ -67,8 +68,8 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void create (Table table) {
-		super.create(table);
+	public void create () {
+		super.create();
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
@@ -175,10 +176,15 @@ public class BulletRaycastObstacleAvoidanceTest extends BulletSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		character.update(Gdx.graphics.getDeltaTime());
+	public void update () {
+		character.update(GdxAI.getTimepiece().getDeltaTime());
 
-		super.render(true);
+		super.update();
+	}
+
+	@Override
+	public void draw () {
+		super.draw();
 
 		if (drawDebug) {
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);

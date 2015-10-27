@@ -14,23 +14,39 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.utils.random;
+package com.badlogic.gdx.ai;
 
 /** @author davebaol */
-public abstract class IntegerDistribution implements Distribution {
+public class DefaultTimepiece implements Timepiece {
 
-	@Override
-	public long nextLong () {
-		return (long)nextInt();
+	private float time;
+	private float deltaTime;
+	private float maxDeltaTime;
+
+	public DefaultTimepiece () {
+		this(Float.POSITIVE_INFINITY);
+	}
+
+	public DefaultTimepiece (float maxDeltaTime) {
+		this.time = 0f;
+		this.deltaTime = 0f;
+		this.maxDeltaTime = maxDeltaTime;
 	}
 
 	@Override
-	public float nextFloat () {
-		return (float)nextInt();
+	public float getTime () {
+		return time;
 	}
 
 	@Override
-	public double nextDouble () {
-		return (double)nextInt();
+	public float getDeltaTime () {
+		return deltaTime;
 	}
+
+	@Override
+	public void update (float deltaTime) {
+		this.deltaTime = (deltaTime > maxDeltaTime ? maxDeltaTime : deltaTime);
+		this.time += this.deltaTime;
+	}
+
 }

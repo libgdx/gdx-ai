@@ -19,12 +19,11 @@ package com.badlogic.gdx.ai.btree.utils;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloneException;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.utils.SerializationException;
 
 /** The {@code BehaviorTreeLibraryManager} is a singleton in charge of the creation of behavior trees using the underlying library.
- * If no library is explicitly set (see the method {@link #setLibrary(BehaviorTreeLibrary)}), a default library using the
- * {@link InternalFileHandleResolver} is used.
+ * If no library is explicitly set (see the method {@link #setLibrary(BehaviorTreeLibrary)}), a default library instantiated by
+ * the constructor {@link BehaviorTreeLibrary#BehaviorTreeLibrary() BehaviorTreeLibrary()} is used instead.
  * 
  * @author davebaol */
 public class BehaviorTreeLibraryManager {

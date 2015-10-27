@@ -14,23 +14,44 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.utils.random;
+package com.badlogic.gdx.ai;
+
+import com.badlogic.gdx.Gdx;
 
 /** @author davebaol */
-public abstract class IntegerDistribution implements Distribution {
+public class GdxLogger implements Logger {
 
-	@Override
-	public long nextLong () {
-		return (long)nextInt();
+	public GdxLogger () {
 	}
 
 	@Override
-	public float nextFloat () {
-		return (float)nextInt();
+	public void debug (String tag, String message) {
+		Gdx.app.debug(tag, message);
 	}
 
 	@Override
-	public double nextDouble () {
-		return (double)nextInt();
+	public void debug (String tag, String message, Throwable exception) {
+		Gdx.app.debug(tag, message, exception);
 	}
+
+	@Override
+	public void info (String tag, String message) {
+		Gdx.app.log(tag, message);
+	}
+
+	@Override
+	public void info (String tag, String message, Throwable exception) {
+		Gdx.app.log(tag, message, exception);
+	}
+
+	@Override
+	public void error (String tag, String message) {
+		Gdx.app.error(tag, message);
+	}
+
+	@Override
+	public void error (String tag, String message, Throwable exception) {
+		Gdx.app.error(tag, message, exception);
+	}
+
 }

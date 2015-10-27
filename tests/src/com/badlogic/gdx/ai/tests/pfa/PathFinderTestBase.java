@@ -42,7 +42,7 @@ public abstract class PathFinderTestBase {
 		this.inputProcessor = inputProcessor;
 	}
 
-	public abstract void create (Table table);
+	public abstract void create ();
 
 	public abstract void render ();
 

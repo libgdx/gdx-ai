@@ -27,7 +27,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -47,7 +46,6 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 	Box2dSteeringEntity character;
 	Wander<Vector2> wanderSB;
 
-	private World world;
 	private Batch spriteBatch;
 
 	public Box2dWanderTest (SteeringBehaviorsTest container) {
@@ -55,15 +53,14 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		drawDebug = true;
 
 		shapeRenderer = new ShapeRenderer();
 
 		spriteBatch = new SpriteBatch();
-
-		// Instantiate a new World with no gravity
-		world = createWorld();
 
 		// Create character
 		character = createSteeringEntity(world, container.greenFish, true);
@@ -167,13 +164,16 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+	public void update () {
+		super.update();
 
-		world.step(deltaTime, 8, 3);
+		// Update the character
+		character.update(Gdx.graphics.getDeltaTime());
+	}
 
-		// Update and draw the character
-		character.update(deltaTime);
+	@Override
+	public void draw () {
+		// Draw the character
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		spriteBatch.end();
@@ -200,8 +200,8 @@ public class Box2dWanderTest extends Box2dSteeringTest {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		shapeRenderer.dispose();
-		world.dispose();
 		spriteBatch.dispose();
 	}
 

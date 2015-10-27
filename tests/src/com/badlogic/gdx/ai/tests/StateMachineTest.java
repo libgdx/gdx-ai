@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.tests.fsm.Bob;
 import com.badlogic.gdx.ai.tests.fsm.Elsa;
@@ -48,7 +49,11 @@ public class StateMachineTest extends GdxAiTest {
 
 	@Override
 	public void render () {
-		elapsedTime += Gdx.graphics.getRawDeltaTime();
+		float delta = Gdx.graphics.getDeltaTime();
+		elapsedTime += delta;
+
+		// Update time
+		GdxAI.getTimepiece().update(delta);
 
 		if (elapsedTime > 0.8f) {
 			// Update Bob and his wife
@@ -56,7 +61,7 @@ public class StateMachineTest extends GdxAiTest {
 			elsa.update(elapsedTime);
 
 			// Dispatch any delayed messages
-			MessageManager.getInstance().update(elapsedTime);
+			MessageManager.getInstance().update();
 
 			elapsedTime = 0;
 		}

@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.pfa.PathFinderTestBase;
 import com.badlogic.gdx.ai.tests.pfa.tests.FlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.HierarchicalTiledAStarTest;
@@ -25,18 +26,17 @@ import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleFlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleHierarchicalTiledAStarTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.StringBuilder;
 
 /** Test class for pathfinding algorithms.
  * 
@@ -50,8 +50,6 @@ public class PathFinderTests extends GdxAiTest {
 	private static final boolean DEBUG_STAGE = false;
 
 	public CollapsableWindow algorithmSelectionWindow;
-	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 
 	// @off - disable libgdx formatter
 	PathFinderTestBase [] tests = {
@@ -73,8 +71,6 @@ public class PathFinderTests extends GdxAiTest {
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
-
-		fpsStringBuilder = new StringBuilder();
 
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -102,18 +98,15 @@ public class PathFinderTests extends GdxAiTest {
 		// Set selected test
 		changeTest(0);
 
-		fpsLabel = new Label("FPS: 999", skin);
-// updateLabel();
-		stage.addActor(fpsLabel);
+		stage.addActor(new FpsLabel("FPS: ", skin));
 	}
 
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		updateStatusBarText(fpsStringBuilder);
-		fpsLabel.setText(fpsStringBuilder);
+		// Update time
+		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 		if (currentTest != null) currentTest.render();
 
@@ -127,10 +120,6 @@ public class PathFinderTests extends GdxAiTest {
 		stage.getViewport().update(width, height, true);
 		stageWidth = width;
 		stageHeight = height;
-	}
-
-	protected void updateStatusBarText (final StringBuilder stringBuilder) {
-		stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 	}
 
 	private List<String> createTestList () {
@@ -190,7 +179,7 @@ public class PathFinderTests extends GdxAiTest {
 
 		// Add the new behavior and its window
 		currentTest = tests[index];
-		currentTest.create(testsTable);
+		currentTest.create();
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);
 		if (currentTest.getInputProcessor() != null) im.addProcessor(currentTest.getInputProcessor());

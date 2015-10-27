@@ -14,23 +14,44 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.utils.random;
+package com.badlogic.gdx.ai;
 
-/** @author davebaol */
-public abstract class IntegerDistribution implements Distribution {
+/** A logger that never logs.
+ * 
+ * @author davebaol */
+public class NullLogger implements Logger {
 
-	@Override
-	public long nextLong () {
-		return (long)nextInt();
+	public NullLogger () {
 	}
 
 	@Override
-	public float nextFloat () {
-		return (float)nextInt();
+	public void debug (String tag, String message) {
+		// Do nothing
 	}
 
 	@Override
-	public double nextDouble () {
-		return (double)nextInt();
+	public void debug (String tag, String message, Throwable exception) {
+		// Do nothing
 	}
+
+	@Override
+	public void info (String tag, String message) {
+		// Do nothing
+	}
+
+	@Override
+	public void info (String tag, String message, Throwable exception) {
+		// Do nothing
+	}
+
+	@Override
+	public void error (String tag, String message) {
+		// Do nothing
+	}
+
+	@Override
+	public void error (String tag, String message, Throwable exception) {
+		// Do nothing
+	}
+
 }

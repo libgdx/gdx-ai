@@ -42,7 +42,9 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
+	public void create () {
+		super.create();
+
 		character = new SteeringActor(container.badlogicSmall, false);
 		character.setPosition(MathUtils.random(container.stageWidth), MathUtils.random(container.stageHeight), Align.center);
 		character.setMaxLinearSpeed(100);
@@ -68,8 +70,8 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 			.setWanderRate(MathUtils.PI2 * 3.5f);
 		prey.setSteeringBehavior(wanderSB);
 
-		table.addActor(character);
-		table.addActor(prey);
+		testTable.addActor(character);
+		testTable.addActor(prey);
 
 		Table detailTable = new Table(container.skin);
 
@@ -103,11 +105,12 @@ public class Scene2dPursueTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void draw () {
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 }

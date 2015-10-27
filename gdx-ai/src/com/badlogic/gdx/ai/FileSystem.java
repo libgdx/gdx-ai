@@ -14,23 +14,25 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.utils.random;
+package com.badlogic.gdx.ai;
+
+import java.io.File;
+
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 
 /** @author davebaol */
-public abstract class IntegerDistribution implements Distribution {
+public interface FileSystem {
 
-	@Override
-	public long nextLong () {
-		return (long)nextInt();
-	}
+	public FileHandleResolver newResolver(FileType fileType);
 
-	@Override
-	public float nextFloat () {
-		return (float)nextInt();
-	}
+	public FileHandle newFileHandle(String fileName);
 
-	@Override
-	public double nextDouble () {
-		return (double)nextInt();
-	}
+	public FileHandle newFileHandle(File file);
+	
+	public FileHandle newFileHandle(String fileName, FileType type);
+
+	public FileHandle newFileHandle(File file, FileType type);
+
 }

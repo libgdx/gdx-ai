@@ -61,7 +61,13 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void create (final Table table) {
+	public String getHelpMessage() {
+		return "Click the target to create a new member. Click a member to remove it.";
+	}
+
+	@Override
+	public void create () {
+		super.create();
 
 		character = new SteeringActor(container.target, false);
 		character.setMaxLinearSpeed(50);
@@ -80,9 +86,9 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 					else
 						fishes++;
 				}
-				SteeringActorFormationMember safm = createFormationMember(fishes < badlogics ? 0 : 1, table);
+				SteeringActorFormationMember safm = createFormationMember(fishes < badlogics ? 0 : 1, testTable);
 				formation.addMember(safm);
-				table.addActor(safm);
+				testTable.addActor(safm);
 			}
 		});
 
@@ -98,7 +104,7 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 			.setWanderRate(MathUtils.PI2 * 4);
 		character.setSteeringBehavior(wanderSB);
 
-		table.addActor(character);
+		testTable.addActor(character);
 
 		// Create the formation pattern
 		DefensiveCircleFormationPattern<Vector2> defensiveCirclePattern = new DefensiveCircleFormationPattern<Vector2>(
@@ -128,10 +134,10 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 		formation = new Formation<Vector2>(character, defensiveCirclePattern, slotAssignmentStrategy);
 
 		for (int i = 0; i < 4; i++) {
-			SteeringActorFormationMember safm = createFormationMember(i, table);
+			SteeringActorFormationMember safm = createFormationMember(i, testTable);
 
 			formation.addMember(safm);
-			table.addActor(safm);
+			testTable.addActor(safm);
 
 			// debug
 			for (int k = 0; k < formation.getSlotAssignmentCount(); k++) {
@@ -171,12 +177,13 @@ public class Scene2dFormationTest extends Scene2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
+	public void update () {
 		formation.updateSlots();
 	}
 
 	@Override
 	public void dispose () {
+		super.dispose();
 	}
 
 	private SteeringActorFormationMember createFormationMember (int type, final Table table) {

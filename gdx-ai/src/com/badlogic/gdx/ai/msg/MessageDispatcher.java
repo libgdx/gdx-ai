@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.msg;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
@@ -41,8 +41,6 @@ public class MessageDispatcher {
 
 	private IntMap<Array<TelegramProvider>> msgProviders;
 
-	private float currentTime;
-
 	private boolean debugEnabled;
 
 	/** Creates a {@code MessageDispatcher} */
@@ -50,11 +48,6 @@ public class MessageDispatcher {
 		this.queue = new PriorityQueue<Telegram>();
 		this.msgListeners = new IntMap<Array<Telegraph>>();
 		this.msgProviders = new IntMap<Array<TelegramProvider>>();
-	}
-
-	/** Returns the current time. */
-	public float getCurrentTime () {
-		return currentTime;
 	}
 
 	/** Returns true if debug mode is on; false otherwise. */
@@ -83,13 +76,13 @@ public class MessageDispatcher {
 		// Dispatch messages from registered providers
 		Array<TelegramProvider> providers = msgProviders.get(msg);
 		if (providers != null) {
-			for (int i = 0; i < providers.size; i++) {
+			for (int i = 0, n = providers.size; i < n; i++) {
 				TelegramProvider provider = providers.get(i);
 				Object info = provider.provideMessageInfo(msg, listener);
-				if (info != null) if (ClassReflection.isInstance(Telegraph.class, provider))
-					dispatchMessage(0, (Telegraph)provider, listener, msg, info);
-				else
-					dispatchMessage(0, null, listener, msg, info);
+				if (info != null) {
+					Telegraph sender = ClassReflection.isInstance(Telegraph.class, provider) ? (Telegraph)provider : null;
+					dispatchMessage(0, sender, listener, msg, info);
+				}
 			}
 		}
 	}
@@ -188,7 +181,6 @@ public class MessageDispatcher {
 			pool.free(queue.get(i));
 		}
 		queue.clear();
-		currentTime = 0;
 	}
 
 	/** Removes all the telegrams from the queue and the registered listeners for all the messages. */
@@ -353,15 +345,19 @@ public class MessageDispatcher {
 
 		// If there is no delay, route telegram immediately
 		if (delay <= 0.0f) {
-			if (debugEnabled)
-				Gdx.app.log(LOG_TAG, "Instant telegram dispatched at time: " + currentTime + " by " + sender + " for " + receiver
+			if (debugEnabled) {
+				float currentTime = GdxAI.getTimepiece().getTime();
+				GdxAI.getLogger().info(LOG_TAG, "Instant telegram dispatched at time: " + currentTime + " by " + sender + " for " + receiver
 					+ ". Msg is " + msg);
+			}
 
 			// Send the telegram to the recipient
 			discharge(telegram);
 		} else {
+			float currentTime = GdxAI.getTimepiece().getTime();
+
 			// Set the timestamp for the delayed telegram
-			telegram.setTimestamp(this.currentTime + delay);
+			telegram.setTimestamp(currentTime + delay);
 
 			// Put the telegram in the queue
 			boolean added = queue.add(telegram);
@@ -371,10 +367,10 @@ public class MessageDispatcher {
 
 			if (debugEnabled) {
 				if (added)
-					Gdx.app.log(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " recorded at time "
-						+ this.currentTime + ". Msg is " + msg);
+					GdxAI.getLogger().info(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " recorded at time " + currentTime
+						+ ". Msg is " + msg);
 				else
-					Gdx.app.log(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " rejected by the queue. Msg is "
+					GdxAI.getLogger().info(LOG_TAG, "Delayed telegram from " + sender + " for " + receiver + " rejected by the queue. Msg is "
 						+ msg);
 			}
 		}
@@ -382,10 +378,9 @@ public class MessageDispatcher {
 
 	/** Dispatches any telegrams with a timestamp that has expired. Any dispatched telegrams are removed from the queue.
 	 * <p>
-	 * This method must be called each time through the main game loop.
-	 * @param deltaTime the time span between the current frame and the last frame in seconds */
-	public void update (float deltaTime) {
-		currentTime += deltaTime;
+	 * This method must be called each time through the main game loop. */
+	public void update () {
+		float currentTime = GdxAI.getTimepiece().getTime();
 
 		// Peek at the queue to see if any telegrams need dispatching.
 		// Remove all telegrams from the front of the queue that have gone
@@ -397,7 +392,7 @@ public class MessageDispatcher {
 			if (telegram.getTimestamp() > currentTime) break;
 
 			if (debugEnabled) {
-				Gdx.app.log(LOG_TAG, "Queued telegram ready for dispatch: Sent to " + telegram.receiver + ". Msg is "
+				GdxAI.getLogger().info(LOG_TAG, "Queued telegram ready for dispatch: Sent to " + telegram.receiver + ". Msg is "
 					+ telegram.message);
 			}
 
@@ -416,6 +411,7 @@ public class MessageDispatcher {
 	 * loading.
 	 * @param callback The callback used to report pending messages individually. **/
 	public void scanQueue (PendingMessageCallback callback) {
+		float currentTime = GdxAI.getTimepiece().getTime();
 		int queueSize = queue.size();
 		for (int i = 0; i < queueSize; i++) {
 			Telegram telegram = queue.get(i);
@@ -433,7 +429,7 @@ public class MessageDispatcher {
 			// Dispatch the telegram to the receiver specified by the telegram itself
 			if (!telegram.receiver.handleMessage(telegram)) {
 				// Telegram could not be handled
-				if (debugEnabled) Gdx.app.log(LOG_TAG, "Message " + telegram.message + " not handled");
+				if (debugEnabled) GdxAI.getLogger().info(LOG_TAG, "Message " + telegram.message + " not handled");
 			}
 		} else {
 			// Dispatch the telegram to all the registered receivers
@@ -447,7 +443,7 @@ public class MessageDispatcher {
 				}
 			}
 			// Telegram could not be handled
-			if (debugEnabled && handledCount == 0) Gdx.app.log(LOG_TAG, "Message " + telegram.message + " not handled");
+			if (debugEnabled && handledCount == 0) GdxAI.getLogger().info(LOG_TAG, "Message " + telegram.message + " not handled");
 		}
 
 		// Release the telegram to the pool

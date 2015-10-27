@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.steer.proximities;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.utils.Array;
@@ -37,7 +37,7 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 	protected float angle;
 
 	private float coneThreshold;
-	private long frameId;
+	private float lastTime;
 	private T ownerOrientation;
 	private T toAgent;
 
@@ -51,7 +51,7 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 		super(owner, agents);
 		this.radius = radius;
 		setAngle(angle);
-		this.frameId = -1;
+		this.lastTime = 0;
 		this.ownerOrientation = owner.getPosition().cpy().setZero();
 		this.toAgent = owner.getPosition().cpy().setZero();
 	}
@@ -82,11 +82,12 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 		int neighborCount = 0;
 		int agentCount = agents.size;
 
-		// Check current frame id to avoid repeating calculations
+		// If the frame is new then avoid repeating calculations
 		// when this proximity is used by multiple group behaviors.
-		if (this.frameId != Gdx.graphics.getFrameId()) {
-			// Save the frame id
-			this.frameId = Gdx.graphics.getFrameId();
+		float currentTime = GdxAI.getTimepiece().getTime();
+		if (this.lastTime != currentTime) {
+			// Save the current time
+			this.lastTime = currentTime;
 
 			T ownerPosition = owner.getPosition();
 

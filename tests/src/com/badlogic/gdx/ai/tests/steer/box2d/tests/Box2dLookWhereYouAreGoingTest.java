@@ -29,7 +29,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -44,7 +43,6 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 	Box2dSteeringEntity character;
 	Box2dSteeringEntity target;
 
-	private World world;
 	private Batch spriteBatch;
 
 	public Box2dLookWhereYouAreGoingTest (SteeringBehaviorsTest container) {
@@ -52,11 +50,10 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void create (Table table) {
-		spriteBatch = new SpriteBatch();
+	public void create () {
+		super.create();
 
-		// Instantiate a new World with no gravity
-		world = createWorld();
+		spriteBatch = new SpriteBatch();
 
 		// Create character
 		character = createSteeringEntity(world, container.greenFish, true);
@@ -149,13 +146,16 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 	}
 
 	@Override
-	public void render () {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+	public void update () {
+		super.update();
 
-		world.step(deltaTime, 8, 3);
+		// Update the character
+		character.update(Gdx.graphics.getDeltaTime());
+	}
 
-		// Update and draw the character
-		character.update(deltaTime);
+	@Override
+	public void draw () {
+		// Draw the character and the target
 		spriteBatch.begin();
 		character.draw(spriteBatch);
 		target.draw(spriteBatch);
@@ -164,7 +164,7 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 
 	@Override
 	public void dispose () {
-		world.dispose();
+		super.dispose();
 		spriteBatch.dispose();
 	}
 

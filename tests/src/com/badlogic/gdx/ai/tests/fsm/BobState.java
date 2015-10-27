@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.ai.tests.fsm;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
@@ -102,8 +102,7 @@ public enum BobState implements State<Bob> {
 		public boolean onMessage (Bob bob, Telegram telegram) {
 			if (telegram.message == MessageType.STEW_READY) {
 
-				System.out.println("Message handled by " + bob.getClass().getSimpleName() + " at time: "
-					+ MessageManager.getInstance().getCurrentTime());
+				talk(bob, "Message STEW_READY handled at time: " + GdxAI.getTimepiece().getTime());
 
 				talk(bob, "Okay Hun, ahm a comin'!");
 
@@ -201,7 +200,7 @@ public enum BobState implements State<Bob> {
 	}
 
 	protected void talk (Bob bob, String msg) {
-		Gdx.app.log(bob.getClass().getSimpleName(), msg);
+		GdxAI.getLogger().info(bob.getClass().getSimpleName(), msg);
 	}
 
 }

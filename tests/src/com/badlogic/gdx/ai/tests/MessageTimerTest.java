@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.tests;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -40,9 +41,10 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 		launch(new MessageTimerTest());
 	}
 
+	private static final String LOG_TAG = MessageTimerTest.class.getSimpleName();
+	
 	Stage stage;
 	Label fpsLabel;
-	StringBuilder fpsStringBuilder;
 	int msgCounter;
 	float msgTimeStamp;
 	boolean timerEnabled;
@@ -52,8 +54,6 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
 
 		timerEnabled = true;
-
-		fpsStringBuilder = new StringBuilder();
 
 		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -90,16 +90,18 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 
 	@Override
 	public void render () {
-		float deltaTime = Gdx.graphics.getRawDeltaTime();
+		// Update time
+		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 		// Dispatch any delayed messages
-		MessageManager.getInstance().update(deltaTime);
+		MessageManager.getInstance().update();
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		fpsStringBuilder.setLength(0);
-		fpsStringBuilder.append("Counter: ").append(msgCounter).append("; timestamp: ").append(msgTimeStamp);
-		fpsLabel.setText(fpsStringBuilder);
+		StringBuilder sb = fpsLabel.getText();
+		sb.setLength(0);
+		sb.append("Counter: ").append(msgCounter).append("; timestamp: ").append(msgTimeStamp);
+		fpsLabel.invalidateHierarchy();
 
 		stage.act();
 		stage.draw();
@@ -109,9 +111,9 @@ public class MessageTimerTest extends GdxAiTest implements Telegraph {
 	public boolean handleMessage (Telegram msg) {
 		this.msgCounter = (Integer)msg.extraInfo;
 		this.msgTimeStamp = msg.getTimestamp();
-		System.out.println("Counter: " + msgCounter + "; timestamp: " + msgTimeStamp);
+		GdxAI.getLogger().info(LOG_TAG, "Counter: " + msgCounter + "; timestamp: " + msgTimeStamp);
 		if (timerEnabled) {
-			float lag = MessageManager.getInstance().getCurrentTime() - msg.getTimestamp();
+			float lag = GdxAI.getTimepiece().getTime() - msg.getTimestamp();
 			lag -= (int)lag; // take the decimal part only (in case the lag is > 1)
 			float delay = 1f - lag;
 			sendMessage(delay, msgCounter + 1);

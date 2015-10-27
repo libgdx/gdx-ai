@@ -30,7 +30,7 @@ public final class TriangularDoubleDistribution extends DoubleDistribution {
 	}
 
 	public TriangularDoubleDistribution (double low, double high) {
-		this(low, high, (high - low) * .5f);
+		this(low, high, (low + high) * .5);
 	}
 
 	public TriangularDoubleDistribution (double low, double high, double mode) {

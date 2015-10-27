@@ -16,12 +16,14 @@
 
 package com.badlogic.gdx.ai.btree.utils;
 
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.ai.FileSystem;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloneException;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SerializationException;
 
@@ -37,15 +39,17 @@ public class BehaviorTreeLibrary {
 	protected FileHandleResolver resolver;
 	protected BehaviorTreeParser<?> parser;
 
-	/** Creates a {@code BehaviorTreeLibrary} using an {@link InternalFileHandleResolver}. */
+	/** Creates a {@code BehaviorTreeLibrary} using the new internal resolver returned by the call
+	 * {@link FileSystem#newResolver(FileType) GdxAI.getFileSystem().newResolver(FileType.Internal)}. */
 	public BehaviorTreeLibrary () {
 		this(BehaviorTreeParser.DEBUG_NONE);
 	}
 
-	/** Creates a {@code BehaviorTreeLibrary} with the given debug level and using an {@link InternalFileHandleResolver}.
+	/** Creates a {@code BehaviorTreeLibrary} with the given debug level and using the new internal resolver returned by the call
+	 * {@link FileSystem#newResolver(FileType) GdxAI.getFileSystem().newResolver(FileType.Internal)}.
 	 * @param parseDebugLevel the debug level the parser will use */
 	public BehaviorTreeLibrary (int parseDebugLevel) {
-		this(new InternalFileHandleResolver(), parseDebugLevel);
+		this(GdxAI.getFileSystem().newResolver(FileType.Internal), parseDebugLevel);
 	}
 
 	/** Creates a {@code BehaviorTreeLibrary} with the given resolver.
