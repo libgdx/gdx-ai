@@ -48,6 +48,7 @@ public class RandomSequence<E> extends Sequence<E> {
 
 	@Override
 	public void start () {
+		super.start();
 		if (randomChildren == null) randomChildren = createRandomChildren();
 	}
 }

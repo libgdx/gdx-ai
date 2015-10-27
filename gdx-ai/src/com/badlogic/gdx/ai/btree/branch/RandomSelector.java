@@ -48,6 +48,7 @@ public class RandomSelector<E> extends Selector<E> {
 
 	@Override
 	public void start () {
+		super.start();
 		if (randomChildren == null) randomChildren = createRandomChildren();
 	}
 }
