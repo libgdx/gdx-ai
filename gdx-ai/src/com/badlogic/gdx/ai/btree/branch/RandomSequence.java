@@ -19,27 +19,26 @@ package com.badlogic.gdx.ai.btree.branch;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
 
-/** A {@code Sequence} is a branch task that runs every children until one of them fails. If a child task succeeds, the selector
- * will start and run the next child task.
+/** A {@code RandomSequence} is a sequence task's variant that runs its children in a random order.
  * 
  * @param <E> type of the blackboard object that tasks use to read or modify game state
  * 
  * @author implicit-invocation */
 public class RandomSequence<E> extends Sequence<E> {
 
-	/** Creates a {@code Sequence} branch with no children. */
+	/** Creates a {@code RandomSequence} branch with no children. */
 	public RandomSequence () {
 		super();
 	}
 
-	/** Creates a {@code Sequence} branch with the given children.
+	/** Creates a {@code RandomSequence} branch with the given children.
 	 * 
 	 * @param tasks the children of this task */
 	public RandomSequence (Array<Task<E>> tasks) {
 		super(tasks);
 	}
 
-	/** Creates a {@code Sequence} branch with the given children.
+	/** Creates a {@code RandomSequence} branch with the given children.
 	 * 
 	 * @param tasks the children of this task */
 	public RandomSequence (Task<E>... tasks) {
