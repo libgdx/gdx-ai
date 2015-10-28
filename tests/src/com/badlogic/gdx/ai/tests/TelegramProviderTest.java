@@ -16,21 +16,22 @@
 
 package com.badlogic.gdx.ai.tests;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.tests.msg.City;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 
 /** A simple test to demonstrate telegram providers.<br/>
  * It builds an ideal city where every new citizen says hello to all the citizens that don't live in his house.
  * @author avianey */
-public class TelegramProviderTest extends GdxAiTest {
+public class TelegramProviderTest extends ApplicationAdapter {
 
 	public static final int MSG_TIME_TO_ACT = 0;
 	public static final int MSG_EXISTING_CITIZEN = 1;
 
 	public static void main (String[] args) {
-		launch(new TelegramProviderTest());
+		GdxAiTestUtils.launch(new TelegramProviderTest());
 	}
 
 	City city;

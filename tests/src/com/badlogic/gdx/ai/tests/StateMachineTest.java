@@ -16,19 +16,20 @@
 
 package com.badlogic.gdx.ai.tests;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.tests.fsm.Bob;
 import com.badlogic.gdx.ai.tests.fsm.Elsa;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 
 /** A simple test to demonstrate state machines combined with message handling.
  * @author davebaol */
-public class StateMachineTest extends GdxAiTest {
+public class StateMachineTest extends ApplicationAdapter {
 
 	public static void main (String[] argv) {
-		launch(new StateMachineTest());
+		GdxAiTestUtils.launch(new StateMachineTest());
 	}
 
 	Bob bob;

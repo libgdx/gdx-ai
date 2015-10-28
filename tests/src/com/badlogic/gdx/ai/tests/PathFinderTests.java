@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.tests;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.GdxAI;
@@ -24,7 +25,7 @@ import com.badlogic.gdx.ai.tests.pfa.tests.FlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.HierarchicalTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleFlatTiledAStarTest;
 import com.badlogic.gdx.ai.tests.pfa.tests.InterruptibleHierarchicalTiledAStarTest;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.graphics.GL20;
@@ -41,10 +42,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 /** Test class for pathfinding algorithms.
  * 
  * @author davebaol */
-public class PathFinderTests extends GdxAiTest {
+public class PathFinderTests extends ApplicationAdapter {
 
 	public static void main (String[] argv) {
-		launch(new PathFinderTests());
+		GdxAiTestUtils.launch(new PathFinderTests());
 	}
 
 	private static final boolean DEBUG_STAGE = false;

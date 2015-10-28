@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.tests;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.GdxAI;
@@ -48,7 +49,7 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dPursueTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dRaycastObstacleAvoidanceTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dSeekTest;
 import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dWanderTest;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
@@ -72,10 +73,10 @@ import com.badlogic.gdx.utils.Array;
 /** Test class for steering behaviors.
  * 
  * @author davebaol */
-public class SteeringBehaviorsTest extends GdxAiTest {
+public class SteeringBehaviorsTest extends ApplicationAdapter {
 
 	public static void main (String[] argv) {
-		launch(new SteeringBehaviorsTest());
+		GdxAiTestUtils.launch(new SteeringBehaviorsTest());
 	}
 
 	private static final boolean DEBUG_STAGE = false;
@@ -165,7 +166,7 @@ public class SteeringBehaviorsTest extends GdxAiTest {
 		translucentPanel.setSize(stageWidth, stageHeight);
 		translucentPanel.setVisible(false);
 		stage.addActor(translucentPanel);
-		
+
 		// Create behavior selection window
 		Array<List<String>> engineBehaviors = new Array<List<String>>();
 		for (int k = 0; k < behaviors.length; k++) {

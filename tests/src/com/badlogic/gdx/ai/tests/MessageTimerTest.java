@@ -16,12 +16,13 @@
 
 package com.badlogic.gdx.ai.tests;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTest;
+import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,10 +36,10 @@ import com.badlogic.gdx.utils.StringBuilder;
 
 /** A simple test to demonstrate timer messages.
  * @author davebaol */
-public class MessageTimerTest extends GdxAiTest implements Telegraph {
+public class MessageTimerTest extends ApplicationAdapter implements Telegraph {
 
 	public static void main (String[] argv) {
-		launch(new MessageTimerTest());
+		GdxAiTestUtils.launch(new MessageTimerTest());
 	}
 
 	private static final String LOG_TAG = MessageTimerTest.class.getSimpleName();

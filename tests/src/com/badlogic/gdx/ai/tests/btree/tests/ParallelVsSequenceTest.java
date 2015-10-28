@@ -1,0 +1,443 @@
+/*******************************************************************************
+ * Copyright 2014 See AUTHORS file.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+package com.badlogic.gdx.ai.tests.btree.tests;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.branch.Parallel;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
+import com.badlogic.gdx.ai.steer.behaviors.Pursue;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
+import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
+import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.ScoreLabel;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+
+/** A simple test to demonstrate the difference between Sequence task and Parallel task with sequence policy.
+ * 
+ * @author davebaol */
+public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
+
+	private BehaviorTreeTests container;
+	private Screen oldScreen;
+
+	public ParallelVsSequenceTest (BehaviorTreeTests container) {
+		super("Predators: Parallel vs. Sequence", "Notice how parallel predator will win most of the times");
+		this.container = container;
+	}
+
+	@Override
+	public Actor createActor (final Skin skin) {
+		Table table = new Table();
+
+		LabelStyle labelStyle = new LabelStyle(skin.get(LabelStyle.class));
+		labelStyle.background = skin.newDrawable("white", .6f, .6f, .6f, 1);
+		String branchChildren = "\n    selectTarget\n    pursue";
+		table.add(new Label("parallel policy:\"sequence\"" + branchChildren, labelStyle)).pad(5);
+		table.add(new Label("vs", skin)).padLeft(10).padRight(10);
+		table.add(new Label("sequence" + branchChildren, labelStyle)).pad(5);
+
+		table.row().padTop(15);
+		
+		TextButton startButton = new TextButton("Start", skin);
+		startButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				oldScreen = container.getScreen();
+				container.setScreen(new TestScreen(ParallelVsSequenceTest.this, skin));
+			}
+		});
+		table.add();
+		table.add(startButton);
+		table.add();
+		return table;
+	}
+
+	private void backToPreviousScreen () {
+		container.setScreen(oldScreen);
+	}
+
+	static class TestScreen extends ScreenAdapter {
+		ParallelVsSequenceTest test;
+
+		Array<Sheep> sheeps;
+		Predator sequencePredator;
+		Predator parallelPredator;
+
+		ShapeRenderer shapeRenderer;
+		TextureRegion greenFishTextureRegion;
+		TextureRegion badlogicTextureRegion;
+		TextureRegion targetTextureRegion;
+		Skin skin;
+		Stage stage;
+		Table testTable;
+		TextButton pauseButton;
+		TextButton gameOverButton;
+
+		float lastUpdateTime;
+
+		public TestScreen (final ParallelVsSequenceTest test, Skin skin) {
+			this.test = test;
+			this.skin = skin;
+			lastUpdateTime = 0;
+
+			greenFishTextureRegion = new TextureRegion(new Texture("data/green_fish.png"));
+			badlogicTextureRegion = new TextureRegion(new Texture("data/badlogicsmall.jpg"));
+			targetTextureRegion = new TextureRegion(new Texture("data/target.png"));
+
+			shapeRenderer = new ShapeRenderer();
+
+			stage = new Stage();
+
+			Stack testStack = new Stack();
+			stage.addActor(testStack);
+
+			// Add translucent panel (it's only visible when AI is paused)
+			final Image translucentPanel = new Image(skin, "translucent");
+			translucentPanel.setSize(stage.getWidth(), stage.getHeight());
+			translucentPanel.setVisible(false);
+			stage.addActor(translucentPanel);
+
+			// Create status bar
+			Table statusBar = new Table(skin);
+			statusBar.left().bottom();
+			statusBar.row().height(26);
+			statusBar.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
+			pauseButton.addListener(new ChangeListener() {
+				@Override
+				public void changed (ChangeEvent event, Actor actor) {
+					boolean pause = pauseButton.isChecked();
+					pauseButton.setText(pause ? "Resume AI" : "Pause AI");
+					translucentPanel.setVisible(pause);
+				}
+			});
+			statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
+			statusBar.add(new ScoreLabel("Sequence (Fish): ", 0, skin) {
+				@Override
+				public int getValue () {
+					return sequencePredator.score;
+				}
+			}).padLeft(15);
+			statusBar.add(new ScoreLabel("Parallel (Badlogics): ", 0, skin) {
+				@Override
+				public int getValue () {
+					return parallelPredator.score;
+				}
+			}).padLeft(15);
+			stage.addActor(statusBar);
+
+			// Add test table
+			testStack.setSize(stage.getWidth(), stage.getHeight());
+			testStack.add(testTable = new Table() {
+				@Override
+				public void act (float delta) {
+					float time = GdxAI.getTimepiece().getTime();
+					if (lastUpdateTime != time) {
+						lastUpdateTime = time;
+						super.act(GdxAI.getTimepiece().getDeltaTime());
+					}
+				}
+			});
+			testStack.layout();
+
+			this.sheeps = new Array<Sheep>();
+
+			for (int i = 0; i < 30; i++) {
+				Sheep sheep = new Sheep(targetTextureRegion);
+				sheep.setMaxLinearAcceleration(50);
+				sheep.setMaxLinearSpeed(80);
+				sheep.setMaxAngularAcceleration(10); // greater than 0 because independent facing is enabled
+				sheep.setMaxAngularSpeed(5);
+
+				Wander<Vector2> wanderSB = new Wander<Vector2>(sheep) //
+					.setFaceEnabled(true) // We want to use Face internally (independent facing is on)
+					.setAlignTolerance(0.001f) // Used by Face
+					.setDecelerationRadius(5) // Used by Face
+					.setTimeToTarget(0.1f) // Used by Face
+					.setWanderOffset(90) //
+					.setWanderOrientation(10) //
+					.setWanderRadius(40) //
+					.setWanderRate(MathUtils.PI2 * 4);
+				sheep.setSteeringBehavior(wanderSB);
+
+				setRandomNonOverlappingPosition(sheep, sheeps, 5);
+				setRandomOrientation(sheep);
+
+				testTable.addActor(sheep);
+
+				sheeps.add(sheep);
+			}
+
+			sequencePredator = createPredator(false);
+			parallelPredator = createPredator(true);
+
+			// Create GameOver panel
+			gameOverButton = new TextButton("Game Over", skin);
+			gameOverButton.setVisible(false);
+			gameOverButton.addListener(new ChangeListener() {
+				@Override
+				public void changed (ChangeEvent event, Actor actor) {
+					test.backToPreviousScreen();
+				}
+			});
+			testTable.add(gameOverButton);
+		}
+
+		private Predator createPredator (boolean parallel) {
+			Predator predator = new Predator(parallel ? badlogicTextureRegion : greenFishTextureRegion, this);
+			predator.setPosition(MathUtils.random(stage.getWidth()), MathUtils.random(stage.getHeight()), Align.center);
+			predator.setMaxLinearSpeed(100);
+			predator.setMaxLinearAcceleration(600);
+
+			final Pursue<Vector2> pursueSB = new Pursue<Vector2>(predator, null, 0.3f);
+			predator.setSteeringBehavior(pursueSB);
+			testTable.addActor(predator);
+
+			BranchTask<Predator> branch = parallel ? new Parallel<Predator>() : new Sequence<Predator>();
+			branch.addChild(new SelectTargetTask());
+			branch.addChild(new PursueTask());
+			predator.btree = new BehaviorTree<Predator>(branch, predator);
+
+			return predator;
+		}
+
+		@Override
+		public void show () {
+			Gdx.input.setInputProcessor(stage);
+		}
+
+		boolean gameOver = false;
+
+		public void update (float delta) {
+			if (!pauseButton.isChecked() && !gameOver) {
+				// Update AI time
+				GdxAI.getTimepiece().update(delta);
+
+				// Update behavior trees
+				sequencePredator.btree.step();
+				parallelPredator.btree.step();
+			}
+
+			stage.act(delta);
+		}
+
+		@Override
+		public void render (float delta) {
+			update(delta);
+
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			if (sequencePredator.target != null) {
+				// Draw circles
+				shapeRenderer.begin(ShapeType.Line);
+				shapeRenderer.setColor(Color.GREEN);
+				shapeRenderer.circle(sequencePredator.target.getPosition().x, sequencePredator.target.getPosition().y,
+					sequencePredator.target.getBoundingRadius() * 1.2f);
+				shapeRenderer.end();
+			}
+			if (parallelPredator.target != null) {
+				// Draw circles
+				shapeRenderer.begin(ShapeType.Line);
+				shapeRenderer.setColor(Color.RED);
+				shapeRenderer.circle(parallelPredator.target.getPosition().x, parallelPredator.target.getPosition().y,
+					parallelPredator.target.getBoundingRadius() * 1.2f);
+				shapeRenderer.end();
+			}
+
+			gameOver = sequencePredator.target == null && parallelPredator.target == null;
+			if (gameOver && !gameOverButton.isVisible()) {
+				String winner = (sequencePredator.score > parallelPredator.score ? "Fish" : "Badlogics") + " wins!!!";
+				if (sequencePredator.score == parallelPredator.score) winner = "There's no winner!!!";
+				gameOverButton.setText("Game Over\n\n" + winner);
+				gameOverButton.setVisible(true);
+			}
+
+			stage.draw();
+		}
+
+		@Override
+		public void resize (int width, int height) {
+			stage.getViewport().update(width, height, true);
+		}
+
+		@Override
+		public void hide () {
+			dispose();
+		}
+
+		@Override
+		public void dispose () {
+			stage.dispose();
+
+			shapeRenderer.dispose();
+
+			// Dispose textures
+			greenFishTextureRegion.getTexture().dispose();
+			badlogicTextureRegion.getTexture().dispose();
+			targetTextureRegion.getTexture().dispose();
+		}
+
+		protected void setRandomNonOverlappingPosition (SteeringActor character, Array<? extends SteeringActor> others,
+			float minDistanceFromBoundary) {
+			int maxTries = Math.max(100, others.size * others.size);
+			SET_NEW_POS:
+			while (--maxTries >= 0) {
+				character.setPosition(MathUtils.random(stage.getWidth()), MathUtils.random(stage.getHeight()), Align.center);
+				character.getPosition().set(character.getX(Align.center), character.getY(Align.center));
+				for (int i = 0; i < others.size; i++) {
+					SteeringActor other = (SteeringActor)others.get(i);
+					if (character.getPosition().dst(other.getPosition()) <= character.getBoundingRadius() + other.getBoundingRadius()
+						+ minDistanceFromBoundary) continue SET_NEW_POS;
+				}
+				return;
+			}
+			throw new GdxRuntimeException("Probable infinite loop detected");
+		}
+
+		protected void setRandomOrientation (SteeringActor character) {
+			float orientation = MathUtils.random(-MathUtils.PI, MathUtils.PI);
+			character.setOrientation(orientation);
+			if (!character.isIndependentFacing()) {
+				// Set random initial non-zero linear velocity since independent facing is off
+				character.angleToVector(character.getLinearVelocity(), orientation).scl(character.getMaxLinearSpeed() / 5);
+			}
+		}
+
+		public static class Sheep extends SteeringActor {
+			boolean eaten;
+
+			public Sheep (TextureRegion region) {
+				super(region, true);
+				this.eaten = false;
+			}
+		}
+
+		public static class Predator extends SteeringActor {
+			Sheep target;
+			TestScreen testScreen;
+			BehaviorTree<Predator> btree;
+			int score;
+
+			public Predator (TextureRegion region, TestScreen testScreen) {
+				super(region);
+				this.testScreen = testScreen;
+				this.score = 0;
+			}
+
+			public void selectTarget () {
+				target = null;
+				((Pursue)getSteeringBehavior()).setTarget(null);
+				Vector2 pos = getPosition();
+				float minDist = Float.POSITIVE_INFINITY;
+				for (Sheep sheep : testScreen.sheeps) {
+					float dist = sheep.getPosition().dst2(pos);
+					if (dist < minDist) {
+						minDist = dist;
+						target = sheep;
+					}
+				}
+			}
+
+			public boolean canEatTarget () {
+				if (target.eaten) return false;
+				float targetRadius = target.getBoundingRadius();
+				return (!target.eaten && target.getPosition().dst2(getPosition()) < targetRadius * targetRadius);
+			}
+
+			public void eatTarget () {
+				score++;
+				target.eaten = true;
+				testScreen.sheeps.removeValue(target, true);
+				testScreen.testTable.removeActor(target);
+			}
+		}
+
+		public static class SelectTargetTask extends LeafTask<Predator> {
+
+			@Override
+			public void run () {
+				getObject().selectTarget();
+				success();
+			}
+
+			@Override
+			protected Task<Predator> copyTo (Task<Predator> task) {
+				return task;
+			}
+
+		}
+
+		public static class PursueTask extends LeafTask<Predator> {
+
+			@Override
+			public void run () {
+				Predator predator = getObject();
+				boolean success = false;
+				if (predator.target != null) {
+					success = predator.canEatTarget();
+					if (success)
+						predator.eatTarget();
+					else if (!predator.target.eaten) {
+						((Pursue)predator.getSteeringBehavior()).setEnabled(true);
+						((Pursue)predator.getSteeringBehavior()).setTarget(predator.target);
+						running();
+						return;
+					}
+				}
+				((Pursue)predator.getSteeringBehavior()).setEnabled(false);
+				if (success)
+					success();
+				else
+					fail();
+			}
+
+			@Override
+			protected Task<Predator> copyTo (Task<Predator> task) {
+				return task;
+			}
+		}
+
+	}
+}
