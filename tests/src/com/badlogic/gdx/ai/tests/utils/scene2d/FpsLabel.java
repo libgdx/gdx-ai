@@ -18,17 +18,12 @@ package com.badlogic.gdx.ai.tests.utils.scene2d;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.StringBuilder;
 
-/** A label showing current FPS.
+/** A label showing current FPS prefixed by a constant string.
  * 
  * @author davebaol */
-public class FpsLabel extends Label {
-
-	int fps;
-	int appendIndex;
+public class FpsLabel extends ScoreLabel {
 
 	public FpsLabel (CharSequence text, Skin skin) {
 		this(text, skin.get(LabelStyle.class));
@@ -47,21 +42,12 @@ public class FpsLabel extends Label {
 	}
 
 	public FpsLabel (CharSequence text, LabelStyle style) {
-		super(text, style);
-		this.fps = 0;
-		this.appendIndex = text.length();
+		super(text, -1, style);
 	}
 
 	@Override
-	public void act (float delta) {
-		if (fps != Gdx.graphics.getFramesPerSecond()) {
-			fps = Gdx.graphics.getFramesPerSecond();
-			StringBuilder sb = getText();
-			sb.setLength(appendIndex);
-			sb.append(fps);
-			invalidateHierarchy();
-		}
-		super.act(delta);
+	public int getValue () {
+		return Gdx.graphics.getFramesPerSecond();
 	}
 
 }
