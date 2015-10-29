@@ -80,7 +80,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 		table.add(new Label("sequence" + branchChildren, labelStyle)).pad(5);
 
 		table.row().padTop(15);
-		
+
 		TextButton startButton = new TextButton("Start", skin);
 		startButton.addListener(new ChangeListener() {
 			@Override
@@ -117,11 +117,13 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 		TextButton gameOverButton;
 
 		float lastUpdateTime;
+		boolean gameOver;
 
 		public TestScreen (final ParallelVsSequenceTest test, Skin skin) {
 			this.test = test;
 			this.skin = skin;
 			lastUpdateTime = 0;
+			gameOver = false;
 
 			greenFishTextureRegion = new TextureRegion(new Texture("data/green_fish.png"));
 			badlogicTextureRegion = new TextureRegion(new Texture("data/badlogicsmall.jpg"));
@@ -248,8 +250,6 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			Gdx.input.setInputProcessor(stage);
 		}
 
-		boolean gameOver = false;
-
 		public void update (float delta) {
 			if (!pauseButton.isChecked() && !gameOver) {
 				// Update AI time
@@ -269,29 +269,30 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			if (sequencePredator.target != null) {
-				// Draw circles
-				shapeRenderer.begin(ShapeType.Line);
-				shapeRenderer.setColor(Color.GREEN);
-				shapeRenderer.circle(sequencePredator.target.getPosition().x, sequencePredator.target.getPosition().y,
-					sequencePredator.target.getBoundingRadius() * 1.2f);
-				shapeRenderer.end();
-			}
-			if (parallelPredator.target != null) {
-				// Draw circles
-				shapeRenderer.begin(ShapeType.Line);
-				shapeRenderer.setColor(Color.RED);
-				shapeRenderer.circle(parallelPredator.target.getPosition().x, parallelPredator.target.getPosition().y,
-					parallelPredator.target.getBoundingRadius() * 1.2f);
-				shapeRenderer.end();
-			}
-
-			gameOver = sequencePredator.target == null && parallelPredator.target == null;
-			if (gameOver && !gameOverButton.isVisible()) {
-				String winner = (sequencePredator.score > parallelPredator.score ? "Fish" : "Badlogics") + " wins!!!";
-				if (sequencePredator.score == parallelPredator.score) winner = "There's no winner!!!";
-				gameOverButton.setText("Game Over\n\n" + winner);
-				gameOverButton.setVisible(true);
+			gameOver = sheeps.size == 0;
+			if (gameOver) {
+				if (!gameOverButton.isVisible()) {
+					String winner = (sequencePredator.score > parallelPredator.score ? "Fish" : "Badlogics") + " wins!!!";
+					if (sequencePredator.score == parallelPredator.score) winner = "There's no winner!!!";
+					gameOverButton.setText("Game Over\n\n" + winner);
+					gameOverButton.setVisible(true);
+				}
+			} else {
+				Sheep target1 = sequencePredator.target;
+				Sheep target2 = parallelPredator.target;
+				if (target1 != null || target2 != null) {
+					// Draw circles
+					shapeRenderer.begin(ShapeType.Line);
+					if (target1 != null) {
+						shapeRenderer.setColor(Color.GREEN);
+						shapeRenderer.circle(target1.getPosition().x, target1.getPosition().y, target1.getBoundingRadius() + 4);
+					}
+					if (target2 != null) {
+						shapeRenderer.setColor(Color.RED);
+						shapeRenderer.circle(target2.getPosition().x, target2.getPosition().y, target2.getBoundingRadius() + 6);
+					}
+					shapeRenderer.end();
+				}
 			}
 
 			stage.draw();
