@@ -28,6 +28,11 @@ public class CircularBuffer<T> {
 	private int tail;
 	private int size;
 
+	/** Creates a resizable {@code CircularBuffer}. */
+	public CircularBuffer () {
+		this(16, true);
+	}
+
 	/** Creates a resizable {@code CircularBuffer} with the given initial capacity.
 	 * @param initialCapacity the initial capacity of this circular buffer */
 	public CircularBuffer (int initialCapacity) {
@@ -67,15 +72,35 @@ public class CircularBuffer<T> {
 	public T read () {
 		if (size > 0) {
 			size--;
-			T item = items[head++];
-			if (head == items.length) head = 0;
+			T item = items[head];
+			items[head] = null; // Avoid keeping useless references
+			if (++head == items.length) head = 0;
 			return item;
 		}
 
 		return null;
 	}
 
-	/** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
+	/** Removes all items from this circular buffer. */
+	public void clear () {
+		final T[] items = this.items;
+		if (tail > head) {
+			int i = head, n = tail;
+			do {
+				items[i++] = null;
+			} while (i < n);
+		} else if (size > 0) { // NOTE: when head == tail the buffer can be empty or full
+			for (int i = head, n = items.length; i < n; i++)
+				items[i] = null;
+			for (int i = 0, n = tail; i < n; i++)
+				items[i] = null;
+		}
+		this.head = 0;
+		this.tail = 0;
+		this.size = 0;
+	}
+
+    /** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
 	public boolean isEmpty () {
 		return size == 0;
 	}
