@@ -36,9 +36,8 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	private float pathLength;
 	private T nearestPointOnCurrentSegment;
 	private T nearestPointOnPath;
-	private T tmp1;
-	private T tmp2;
-	private T tmp3;
+	private T tmpB;
+	private T tmpC;
 
 	/** Creates a closed {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path
@@ -56,9 +55,8 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		createPath(waypoints);
 		nearestPointOnCurrentSegment = waypoints.first().cpy();
 		nearestPointOnPath = waypoints.first().cpy();
-		tmp1 = waypoints.first().cpy();
-		tmp2 = waypoints.first().cpy();
-		tmp3 = waypoints.first().cpy();
+		tmpB = waypoints.first().cpy();
+		tmpC = waypoints.first().cpy();
 	}
 
 	@Override
@@ -88,18 +86,15 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 	 * @param b the end point of the line segment
 	 * @param c the point to calculate the distance from */
 	public float calculatePointSegmentSquareDistance (T out, T a, T b, T c) {
-		tmp1.set(a);
-		tmp2.set(b);
-		tmp3.set(c);
+		out.set(a);
+		tmpB.set(b);
+		tmpC.set(c);
 
-		T ab = tmp2.sub(a);
-		float t = (tmp3.sub(a)).dot(ab) / ab.len2();
-		t = MathUtils.clamp(t, 0, 1);
-		out.set(tmp1.add(ab.scl(t)));
+		T ab = tmpB.sub(a);
+		float t = (tmpC.sub(a)).dot(ab) / ab.len2();
+		out.mulAdd(ab, MathUtils.clamp(t, 0, 1));
 
-		tmp1.set(out);
-		T distance = tmp1.sub(c);
-		return distance.len2();
+		return out.dst2(c);
 	}
 
 	@Override

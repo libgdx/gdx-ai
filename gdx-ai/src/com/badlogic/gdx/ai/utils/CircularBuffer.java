@@ -100,7 +100,7 @@ public class CircularBuffer<T> {
 		this.size = 0;
 	}
 
-    /** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
+	/** Returns {@code true} if this circular buffer is empty; {@code false} otherwise. */
 	public boolean isEmpty () {
 		return size == 0;
 	}
@@ -126,21 +126,27 @@ public class CircularBuffer<T> {
 		this.resizable = resizable;
 	}
 
-	/** Creates a new backing array with the specified capacity containing the current items. */
+	/** Increases the size of the backing array (if necessary) to accommodate the specified number of additional items. Useful
+	 * before adding many items to avoid multiple backing array resizes.
+	 * @param additionalCapacity the number of additional items */
+	public void ensureCapacity (int additionalItems) {
+		int newCapacity = size + additionalItems;
+		if (items.length < newCapacity) resize(newCapacity);
+	}
+
+	/** Creates a new backing array with the specified capacity containing the current items.
+	 * @param newCapacity the new capacity */
 	protected void resize (int newCapacity) {
-		T[] items = this.items;
 		@SuppressWarnings("unchecked")
 		T[] newItems = (T[])ArrayReflection.newInstance(items.getClass().getComponentType(), newCapacity);
 		if (tail > head) {
 			System.arraycopy(items, head, newItems, 0, size);
-			tail = tail - head;
-			head = 0;
 		} else if (size > 0) { // NOTE: when head == tail the buffer can be empty or full
 			System.arraycopy(items, head, newItems, 0, items.length - head);
 			System.arraycopy(items, 0, newItems, items.length - head, tail);
-			tail = items.length - head + tail;
-			head = 0;
 		}
-		this.items = newItems;
+		head = 0;
+		tail = size;
+		items = newItems;
 	}
 }
