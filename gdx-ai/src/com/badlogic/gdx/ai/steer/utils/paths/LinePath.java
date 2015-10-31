@@ -221,6 +221,11 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 			this.distance = distance;
 		}
 
+		/** Returns the index of the current segment along the path */
+		public float getSegmentIndex () {
+			return segmentIndex;
+		}
+
 	}
 
 	/** A {@code Segment} connects two consecutive waypoints of a {@link LinePath}.
