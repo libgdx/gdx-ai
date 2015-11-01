@@ -222,7 +222,7 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		}
 
 		/** Returns the index of the current segment along the path */
-		public float getSegmentIndex () {
+		public int getSegmentIndex () {
 			return segmentIndex;
 		}
 
