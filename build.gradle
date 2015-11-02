@@ -20,7 +20,7 @@ allprojects {
 
 ext {
 	projectGroup = "gdx-ai"
-	gdxVersion = '1.7.0'
+	gdxVersion = '1.7.1'
 }
 
 /** needed to disable Java 8 doclint which throws errors **/
