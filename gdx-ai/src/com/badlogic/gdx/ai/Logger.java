@@ -16,7 +16,8 @@
 
 package com.badlogic.gdx.ai;
 
-/** @author davebaol */
+/** The {@code Logger} interface provides an abstraction over logging facilities.
+ * @author davebaol */
 public interface Logger {
 
 	/** Logs a debug message.

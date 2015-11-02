@@ -22,7 +22,8 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 
-/** @author davebaol */
+/** The {@code FileSystem} interface exposes the underlying file system(s).
+ * @author davebaol */
 public interface FileSystem {
 
 	public FileHandleResolver newResolver(FileType fileType);
