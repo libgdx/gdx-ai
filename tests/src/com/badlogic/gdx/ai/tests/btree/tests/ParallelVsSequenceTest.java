@@ -233,7 +233,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			predator.setMaxLinearSpeed(100);
 			predator.setMaxLinearAcceleration(600);
 
-			final Pursue<Vector2> pursueSB = new Pursue<Vector2>(predator, null, 0.3f);
+			final Pursue<Vector2> pursueSB = new Pursue<Vector2>(predator, null, .5f);
 			predator.setSteeringBehavior(pursueSB);
 			testTable.addActor(predator);
 
