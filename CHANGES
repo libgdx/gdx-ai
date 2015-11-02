@@ -1,7 +1,7 @@
 [1.6.1]
-- API Addition: added GdxAI service locator with Timepiece, Logger and FileSystem providers. This reduces
-  coupling with libgdx and allows you to use gdx-ai out of a libgdx application without having to initialize
-  libgdx environment, so avoiding the waste of resources and the need of native libraries.
+- API Addition: added GdxAI service locator that reduces coupling with libgdx and allows you to use gdx-ai
+  out of a libgdx application without having to initialize libgdx environment, so avoiding the waste of resources
+  and the need of native libraries; see https://github.com/libgdx/gdx-ai/wiki/Initializing-and-Using-gdxAI
 - API Change: removed delta time argument from the update method of the MessageDispatcher; the new GdxAI.getTimepiece().getTime() is internally used instead.
 - API Change: Behavior tree API revised and improved
   * Now tasks have a status that is updated each time they run.
