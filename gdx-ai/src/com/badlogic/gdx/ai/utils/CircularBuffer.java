@@ -129,8 +129,8 @@ public class CircularBuffer<T> {
 	/** Increases the size of the backing array (if necessary) to accommodate the specified number of additional items. Useful
 	 * before adding many items to avoid multiple backing array resizes.
 	 * @param additionalCapacity the number of additional items */
-	public void ensureCapacity (int additionalItems) {
-		int newCapacity = size + additionalItems;
+	public void ensureCapacity (int additionalCapacity) {
+		int newCapacity = size + additionalCapacity;
 		if (items.length < newCapacity) resize(newCapacity);
 	}
 
