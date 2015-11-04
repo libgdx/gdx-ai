@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 /** A label showing current FPS prefixed by a constant string.
  * 
  * @author davebaol */
-public class FpsLabel extends ScoreLabel {
+public class FpsLabel extends IntValueLabel {
 
 	public FpsLabel (CharSequence text, Skin skin) {
 		this(text, skin.get(LabelStyle.class));

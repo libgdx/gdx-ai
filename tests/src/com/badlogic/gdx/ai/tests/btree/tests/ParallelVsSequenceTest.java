@@ -32,7 +32,7 @@ import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
-import com.badlogic.gdx.ai.tests.utils.scene2d.ScoreLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.IntValueLabel;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -156,13 +156,13 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 				}
 			});
 			statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
-			statusBar.add(new ScoreLabel("Sequence (Fish): ", 0, skin) {
+			statusBar.add(new IntValueLabel("Sequence (Fish): ", 0, skin) {
 				@Override
 				public int getValue () {
 					return sequencePredator.score;
 				}
 			}).padLeft(15);
-			statusBar.add(new ScoreLabel("Parallel (Badlogics): ", 0, skin) {
+			statusBar.add(new IntValueLabel("Parallel (Badlogics): ", 0, skin) {
 				@Override
 				public int getValue () {
 					return parallelPredator.score;

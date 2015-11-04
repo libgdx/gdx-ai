@@ -56,19 +56,18 @@ public class MessageTests extends ApplicationAdapter {
 
 	// @off - disable libgdx formatter
 	// Keep it sorted!
-	MessageTestBase[] behaviors = {
+	MessageTestBase[] tests = {
 			new MessageTimerTest(this),
 			new TelegramProviderTest(this)
 	};
 	// @on - enable libgdx formatter
 
-	MessageTestBase currentBehavior;
+	MessageTestBase currentTest;
 
 	public Stage stage;
 	public float stageWidth;
 	public float stageHeight;
 	public Skin skin;
-	String behaviorNames[][];
 
 	@Override
 	public void create () {
@@ -119,16 +118,16 @@ public class MessageTests extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Render current steering behavior test
-		if (currentBehavior != null) {
+		if (currentTest != null) {
 			if (!pauseButton.isChecked()) {
 				// Update AI time
 				GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 				// Update test
-				currentBehavior.update();
+				currentTest.update();
 			}
 			// Draw test
-			currentBehavior.draw();
+			currentTest.draw();
 		}
 
 		stage.act();
@@ -145,7 +144,7 @@ public class MessageTests extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-		if (currentBehavior != null) currentBehavior.dispose();
+		if (currentTest != null) currentTest.dispose();
 
 		stage.dispose();
 		skin.dispose();
@@ -153,14 +152,14 @@ public class MessageTests extends ApplicationAdapter {
 
 	private List<String> createTestList () {
 		// Create behavior names
-		int numBehaviors = behaviors.length;
-		String[] behaviorNames = new String[numBehaviors];
-		for (int i = 0; i < numBehaviors; i++) {
-			behaviorNames[i] = behaviors[i].testName;
+		int numTests = tests.length;
+		String[] testNames = new String[numTests];
+		for (int i = 0; i < numTests; i++) {
+			testNames[i] = tests[i].testName;
 		}
 
 		final List<String> testList = new List<String>(skin);
-		testList.setItems(behaviorNames);
+		testList.setItems(testNames);
 		testList.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
@@ -198,17 +197,17 @@ public class MessageTests extends ApplicationAdapter {
 	}
 
 	void changeTest (int behaviorIndex) {
-		// Remove the old behavior and its window
-		if (currentBehavior != null) {
-			if (currentBehavior.getDetailWindow() != null) currentBehavior.getDetailWindow().remove();
-			currentBehavior.dispose();
+		// Remove the old test and its window
+		if (currentTest != null) {
+			if (currentTest.getDetailWindow() != null) currentTest.getDetailWindow().remove();
+			currentTest.dispose();
 		}
 
-		// Add the new behavior and its window
-		currentBehavior = behaviors[behaviorIndex];
-		currentBehavior.create();
-		testHelpLabel.setText(currentBehavior.getHelpMessage());
-		if (currentBehavior.getDetailWindow() != null) stage.addActor(currentBehavior.getDetailWindow());
+		// Add the new test and its window
+		currentTest = tests[behaviorIndex];
+		currentTest.create();
+		testHelpLabel.setText(currentTest.getHelpMessage());
+		if (currentTest.getDetailWindow() != null) stage.addActor(currentTest.getDetailWindow());
 	}
 
 }

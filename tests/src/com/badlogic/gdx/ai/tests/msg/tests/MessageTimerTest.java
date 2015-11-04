@@ -22,6 +22,8 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.tests.MessageTests;
 import com.badlogic.gdx.ai.tests.msg.MessageTestBase;
+import com.badlogic.gdx.ai.tests.utils.scene2d.FloatValueLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.IntValueLabel;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -30,11 +32,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
  * @author davebaol */
 public class MessageTimerTest extends MessageTestBase implements Telegraph {
 
-	private static final String LOG_TAG = MessageTimerTest.class.getSimpleName();
-
 	int msgCounter;
-	float msgTimeStamp;
-	boolean timerEnabled;
+	float msgTimestamp;
+	TextButton timerEnabledButton;
 
 	public MessageTimerTest (MessageTests container) {
 		super(container, "Timer");
@@ -42,28 +42,56 @@ public class MessageTimerTest extends MessageTestBase implements Telegraph {
 
 	@Override
 	public String getHelpMessage () {
-		return "Create a simple timer";
+		return "Create a simple timer that increments a counter each second";
 	}
 
 	@Override
 	public void create () {
 		super.create();
 
-		timerEnabled = true;
+		MessageManager.getInstance().clear();
 
-		TextButton button = new TextButton("Stop timer", container.skin);
-		button.addListener(new ChangeListener() {
+		msgCounter = -1;
+
+		testTable.add(new IntValueLabel("Message Counter: ", 0, container.skin) {
+			@Override
+			public int getValue () {
+				return msgCounter;
+			}
+		}).left();
+
+		testTable.row();
+		testTable.add(new FloatValueLabel("Message Timestamp: ", 0, container.skin) {
+			@Override
+			public float getValue () {
+				return msgTimestamp;
+			}
+		}).left();
+
+		testTable.row();
+		testTable.add(new FloatValueLabel("AI Time: ", 0, container.skin) {
+			@Override
+			public float getValue () {
+				return GdxAI.getTimepiece().getTime();
+			}
+		}).left();
+
+		testTable.row();
+		timerEnabledButton = new TextButton("Stop timer", container.skin);
+		timerEnabledButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				timerEnabled = !timerEnabled;
-				((TextButton)actor).setText(timerEnabled ? "Stop Timer" : "Start Timer");
-				if (timerEnabled) sendMessage(0f, msgCounter + 1);
+				if (timerEnabledButton.isChecked()) {
+					timerEnabledButton.setText("Stop Timer");
+					sendMessage(0f, msgCounter + 1);
+				} else {
+					timerEnabledButton.setText("Start Timer");
+				}
+				
 			}
 		});
-		testTable.add(button);
-
-		// Send the 1st message with no delay and counter 0
-		sendMessage(0f, 0);
+		testTable.add(timerEnabledButton).left();
+		timerEnabledButton.setChecked(true); // this triggers the listener above, so sending the 1st message with no delay and counter 0
 	}
 
 	@Override
@@ -85,9 +113,8 @@ public class MessageTimerTest extends MessageTestBase implements Telegraph {
 	@Override
 	public boolean handleMessage (Telegram msg) {
 		this.msgCounter = (Integer)msg.extraInfo;
-		this.msgTimeStamp = msg.getTimestamp();
-		GdxAI.getLogger().info(LOG_TAG, "Counter: " + msgCounter + "; timestamp: " + msgTimeStamp);
-		if (timerEnabled) {
+		this.msgTimestamp = msg.getTimestamp();
+		if (timerEnabledButton.isChecked()) {
 			float lag = GdxAI.getTimepiece().getTime() - msg.getTimestamp();
 			lag -= (int)lag; // take the decimal part only (in case the lag is > 1)
 			float delay = 1f - lag;

@@ -49,6 +49,7 @@ public class TelegramProviderTest extends MessageTestBase {
 	@Override
 	public void create () {
 		super.create();
+		MessageManager.getInstance().clear();
 		elapsedTime = 0;
 		// build a new city
 		city = new City();
@@ -72,6 +73,7 @@ public class TelegramProviderTest extends MessageTestBase {
 	@Override
 	public void dispose () {
 		city = null;
+		MessageManager.getInstance().clear();
 		super.dispose();
 	}
 
