@@ -14,65 +14,44 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests;
+package com.badlogic.gdx.ai.tests.msg.tests;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.ai.tests.MessageTests;
+import com.badlogic.gdx.ai.tests.msg.MessageTestBase;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.StringBuilder;
 
 /** A simple test to demonstrate timer messages.
  * @author davebaol */
-public class MessageTimerTest extends ApplicationAdapter implements Telegraph {
-
-	public static void main (String[] argv) {
-		GdxAiTestUtils.launch(new MessageTimerTest());
-	}
+public class MessageTimerTest extends MessageTestBase implements Telegraph {
 
 	private static final String LOG_TAG = MessageTimerTest.class.getSimpleName();
-	
-	Stage stage;
-	Label fpsLabel;
+
 	int msgCounter;
 	float msgTimeStamp;
 	boolean timerEnabled;
 
+	public MessageTimerTest (MessageTests container) {
+		super(container, "Timer");
+	}
+
+	@Override
+	public String getHelpMessage () {
+		return "Create a simple timer";
+	}
+
 	@Override
 	public void create () {
-		Gdx.gl.glClearColor(.3f, .3f, .3f, 1);
+		super.create();
 
 		timerEnabled = true;
 
-		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-
-		stage = new Stage();
-
-		Stack stack = new Stack();
-		stage.addActor(stack);
-		stack.setSize(stage.getWidth(), stage.getHeight());
-
-		Table table = new Table(skin);
-		stack.add(table);
-
-		fpsLabel = new Label("", skin);
-		table.add(fpsLabel);
-
-		table.row();
-
-		TextButton button = new TextButton("Stop timer", skin);
+		TextButton button = new TextButton("Stop timer", container.skin);
 		button.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
@@ -81,31 +60,26 @@ public class MessageTimerTest extends ApplicationAdapter implements Telegraph {
 				if (timerEnabled) sendMessage(0f, msgCounter + 1);
 			}
 		});
-		table.add(button);
-
-		Gdx.input.setInputProcessor(stage);
+		testTable.add(button);
 
 		// Send the 1st message with no delay and counter 0
 		sendMessage(0f, 0);
 	}
 
 	@Override
-	public void render () {
-		// Update time
-		GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
-
+	public void update () {
 		// Dispatch any delayed messages
 		MessageManager.getInstance().update();
+	}
 
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	@Override
+	public void draw () {
+	}
 
-		StringBuilder sb = fpsLabel.getText();
-		sb.setLength(0);
-		sb.append("Counter: ").append(msgCounter).append("; timestamp: ").append(msgTimeStamp);
-		fpsLabel.invalidateHierarchy();
-
-		stage.act();
-		stage.draw();
+	@Override
+	public void dispose () {
+		MessageManager.getInstance().clear();
+		super.dispose();
 	}
 
 	@Override
