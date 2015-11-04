@@ -22,6 +22,15 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  * @author davebaol */
 public class Telegram implements Comparable<Telegram>, Poolable {
 
+	/** Indicates that the sender doesn't need any return receipt */
+	public static final int RETURN_RECEIPT_UNNEEDED = 0;
+
+	/** Indicates that the sender needs the return receipt */
+	public static final int RETURN_RECEIPT_NEEDED = 1;
+
+	/** Indicates that the return receipt has been sent back to the original sender of the telegram */
+	public static final int RETURN_RECEIPT_SENT = 2;
+
 	/** The agent that sent this telegram */
 	public Telegraph sender;
 
@@ -30,6 +39,10 @@ public class Telegram implements Comparable<Telegram>, Poolable {
 
 	/** The message type. */
 	public int message;
+
+	/** The return receipt status of this telegram. Its value should be {@link #RETURN_RECEIPT_UNNEEDED}, {@link #RETURN_RECEIPT_NEEDED} or
+	 * {@link #RETURN_RECEIPT_SENT}. */
+	public int returnReceiptStatus;
 
 	/** Messages can be dispatched immediately or delayed for a specified amount of time. If a delay is necessary, this field is
 	 * stamped with the time the message should be dispatched. */
@@ -57,6 +70,7 @@ public class Telegram implements Comparable<Telegram>, Poolable {
 		this.sender = null;
 		this.receiver = null;
 		this.message = 0;
+		this.returnReceiptStatus = RETURN_RECEIPT_UNNEEDED;
 		this.extraInfo = null;
 		this.timestamp = 0;
 	}
