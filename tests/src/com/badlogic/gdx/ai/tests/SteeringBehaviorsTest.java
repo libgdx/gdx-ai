@@ -82,13 +82,13 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 
 	private static final String[] ENGINES = {"Scene2d", "Box2d", "Bullet"};
 
-	public CollapsableWindow behaviorSelectionWindow;
+	private CollapsableWindow testSelectionWindow;
 	Label testHelpLabel;
 	TextButton pauseButton;
 
 	// @off - disable libgdx formatter
 	// Keep it sorted!
-	SteeringTestBase[][] behaviors = {
+	private SteeringTestBase[][] tests = {
 		{ // Scene2d
 			new Scene2dArriveTest(this),
 			new Scene2dCollisionAvoidanceTest(this),
@@ -129,13 +129,12 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 	};
 	// @on - enable libgdx formatter
 
-	SteeringTestBase currentBehavior;
+	SteeringTestBase currentTest;
 
 	public Stage stage;
 	public float stageWidth;
 	public float stageHeight;
 	public Skin skin;
-	String behaviorNames[][];
 
 	public TextureRegion greenFish;
 	public TextureRegion cloud;
@@ -166,12 +165,12 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		translucentPanel.setVisible(false);
 		stage.addActor(translucentPanel);
 
-		// Create behavior selection window
-		Array<List<String>> engineBehaviors = new Array<List<String>>();
-		for (int k = 0; k < behaviors.length; k++) {
-			engineBehaviors.add(createBehaviorList(k));
+		// Create test selection window
+		Array<List<String>> engineTests = new Array<List<String>>();
+		for (int k = 0; k < tests.length; k++) {
+			engineTests.add(createTestList(k));
 		}
-		behaviorSelectionWindow = addBehaviorSelectionWindow("Behaviors", ENGINES, engineBehaviors, 0, -1);
+		testSelectionWindow = addTestSelectionWindow("Behaviors", ENGINES, engineTests, 0, -1);
 
 		// Create status bar
 		Table statusBar = new Table(skin);
@@ -183,7 +182,7 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		stage.addActor(statusBar);
 
 		// Set selected behavior
-		changeBehavior(0, 0);
+		changeTest(0, 0);
 	}
 
 	@Override
@@ -191,16 +190,16 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Render current steering behavior test
-		if (currentBehavior != null) {
+		if (currentTest != null) {
 			if (!pauseButton.isChecked()) {
 				// Update AI time
 				GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
 
 				// Update test
-				currentBehavior.update();
+				currentTest.update();
 			}
 			// Draw test
-			currentBehavior.draw();
+			currentTest.draw();
 		}
 
 		stage.act();
@@ -217,7 +216,7 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-		if (currentBehavior != null) currentBehavior.dispose();
+		if (currentTest != null) currentTest.dispose();
 
 		stage.dispose();
 		skin.dispose();
@@ -229,29 +228,29 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		target.getTexture().dispose();
 	}
 
-	private List<String> createBehaviorList (final int engineIndex) {
-		// Create behavior names
-		int numBehaviors = behaviors[engineIndex].length;
-		String[] behaviorNames = new String[numBehaviors];
-		for (int i = 0; i < numBehaviors; i++) {
-			behaviorNames[i] = behaviors[engineIndex][i].behaviorName;
+	private List<String> createTestList (final int engineIndex) {
+		// Create test names
+		int numTests = tests[engineIndex].length;
+		String[] testNames = new String[numTests];
+		for (int i = 0; i < numTests; i++) {
+			testNames[i] = tests[engineIndex][i].testName;
 		}
 
-		final List<String> behaviorsList = new List<String>(skin);
-		behaviorsList.setItems(behaviorNames);
-		behaviorsList.addListener(new ClickListener() {
+		final List<String> testList = new List<String>(skin);
+		testList.setItems(testNames);
+		testList.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				if (!behaviorSelectionWindow.isCollapsed() && getTapCount() == 2) {
-					changeBehavior(engineIndex, behaviorsList.getSelectedIndex());
-					behaviorSelectionWindow.collapse();
+				if (!testSelectionWindow.isCollapsed() && getTapCount() == 2) {
+					changeTest(engineIndex, testList.getSelectedIndex());
+					testSelectionWindow.collapse();
 				}
 			}
 		});
-		return behaviorsList;
+		return testList;
 	}
 
-	protected CollapsableWindow addBehaviorSelectionWindow (String title, String[] tabTitles, Array<List<String>> tabLists,
+	private CollapsableWindow addTestSelectionWindow (String title, String[] tabTitles, Array<List<String>> tabLists,
 		float x, float y) {
 		if (tabTitles.length != tabLists.size)
 			throw new IllegalArgumentException("tabTitles and tabList must have the same size.");
@@ -281,21 +280,21 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		return window;
 	}
 
-	void changeBehavior (int engineIndex, int behaviorIndex) {
-		// Remove the old behavior and its window
-		if (currentBehavior != null) {
-			if (currentBehavior.getDetailWindow() != null) currentBehavior.getDetailWindow().remove();
-			currentBehavior.dispose();
+	private void changeTest (int engineIndex, int testIndex) {
+		// Remove the old test and its window
+		if (currentTest != null) {
+			if (currentTest.getDetailWindow() != null) currentTest.getDetailWindow().remove();
+			currentTest.dispose();
 		}
 
-		// Add the new behavior and its window
-		currentBehavior = behaviors[engineIndex][behaviorIndex];
-		currentBehavior.create();
-		testHelpLabel.setText(currentBehavior.getHelpMessage());
+		// Add the new test and its window
+		currentTest = tests[engineIndex][testIndex];
+		currentTest.create();
+		testHelpLabel.setText(currentTest.getHelpMessage());
 		InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
 		if (im.size() > 1) im.removeProcessor(1);
-		if (currentBehavior.getInputProcessor() != null) im.addProcessor(currentBehavior.getInputProcessor());
-		if (currentBehavior.getDetailWindow() != null) stage.addActor(currentBehavior.getDetailWindow());
+		if (currentTest.getInputProcessor() != null) im.addProcessor(currentTest.getInputProcessor());
+		if (currentTest.getDetailWindow() != null) stage.addActor(currentTest.getDetailWindow());
 	}
 
 }

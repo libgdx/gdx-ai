@@ -54,7 +54,6 @@ public class MessageTests extends ApplicationAdapter {
 	TextButton pauseButton;
 
 	// @off - disable libgdx formatter
-	// Keep it sorted!
 	MessageTestBase[] tests = {
 			new MessageTimerTest(this),
 			new TelegramProviderTest(this)
@@ -187,7 +186,7 @@ public class MessageTests extends ApplicationAdapter {
 		return window;
 	}
 
-	void changeTest (int testIndex) {
+	private void changeTest (int testIndex) {
 		// Remove the old test and its window
 		if (currentTest != null) {
 			if (currentTest.getDetailWindow() != null) currentTest.getDetailWindow().remove();

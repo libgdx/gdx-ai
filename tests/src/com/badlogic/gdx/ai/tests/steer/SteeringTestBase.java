@@ -33,18 +33,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public abstract class SteeringTestBase {
 	protected SteeringBehaviorsTest container;
 	public String engineName;
-	public String behaviorName;
+	public String testName;
 	protected InputProcessor inputProcessor;
 	protected CollapsableWindow detailWindow;
 
-	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String name) {
-		this(container, engineName, name, null);
+	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String testName) {
+		this(container, engineName, testName, null);
 	}
 
-	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String behaviorName, InputProcessor inputProcessor) {
+	public SteeringTestBase (SteeringBehaviorsTest container, String engineName, String testName, InputProcessor inputProcessor) {
 		this.container = container;
 		this.engineName = engineName;
-		this.behaviorName = behaviorName;
+		this.testName = testName;
 		this.inputProcessor = inputProcessor;
 	}
 
@@ -71,7 +71,7 @@ public abstract class SteeringTestBase {
 	}
 
 	protected CollapsableWindow createDetailWindow (Table table) {
-		CollapsableWindow window = new CollapsableWindow(this.engineName + " " + this.behaviorName, container.skin);
+		CollapsableWindow window = new CollapsableWindow(this.engineName + " " + this.testName, container.skin);
 		window.row();
 		window.add(table);
 		window.pack();
