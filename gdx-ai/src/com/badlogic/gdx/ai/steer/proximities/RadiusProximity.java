@@ -17,11 +17,22 @@
 package com.badlogic.gdx.ai.steer.proximities;
 
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.utils.Array;
 
 /** A {@code RadiusProximity} elaborates any agents contained in the specified list that are within the radius of the owner.
+ * <p>
+ * Note that this implementation checks the AI time of the current frame through the {@link Timepiece#getTime()
+ * GdxAI.getTimepiece().getTime()} method in order to calculate neighbors only once per frame (assuming delta time is always
+ * greater than 0, if time has changed the frame has changed too). This means that
+ * <ul>
+ * <li>if you forget to {@link Timepiece#update(float) update the timepiece} on each frame the proximity instance will be
+ * calculated only the very first time, which is not what you want of course.</li>
+ * <li>ideally the timepiece should be updated before the proximity is updated by the {@link #findNeighbors(ProximityCallback)}
+ * method.</li>
+ * </ul>
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 

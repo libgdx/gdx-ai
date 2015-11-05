@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.msg;
 
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
@@ -512,9 +513,15 @@ public class MessageDispatcher implements Telegraph {
 		}
 	}
 
-	/** Dispatches any telegrams with a timestamp that has expired. Any dispatched telegrams are removed from the queue.
+	/** Dispatches any delayed telegrams with a timestamp that has expired. Dispatched telegrams are removed from the queue.
 	 * <p>
-	 * This method must be called each time through the main game loop. */
+	 * This method must be called regularly from inside the main game loop to facilitate the correct and timely dispatch of any
+	 * delayed messages. Notice that the message dispatcher internally calls {@link Timepiece#getTime()
+	 * GdxAI.getTimepiece().getTime()} to get the current AI time and properly dispatch delayed messages. This means that
+	 * <ul>
+	 * <li>if you forget to {@link Timepiece#update(float) update the timepiece} the delayed messages won't be dispatched.</li>
+	 * <li>ideally the timepiece should be updated before the message dispatcher.</li>
+	 * </ul> */
 	public void update () {
 		float currentTime = GdxAI.getTimepiece().getTime();
 

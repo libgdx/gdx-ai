@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.steer.behaviors;
 
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
@@ -45,6 +46,13 @@ import com.badlogic.gdx.math.Vector;
  * time step, {@link Face} behavior should not be used (which is the default case). On the other hand, if the owner has
  * independent facing you should explicitly call {@link #setFaceEnabled(boolean) setFaceEnabled(true)} before using Wander
  * behavior.
+ * <p>
+ * Note that this behavior internally calls the {@link Timepiece#getTime() GdxAI.getTimepiece().getTime()} method to get the
+ * current AI time and make the {@link #wanderRate} FPS independent. This means that
+ * <ul>
+ * <li>if you forget to {@link Timepiece#update(float) update the timepiece} the wander orientation won't change.</li>
+ * <li>ideally the timepiece should be always updated before this steering behavior runs.</li>
+ * </ul>
  * <p>
  * This steering behavior can be used to produce a whole range of random motion, from very smooth undulating turns to wild
  * Strictly Ballroom type whirls and pirouettes depending on the size of the circle, its distance from the agent, and the amount
