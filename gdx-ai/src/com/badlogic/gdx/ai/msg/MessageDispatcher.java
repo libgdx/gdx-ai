@@ -456,6 +456,7 @@ public class MessageDispatcher implements Telegraph {
 	 *           registered for the specified message code
 	 * @param msg the message code
 	 * @param extraInfo an optional object
+	 * @param needsReturnReceipt whether the return receipt is needed or not
 	 * @throws IllegalArgumentException if the sender is {@code null} and the return receipt is needed */
 	public void dispatchMessage (float delay, Telegraph sender, Telegraph receiver, int msg, Object extraInfo,
 		boolean needsReturnReceipt) {
@@ -472,14 +473,16 @@ public class MessageDispatcher implements Telegraph {
 
 		// If there is no delay, route telegram immediately
 		if (delay <= 0.0f) {
-			
+
 			// TODO: should we set the timestamp here?
-			//telegram.setTimestamp(GdxAI.getTimepiece().getTime());
-			
+			// telegram.setTimestamp(GdxAI.getTimepiece().getTime());
+
 			if (debugEnabled) {
 				float currentTime = GdxAI.getTimepiece().getTime();
-				GdxAI.getLogger().info(LOG_TAG,
-					"Instant telegram dispatched at time: " + currentTime + " by " + sender + " for " + receiver + ". Msg is " + msg);
+				GdxAI.getLogger().info(
+					LOG_TAG,
+					"Instant telegram dispatched at time: " + currentTime + " by " + sender + " for " + receiver
+						+ ". Message code is " + msg);
 			}
 
 			// Send the telegram to the recipient
@@ -498,14 +501,13 @@ public class MessageDispatcher implements Telegraph {
 
 			if (debugEnabled) {
 				if (added)
-					GdxAI.getLogger()
-						.info(
-							LOG_TAG,
-							"Delayed telegram from " + sender + " for " + receiver + " recorded at time " + currentTime + ". Msg is "
-								+ msg);
+					GdxAI.getLogger().info(
+						LOG_TAG,
+						"Delayed telegram from " + sender + " for " + receiver + " recorded at time " + currentTime
+							+ ". Message code is " + msg);
 				else
 					GdxAI.getLogger().info(LOG_TAG,
-						"Delayed telegram from " + sender + " for " + receiver + " rejected by the queue. Msg is " + msg);
+						"Delayed telegram from " + sender + " for " + receiver + " rejected by the queue. Message code is " + msg);
 			}
 		}
 	}
@@ -527,7 +529,7 @@ public class MessageDispatcher implements Telegraph {
 
 			if (debugEnabled) {
 				GdxAI.getLogger().info(LOG_TAG,
-					"Queued telegram ready for dispatch: Sent to " + telegram.receiver + ". Msg is " + telegram.message);
+					"Queued telegram ready for dispatch: Sent to " + telegram.receiver + ". Message code is " + telegram.message);
 			}
 
 			// Send the telegram to the recipient

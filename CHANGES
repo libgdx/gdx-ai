@@ -4,7 +4,7 @@
   and the need of native libraries; see https://github.com/libgdx/gdx-ai/wiki/Initializing-and-Using-gdxAI
 - API Change and Addition: Messaging API
   * Removed delta time argument from the update method of the MessageDispatcher; the new GdxAI.getTimepiece().getTime() is internally used instead.
-  * Added return receipt support.
+  * Added return receipt support, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#return-receipt
   * The report method of PendingMessageCallback now takes an additional argument for the return receipt.
 - API Change and Addition: Behavior tree API revised and improved, see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees
   * Now tasks have a status that is updated each time they run.

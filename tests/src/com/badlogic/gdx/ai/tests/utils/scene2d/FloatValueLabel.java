@@ -21,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.StringBuilder;
 
-/** A label continuously showing the most up-to-date integer value prefixed by a constant string.
+/** A label continuously showing the most up-to-date float value prefixed by a constant string.
  * 
  * @author davebaol */
 public abstract class FloatValueLabel extends Label {
