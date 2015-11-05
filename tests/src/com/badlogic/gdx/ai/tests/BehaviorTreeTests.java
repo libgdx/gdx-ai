@@ -29,8 +29,8 @@ import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.PauseButton;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -42,7 +42,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -106,13 +105,7 @@ public class BehaviorTreeTests extends Game {
 			t.setFillParent(true);
 			t.add(splitPane).colspan(3).grow();
 			t.row();
-			t.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
-			pauseButton.addListener(new ChangeListener() {
-				@Override
-				public void changed (ChangeEvent event, Actor actor) {
-					pauseButton.setText(pauseButton.isChecked() ? "Resume AI" : "Pause AI");
-				}
-			});
+			t.add(pauseButton = new PauseButton(skin)).width(90).left();
 			t.add(new FpsLabel("FPS: ", skin)).left();
 			t.add(testDescriptionLabel = new Label("", skin)).left();
 			stage.addActor(t);

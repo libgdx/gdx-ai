@@ -16,13 +16,12 @@
 
 package com.badlogic.gdx.ai.tests.msg;
 
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.tests.MessageTests;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /** Base class for individual message tests.
@@ -31,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 public abstract class MessageTestBase {
 	protected MessageTests container;
 	public String testName;
-	protected InputProcessor inputProcessor;
 	protected CollapsableWindow detailWindow;
 
 	private float lastUpdateTime;
@@ -39,13 +37,8 @@ public abstract class MessageTestBase {
 	protected Table testTable;
 
 	public MessageTestBase (MessageTests container, String testName) {
-		this(container, testName, null);
-	}
-
-	public MessageTestBase (MessageTests container, String testName, InputProcessor inputProcessor) {
 		this.container = container;
 		this.testName = testName;
-		this.inputProcessor = inputProcessor;
 	}
 
 	public void create () {
@@ -75,15 +68,7 @@ public abstract class MessageTestBase {
 
 	public abstract void draw ();
 
-	public abstract String getHelpMessage();
-
-	public InputProcessor getInputProcessor () {
-		return inputProcessor;
-	}
-
-	public void setInputProcessor (InputProcessor inputProcessor) {
-		this.inputProcessor = inputProcessor;
-	}
+	public abstract String getDescription ();
 
 	public CollapsableWindow getDetailWindow () {
 		return detailWindow;

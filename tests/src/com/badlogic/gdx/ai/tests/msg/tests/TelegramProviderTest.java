@@ -42,7 +42,7 @@ public class TelegramProviderTest extends MessageTestBase {
 	}
 
 	@Override
-	public String getHelpMessage () {
+	public String getDescription () {
 		return "Creates a town where newcomers introduce themselves to neighbors";
 	}
 
@@ -67,7 +67,6 @@ public class TelegramProviderTest extends MessageTestBase {
 
 	@Override
 	public void draw () {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

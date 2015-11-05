@@ -41,8 +41,8 @@ public class MessageTimerTest extends MessageTestBase implements Telegraph {
 	}
 
 	@Override
-	public String getHelpMessage () {
-		return "Create a simple timer that increments a counter each second";
+	public String getDescription () {
+		return "Creates a simple timer that increments a counter each second";
 	}
 
 	@Override
@@ -87,11 +87,13 @@ public class MessageTimerTest extends MessageTestBase implements Telegraph {
 				} else {
 					timerEnabledButton.setText("Start Timer");
 				}
-				
+
 			}
 		});
 		testTable.add(timerEnabledButton).left();
-		timerEnabledButton.setChecked(true); // this triggers the listener above, so sending the 1st message with no delay and counter 0
+
+		// Triggers the listener above, so sending the 1st message with no delay and counter 0
+		timerEnabledButton.setChecked(true);
 	}
 
 	@Override

@@ -25,8 +25,8 @@ import com.badlogic.gdx.ai.tests.msg.tests.TelegramProviderTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.PauseButton;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -36,7 +36,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /** Main class for message tests.
@@ -51,7 +50,7 @@ public class MessageTests extends ApplicationAdapter {
 	private static final boolean DEBUG_STAGE = false;
 
 	public CollapsableWindow testSelectionWindow;
-	Label testHelpLabel;
+	Label testDescriptionLabel;
 	TextButton pauseButton;
 
 	// @off - disable libgdx formatter
@@ -96,17 +95,9 @@ public class MessageTests extends ApplicationAdapter {
 		Table statusBar = new Table(skin);
 		statusBar.left().bottom();
 		statusBar.row().height(26);
-		statusBar.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
-		pauseButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				boolean pause = pauseButton.isChecked();
-				pauseButton.setText(pause ? "Resume AI" : "Pause AI");
-				translucentPanel.setVisible(pause);
-			}
-		});
+		statusBar.add(pauseButton = new PauseButton(translucentPanel, skin)).width(90).left();
 		statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
-		statusBar.add(testHelpLabel = new Label("", skin)).padLeft(15);
+		statusBar.add(testDescriptionLabel = new Label("", skin)).padLeft(15);
 		stage.addActor(statusBar);
 
 		// Set selected behavior
@@ -196,7 +187,7 @@ public class MessageTests extends ApplicationAdapter {
 		return window;
 	}
 
-	void changeTest (int behaviorIndex) {
+	void changeTest (int testIndex) {
 		// Remove the old test and its window
 		if (currentTest != null) {
 			if (currentTest.getDetailWindow() != null) currentTest.getDetailWindow().remove();
@@ -204,9 +195,9 @@ public class MessageTests extends ApplicationAdapter {
 		}
 
 		// Add the new test and its window
-		currentTest = tests[behaviorIndex];
+		currentTest = tests[testIndex];
 		currentTest.create();
-		testHelpLabel.setText(currentTest.getHelpMessage());
+		testDescriptionLabel.setText(currentTest.getDescription());
 		if (currentTest.getDetailWindow() != null) stage.addActor(currentTest.getDetailWindow());
 	}
 

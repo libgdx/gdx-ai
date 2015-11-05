@@ -52,11 +52,11 @@ import com.badlogic.gdx.ai.tests.steer.scene2d.tests.Scene2dWanderTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.CollapsableWindow;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.PauseButton;
 import com.badlogic.gdx.ai.tests.utils.scene2d.TabbedPane;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -66,7 +66,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
@@ -178,15 +177,7 @@ public class SteeringBehaviorsTest extends ApplicationAdapter {
 		Table statusBar = new Table(skin);
 		statusBar.left().bottom();
 		statusBar.row().height(26);
-		statusBar.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
-		pauseButton.addListener(new ChangeListener() {
-			@Override
-			public void changed (ChangeEvent event, Actor actor) {
-				boolean pause = pauseButton.isChecked();
-				pauseButton.setText(pause ? "Resume AI" : "Pause AI");
-				translucentPanel.setVisible(pause);
-			}
-		});
+		statusBar.add(pauseButton = new PauseButton(translucentPanel, skin)).width(90).left();
 		statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
 		statusBar.add(testHelpLabel = new Label("", skin)).padLeft(15);
 		stage.addActor(statusBar);

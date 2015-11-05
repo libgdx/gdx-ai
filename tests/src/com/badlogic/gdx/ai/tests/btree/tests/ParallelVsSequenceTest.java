@@ -33,6 +33,7 @@ import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.steer.scene2d.SteeringActor;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
 import com.badlogic.gdx.ai.tests.utils.scene2d.IntValueLabel;
+import com.badlogic.gdx.ai.tests.utils.scene2d.PauseButton;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -146,15 +147,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			Table statusBar = new Table(skin);
 			statusBar.left().bottom();
 			statusBar.row().height(26);
-			statusBar.add(pauseButton = new TextButton("Pause AI", skin)).width(90).left();
-			pauseButton.addListener(new ChangeListener() {
-				@Override
-				public void changed (ChangeEvent event, Actor actor) {
-					boolean pause = pauseButton.isChecked();
-					pauseButton.setText(pause ? "Resume AI" : "Pause AI");
-					translucentPanel.setVisible(pause);
-				}
-			});
+			statusBar.add(pauseButton = new PauseButton(translucentPanel, skin)).width(90).left();
 			statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
 			statusBar.add(new IntValueLabel("Sequence (Fish): ", 0, skin) {
 				@Override
