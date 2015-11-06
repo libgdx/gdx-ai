@@ -51,16 +51,16 @@ public class Sequence<E> extends SingleRunningChildBranch<E> {
 	public void childSuccess (Task<E> runningTask) {
 		super.childSuccess(runningTask);
 		if (++currentChildIndex < children.size) {
-			run();
+			run(); // Run next child
 		} else {
-			success();
+			success(); // All children processed, return success status
 		}
 	}
 
 	@Override
 	public void childFail (Task<E> runningTask) {
 		super.childFail(runningTask);
-		fail();
+		fail(); // Return failure status when a child says it failed
 	}
 
 }

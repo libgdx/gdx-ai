@@ -51,7 +51,7 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 	@Override
 	public void childRunning (Task<E> task, Task<E> reporter) {
 		runningChild = task;
-		running();
+		running(); // Return a running status when a child says it's running
 	}
 
 	@Override

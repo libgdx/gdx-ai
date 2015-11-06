@@ -51,16 +51,16 @@ public class Selector<E> extends SingleRunningChildBranch<E> {
 	public void childFail (Task<E> runningTask) {
 		super.childFail(runningTask);
 		if (++currentChildIndex < children.size) {
-			run();
+			run(); // Run next child
 		} else {
-			fail();
+			fail(); // All children processed, return failure status
 		}
 	}
 
 	@Override
 	public void childSuccess (Task<E> runningTask) {
 		super.childSuccess(runningTask);
-		success();
+		success(); // Return success status when a child says it succeeded
 	}
 
 }
