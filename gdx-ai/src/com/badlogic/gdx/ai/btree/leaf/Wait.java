@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.btree.leaf;
 
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
@@ -57,7 +58,12 @@ public class Wait<E> extends LeafTask<E> {
 
 	/** Draws a value from the distribution that determines the seconds to wait for.
 	 * <p>
-	 * This method is called when the task is entered. */
+	 * This method is called when the task is entered. Also, this method internally calls {@link Timepiece#getTime()
+	 * GdxAI.getTimepiece().getTime()} to get the current AI time. This means that
+	 * <ul>
+	 * <li>if you forget to {@link Timepiece#update(float) update the timepiece} this task will keep running indefinitely.</li>
+	 * <li>the timepiece should be updated before this task runs.</li>
+	 * </ul> */
 	@Override
 	public void start () {
 		timeout = seconds.nextFloat();
