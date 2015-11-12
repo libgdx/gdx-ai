@@ -20,69 +20,85 @@ import com.badlogic.gdx.ai.msg.Telegram;
 
 /** Default implementation of the {@link StateMachine} interface.
  * 
- * @param <E> is the type of the entity handled by this state machine
+ * @param <E> the type of the entity owning this state machine
+ * @param <S> the type of the states of this state machine
  * 
  * @author davebaol */
-public class DefaultStateMachine<E> implements StateMachine<E> {
+public class DefaultStateMachine<E, S extends State<E>> implements StateMachine<E, S> {
 
 	/** The entity that owns this state machine. */
 	protected E owner;
 
 	/** The current state the owner is in. */
-	protected State<E> currentState;
+	protected S currentState;
 
 	/** The last state the owner was in. */
-	protected State<E> previousState;
+	protected S previousState;
 
 	/** The global state of the owner. Its logic is called every time the FSM is updated. */
-	protected State<E> globalState;
+	protected S globalState;
 
-	/** Creates a DefaultStateMachine for the specified owner.
+	/** Creates a {@code DefaultStateMachine} with no owner, initial state and global state. */
+	public DefaultStateMachine () {
+		this(null, null, null);
+	}
+
+	/** Creates a {@code DefaultStateMachine} for the specified owner.
 	 * @param owner the owner of the state machine */
 	public DefaultStateMachine (E owner) {
 		this(owner, null, null);
 	}
 
-	/** Creates a DefaultStateMachine for the specified owner and initial state.
+	/** Creates a {@code DefaultStateMachine} for the specified owner and initial state.
 	 * @param owner the owner of the state machine
 	 * @param initialState the initial state */
-	public DefaultStateMachine (E owner, State<E> initialState) {
+	public DefaultStateMachine (E owner, S initialState) {
 		this(owner, initialState, null);
 	}
 
-	/** Creates a DefaultStateMachine for the specified owner, initial state and global state.
+	/** Creates a {@code DefaultStateMachine} for the specified owner, initial state and global state.
 	 * @param owner the owner of the state machine
 	 * @param initialState the initial state
 	 * @param globalState the global state */
-	public DefaultStateMachine (E owner, State<E> initialState, State<E> globalState) {
+	public DefaultStateMachine (E owner, S initialState, S globalState) {
 		this.owner = owner;
 		this.setInitialState(initialState);
 		this.setGlobalState(globalState);
 	}
+	/** Returns the owner of this state machine. */
+	public E getOwner () {
+		return owner;
+	}
+
+	/** Sets the owner of this state machine.
+	 * @param state the owner. */
+	public void setOwner (E owner) {
+		this.owner = owner;
+	}
 
 	@Override
-	public void setInitialState (State<E> state) {
+	public void setInitialState (S state) {
 		this.previousState = null;
 		this.currentState = state;
 	}
 
 	@Override
-	public void setGlobalState (State<E> state) {
+	public void setGlobalState (S state) {
 		this.globalState = state;
 	}
 
 	@Override
-	public State<E> getCurrentState () {
+	public S getCurrentState () {
 		return currentState;
 	}
 
 	@Override
-	public State<E> getGlobalState () {
+	public S getGlobalState () {
 		return globalState;
 	}
 
 	@Override
-	public State<E> getPreviousState () {
+	public S getPreviousState () {
 		return previousState;
 	}
 
@@ -98,7 +114,7 @@ public class DefaultStateMachine<E> implements StateMachine<E> {
 	}
 
 	@Override
-	public void changeState (State<E> newState) {
+	public void changeState (S newState) {
 		// Keep a record of the previous state
 		previousState = currentState;
 
@@ -130,7 +146,7 @@ public class DefaultStateMachine<E> implements StateMachine<E> {
 	 * @param state the state to be compared with the current state
 	 * @return true if the current state and the given state are the same object. */
 	@Override
-	public boolean isInState (State<E> state) {
+	public boolean isInState (S state) {
 		return currentState == state;
 	}
 

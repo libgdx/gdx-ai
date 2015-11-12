@@ -16,16 +16,17 @@
 
 package com.badlogic.gdx.ai.fsm;
 
-import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 
 /** A state machine manages the state transitions of its entity. Additionally, the state machine may be delegated by the entity to
  * handle its messages.
  * 
- * @param <E> is the type of the entity
+ * @param <E> the type of the entity owning this state machine
+ * @param <S> the type of the states of this state machine
  * 
  * @author davebaol */
-public interface StateMachine<E> extends Telegraph {
+public interface StateMachine<E, S extends State<E>> extends Telegraph {
 
 	/** Updates the state machine.
 	 * <p>
@@ -36,38 +37,38 @@ public interface StateMachine<E> extends Telegraph {
 
 	/** Performs a transition to the specified state.
 	 * @param newState the state to transition to */
-	public void changeState (State<E> newState);
+	public void changeState (S newState);
 
-	/** Change state back to the previous state.
+	/** Changes the state back to the previous state.
 	 * @return {@code True} in case there was a previous state that we were able to revert to. In case there is no previous state,
 	 *         no state change occurs and {@code false} will be returned. */
 	public boolean revertToPreviousState ();
 
 	/** Sets the initial state of this state machine.
 	 * @param state the initial state. */
-	public void setInitialState (State<E> state);
+	public void setInitialState (S state);
 
 	/** Sets the global state of this state machine.
 	 * @param state the global state. */
-	public void setGlobalState (State<E> state);
+	public void setGlobalState (S state);
 
 	/** Returns the current state of this state machine. */
-	public State<E> getCurrentState ();
+	public S getCurrentState ();
 
 	/** Returns the global state of this state machine.
 	 * <p>
 	 * Implementation classes should invoke the {@code update} method of the global state every time the FSM is updated. Also, they
 	 * should never invoke its {@code enter} and {@code exit} method.
 	 * </p> */
-	public State<E> getGlobalState ();
+	public S getGlobalState ();
 
 	/** Returns the last state of this state machine. */
-	public State<E> getPreviousState ();
+	public S getPreviousState ();
 
 	/** Indicates whether the state machine is in the given state.
 	 * @param state the state to be compared with the current state
 	 * @return true if the current state's type is equal to the type of the class passed as a parameter. */
-	public boolean isInState (State<E> state);
+	public boolean isInState (S state);
 
 	/** Handles received telegrams.
 	 * <p>

@@ -6,6 +6,9 @@
   * Removed delta time argument from the update method of the MessageDispatcher; the new GdxAI.getTimepiece().getTime() is internally used instead.
   * Added return receipt support, see https://github.com/libgdx/gdx-ai/wiki/Message-Handling#return-receipt
   * The report method of PendingMessageCallback now takes an additional argument for the return receipt.
+- API Change and Addition: State Machine API
+  * Now the StateMachine interface has a generic type parameter for the state.
+  * Added owner's getter and setter to the DefaultStateMachine; also, the owner is now optional in constructor.
 - API Change and Addition: Behavior tree API revised and improved, see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees
   * Now tasks have a status that is updated each time they run.
   * Added enum support in behavior tree files.

@@ -32,7 +32,7 @@ public class Bob implements Telegraph {
 	// above this value a miner is sleepy
 	final public static int TIREDNESS_THRESHOLD = 5;
 
-	private StateMachine<Bob> stateMachine;
+	private StateMachine<Bob, BobState> stateMachine;
 	private Location location;
 	// how many nuggets the miner has in his pockets
 	private int goldCarried;
@@ -56,7 +56,7 @@ public class Bob implements Telegraph {
 		thirst = 0;
 		fatigue = 0;
 
-		stateMachine = new DefaultStateMachine<Bob>(this, BobState.GO_HOME_AND_SLEEP_TILL_RESTED);
+		stateMachine = new DefaultStateMachine<Bob, BobState>(this, BobState.GO_HOME_AND_SLEEP_TILL_RESTED);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class Bob implements Telegraph {
 		stateMachine.update();
 	}
 
-	public StateMachine<Bob> getStateMachine () {
+	public StateMachine<Bob, BobState> getStateMachine () {
 		return stateMachine;
 	}
 
