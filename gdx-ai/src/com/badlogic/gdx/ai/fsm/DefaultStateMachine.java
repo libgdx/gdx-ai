@@ -71,7 +71,7 @@ public class DefaultStateMachine<E, S extends State<E>> implements StateMachine<
 	}
 
 	/** Sets the owner of this state machine.
-	 * @param state the owner. */
+	 * @param owner the owner. */
 	public void setOwner (E owner) {
 		this.owner = owner;
 	}
