@@ -106,7 +106,7 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 
 		// If timeToCollision is negative, i.e. the owner is already moving away from the the neighbor,
 		// or it's not the most imminent collision then no action needs to be taken.
-		if (timeToCollision <= 0 || timeToCollision >= shortestTime) return false;
+		if (timeToCollision <= 0 || timeToCollision >= shortestTime || Float.isNaN(timeToCollision)) return false;
 
 		// Check if it is going to be a collision at all
 		float distance = relativePosition.len();
