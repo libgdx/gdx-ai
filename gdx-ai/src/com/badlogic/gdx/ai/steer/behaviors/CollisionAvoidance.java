@@ -103,7 +103,10 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 		relativeVelocity.set(neighbor.getLinearVelocity()).sub(owner.getLinearVelocity());
 		float relativeSpeed2 = relativeVelocity.len2();
 
-		// Same linear velocity, collision can't happen
+		// Collision can't happen when the agents have the same linear velocity.
+		// Also, note that timeToTarget would be NaN due to the indeterminate form 0/0 and,
+		// since any comparison involving NaN returns false, it would become the shortestTime,
+		// so defeating the algorithm.
 		if (relativeSpeed2 == 0) return false;
 		
 		float timeToCollision = -relativePosition.dot(relativeVelocity) / relativeSpeed2;
