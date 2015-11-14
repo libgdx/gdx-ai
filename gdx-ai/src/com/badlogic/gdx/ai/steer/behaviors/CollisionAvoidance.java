@@ -102,6 +102,10 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 		relativePosition.set(neighbor.getPosition()).sub(owner.getPosition());
 		relativeVelocity.set(neighbor.getLinearVelocity()).sub(owner.getLinearVelocity());
 		float relativeSpeed2 = relativeVelocity.len2();
+
+		// Same linear velocity, collision can't happen
+		if (relativeSpeed2 == 0) return false;
+		
 		float timeToCollision = -relativePosition.dot(relativeVelocity) / relativeSpeed2;
 
 		// If timeToCollision is negative, i.e. the owner is already moving away from the the neighbor,
