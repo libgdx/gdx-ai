@@ -23,6 +23,7 @@
   * Now the UntilFail decorator succeeds when its child fails.
   * Added ability to clone tasks through third-party libraries like Kryo.
   * Added support for custom distributions in behavior tree files.
+  * Now LeafTask usage is less error prone thanks to the execute method.
 
 [1.6.0]
 - Updated to libgdx 1.7.0
