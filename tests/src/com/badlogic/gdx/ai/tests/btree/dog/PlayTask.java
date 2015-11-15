@@ -27,10 +27,10 @@ public class PlayTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void run () {
+	public Status execute () {
 		Dog dog = getObject();
 		dog.brainLog("PANT PANT - So fun");
-		running();
+		return Status.RUNNING;
 	}
 
 	@Override

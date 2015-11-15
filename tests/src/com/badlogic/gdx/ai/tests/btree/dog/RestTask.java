@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 
 /** @author implicit-invocation
  * @author davebaol */
@@ -29,9 +29,9 @@ public class RestTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void run () {
+	public Status execute () {
 		getObject().brainLog("zz zz zz");
-		running();
+		return Status.RUNNING;
 	}
 
 	@Override

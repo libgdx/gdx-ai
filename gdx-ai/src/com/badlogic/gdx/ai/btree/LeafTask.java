@@ -31,6 +31,31 @@ public abstract class LeafTask<E> extends Task<E> {
 	public LeafTask () {
 	}
 
+	/** This method contains the update logic of this leaf task. The actual implementation MUST return one of {@link Status#RUNNING}
+	 * , {@link Status#SUCCEEDED} or {@link Status#FAILED}. Other return values will cause an {@code IllegalStateException}.
+	 * @return the status of this leaf task */
+	public abstract Status execute ();
+
+	/** This method contains the update logic of this task. The implementation delegates the {@link #execute()} method. */
+	@Override
+	public final void run () {
+		Status result = execute();
+		if (result == null) throw new IllegalStateException("Invalid status 'null' returned by the execute method");
+		switch (result) {
+		case SUCCEEDED:
+			success();
+			return;
+		case FAILED:
+			fail();
+			return;
+		case RUNNING:
+			running();
+			return;
+		default:
+			throw new IllegalStateException("Invalid status '" + result.name() + "' returned by the execute method");
+		}
+	}
+
 	/** Always throws {@code IllegalStateException} because a leaf task cannot have any children. */
 	@Override
 	protected int addChildToTask (Task<E> child) {

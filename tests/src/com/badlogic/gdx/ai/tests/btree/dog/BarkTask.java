@@ -38,11 +38,11 @@ public class BarkTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void run () {
+	public Status execute () {
 		Dog dog = getObject();
 		for (int i = 0; i < t; i++)
 			dog.bark();
-		success();
+		return Status.SUCCEEDED;
 	}
 
 	@Override

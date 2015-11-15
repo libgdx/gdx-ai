@@ -391,9 +391,9 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 		public static class SelectTargetTask extends LeafTask<Predator> {
 
 			@Override
-			public void run () {
+			public Status execute () {
 				getObject().selectTarget();
-				success();
+				return Status.SUCCEEDED;
 			}
 
 			@Override
@@ -406,7 +406,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 		public static class PursueTask extends LeafTask<Predator> {
 
 			@Override
-			public void run () {
+			public Status execute () {
 				Predator predator = getObject();
 				boolean success = false;
 				if (predator.target != null) {
@@ -416,15 +416,11 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 					else if (!predator.target.eaten) {
 						((Pursue)predator.getSteeringBehavior()).setEnabled(true);
 						((Pursue)predator.getSteeringBehavior()).setTarget(predator.target);
-						running();
-						return;
+						return Status.RUNNING;
 					}
 				}
 				((Pursue)predator.getSteeringBehavior()).setEnabled(false);
-				if (success)
-					success();
-				else
-					fail();
+				return success ? Status.SUCCEEDED : Status.FAILED;
 			}
 
 			@Override

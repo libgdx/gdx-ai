@@ -30,9 +30,11 @@ public class Success<E> extends LeafTask<E> {
 	public Success () {
 	}
 
+	/** Executes this {@code Success} task.
+	 * @return {@link Status#SUCCEEDED}. */
 	@Override
-	public void run () {
-		success();
+	public Status execute () {
+		return Status.SUCCEEDED;
 	}
 
 	@Override

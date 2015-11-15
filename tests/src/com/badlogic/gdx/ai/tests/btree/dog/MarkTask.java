@@ -16,15 +16,15 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 
 /** @author implicit-invocation
  * @author davebaol */
 public class MarkTask extends LeafTask<Dog> {
 
 	int i;
-	
+
 	@Override
 	public void start () {
 		i = 0;
@@ -32,17 +32,13 @@ public class MarkTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void run () {
+	public Status execute () {
 		Dog dog = getObject();
 		Boolean result = dog.markATree(i++);
 		if (result == null) {
-			running();
+			return Status.RUNNING;
 		}
-		else if (result) {
-			success();
-		} else {
-			fail();
-		}
+		return result ? Status.SUCCEEDED : Status.FAILED;
 	}
 
 	@Override

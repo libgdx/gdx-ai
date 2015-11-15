@@ -70,12 +70,11 @@ public class Wait<E> extends LeafTask<E> {
 		startTime = GdxAI.getTimepiece().getTime();
 	}
 
+	/** Executes this {@code Wait} task.
+	 * @return {@link Status#SUCCEEDED} if the specified timeout has expired; {@link Status#RUNNING} otherwise. */
 	@Override
-	public void run () {
-		if (GdxAI.getTimepiece().getTime() - startTime < timeout)
-			running();
-		else
-			success();
+	public Status execute () {
+		return GdxAI.getTimepiece().getTime() - startTime < timeout ? Status.RUNNING : Status.SUCCEEDED;
 	}
 
 	@Override

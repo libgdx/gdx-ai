@@ -30,9 +30,11 @@ public class Failure<E> extends LeafTask<E> {
 	public Failure () {
 	}
 
+	/** Executes this {@code Failure} task.
+	 * @return {@link Status#FAILED}. */
 	@Override
-	public void run () {
-		fail();
+	public Status execute () {
+		return Status.FAILED;
 	}
 
 	@Override

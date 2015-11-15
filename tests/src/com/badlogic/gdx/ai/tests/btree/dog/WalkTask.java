@@ -33,15 +33,11 @@ public class WalkTask extends LeafTask<Dog> {
 	}
 
 	@Override
-	public void run () {
+	public Status execute () {
 		i++;
 		Dog dog = getObject();
 		dog.randomlyWalk();
-		if (i < 3) {
-			running();
-		} else {
-			success();
-		}
+		return i < 3 ? Status.RUNNING : Status.SUCCEEDED;
 	}
 
 	@Override

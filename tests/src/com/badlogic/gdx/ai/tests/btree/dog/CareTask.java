@@ -16,26 +16,24 @@
 
 package com.badlogic.gdx.ai.tests.btree.dog;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 
 /** @author implicit-invocation
  * @author davebaol */
 public class CareTask extends LeafTask<Dog> {
 
-	@TaskAttribute(required=true)
-	public float urgentProb = 0.8f;
+	@TaskAttribute(required = true) public float urgentProb = 0.8f;
 
 	@Override
-	public void run () {
+	public Status execute () {
 		if (Math.random() < urgentProb) {
-			success();
-		} else {
-			Dog dog = getObject();
-			dog.brainLog("GASP - Something urgent :/");
-			fail();
+			return Status.SUCCEEDED;
 		}
+		Dog dog = getObject();
+		dog.brainLog("GASP - Something urgent :/");
+		return Status.FAILED;
 	}
 
 	@Override
