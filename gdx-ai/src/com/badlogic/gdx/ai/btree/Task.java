@@ -143,7 +143,8 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.RUNNING;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
-		control.childRunning(this, this);
+		if (control != null)
+			control.childRunning(this, this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a success result */
@@ -152,7 +153,8 @@ public abstract class Task<E> {
 		status = Status.SUCCEEDED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		control.childSuccess(this);
+		if (control != null)
+			control.childSuccess(this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a failure result */
@@ -161,7 +163,8 @@ public abstract class Task<E> {
 		status = Status.FAILED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		control.childFail(this);
+		if (control != null)
+			control.childFail(this);
 	}
 
 	/** This method will be called when one of the children of this task succeeds

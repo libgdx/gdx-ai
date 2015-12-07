@@ -84,7 +84,8 @@ public class BehaviorTreeViewer<E> extends Table {
 			@Override
 			public void statusUpdated (Task<E> task, Task.Status previousStatus) {
 				TaskNode tn = taskNodes.get(task);
-				tn.updateStatus(previousStatus, step);
+				if (tn!= null)
+					tn.updateStatus(previousStatus, step);
 			}
 
 			@Override

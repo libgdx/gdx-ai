@@ -94,15 +94,18 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
-	public final void childRunning (Task<E> runningTask, Task<E> reporter) {
+	public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		running();
 	}
 
 	@Override
-	public final void childFail (Task<E> runningTask) {
+	public void childFail (Task<E> runningTask) {
+		fail();
 	}
 
 	@Override
-	public final void childSuccess (Task<E> runningTask) {
+	public void childSuccess (Task<E> runningTask) {
+		success();
 	}
 
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
