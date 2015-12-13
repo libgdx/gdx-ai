@@ -1,4 +1,5 @@
-[1.6.1]
+[1.7.0]
+- Updated to libgdx 1.7.1
 - API Addition: added GdxAI service locator that reduces coupling with libgdx and allows you to use gdx-ai
   out of a libgdx application without having to initialize libgdx environment, so avoiding the waste of resources
   and the need of native libraries; see https://github.com/libgdx/gdx-ai/wiki/Initializing-and-Using-gdxAI
