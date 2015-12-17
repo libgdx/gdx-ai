@@ -1,3 +1,6 @@
+[1.7.1]
+- Now the behavior tree parser can report comments, which is useful for certain tools such as graphical editors.
+
 [1.7.0]
 - Updated to libgdx 1.7.1
 - API Addition: added GdxAI service locator that reduces coupling with libgdx and allows you to use gdx-ai

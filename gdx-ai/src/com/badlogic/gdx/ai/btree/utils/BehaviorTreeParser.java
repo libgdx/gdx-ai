@@ -63,10 +63,10 @@ public class BehaviorTreeParser<E> {
 	public static final int DEBUG_LOW = 1;
 	public static final int DEBUG_HIGH = 2;
 
-	public int debug;
+	public int debugLevel;
 	public DistributionAdapters distributionAdapters;
 
-	private ConcreteBehaviorTreeReader<E> btReader;
+	private DefaultBehaviorTreeReader<E> btReader;
 
 	public BehaviorTreeParser () {
 		this(DEBUG_NONE);
@@ -76,14 +76,19 @@ public class BehaviorTreeParser<E> {
 		this(distributionAdapters, DEBUG_NONE);
 	}
 
-	public BehaviorTreeParser (int debug) {
-		this(new DistributionAdapters(), debug);
+	public BehaviorTreeParser (int debugLevel) {
+		this(new DistributionAdapters(), debugLevel);
 	}
 
-	public BehaviorTreeParser (DistributionAdapters distributionAdapters, int debug) {
+	public BehaviorTreeParser (DistributionAdapters distributionAdapters, int debugLevel) {
+		this(distributionAdapters, debugLevel, null);
+	}
+
+	public BehaviorTreeParser (DistributionAdapters distributionAdapters, int debugLevel, DefaultBehaviorTreeReader<E> reader) {
 		this.distributionAdapters = distributionAdapters;
-		this.debug = debug;
-		btReader = new ConcreteBehaviorTreeReader<E>(this);
+		this.debugLevel = debugLevel;
+		btReader = reader == null ? new DefaultBehaviorTreeReader<E>() : reader;
+		btReader.setParser(this);
 	}
 
 	/** Parses the given string.
@@ -127,7 +132,7 @@ public class BehaviorTreeParser<E> {
 	}
 
 	protected BehaviorTree<E> createBehaviorTree (Task<E> root, E object) {
-		if (debug > BehaviorTreeParser.DEBUG_LOW) printTree(root, 0);
+		if (debugLevel > BehaviorTreeParser.DEBUG_LOW) printTree(root, 0);
 		return new BehaviorTree<E>(root, object);
 	}
 
@@ -140,7 +145,7 @@ public class BehaviorTreeParser<E> {
 		}
 	}
 
-	static class ConcreteBehaviorTreeReader<E> extends BehaviorTreeReader {
+	public static class DefaultBehaviorTreeReader<E> extends BehaviorTreeReader {
 
 		private static final ObjectMap<String, String> DEFAULT_IMPORTS = new ObjectMap<String, String>();
 		static {
@@ -177,29 +182,41 @@ public class BehaviorTreeParser<E> {
 
 		private static final String[] STATEMENTS = new String[] {"import", "root"};
 
-		BehaviorTreeParser<E> btParser;
+		protected BehaviorTreeParser<E> btParser;
 
 		ObjectMap<String, String> userImports = new ObjectMap<String, String>();
 
 		ObjectMap<Class<?>, Metadata> metadataCache = new ObjectMap<Class<?>, Metadata>();
 
 		Task<E> root;
-		Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
+		protected Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
 		ObjectSet<String> encounteredAttributes = new ObjectSet<String>();
 		int tagType;
 		boolean isTask;
 		int currentDepth;
-		StackedTask<E> prevTask;
+		protected StackedTask<E> prevTask;
 		int step;
 		int rootIndent;
 
-		ConcreteBehaviorTreeReader (BehaviorTreeParser<E> btParser) {
-			this.btParser = btParser;
+		public DefaultBehaviorTreeReader () {
+			this(false);
+		}
+
+		public DefaultBehaviorTreeReader (boolean reportsComments) {
+			super(reportsComments);
+		}
+
+		public BehaviorTreeParser<E> getParser () {
+			return btParser;
+		}
+
+		public void setParser (BehaviorTreeParser<E> parser) {
+			this.btParser = parser;
 		}
 
 		@Override
 		public void parse (char[] data, int offset, int length) {
-			debug = btParser.debug > BehaviorTreeParser.DEBUG_NONE;
+			debug = btParser.debugLevel > BehaviorTreeParser.DEBUG_NONE;
 			tagType = TAG_NONE;
 			isTask = false;
 			userImports.clear();
@@ -219,14 +236,14 @@ public class BehaviorTreeParser<E> {
 
 		@Override
 		protected void startStatement (int indent, String name) {
-			if (btParser.debug > BehaviorTreeParser.DEBUG_LOW)
+			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
 				System.out.println(lineNumber + ": <" + indent + "> task name '" + name + "'");
 			if (tagType == TAG_ROOT)
 				openTask(indent, name);
 			else {
 				boolean validStatement = openTag(name);
 				if (!validStatement) {
-					if (btParser.debug > BehaviorTreeParser.DEBUG_LOW) {
+					if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW) {
 						System.out.println("validStatement: " + validStatement);
 						System.out.println("getImport(name): " + getImport(name));
 					}
@@ -243,7 +260,7 @@ public class BehaviorTreeParser<E> {
 
 		@Override
 		protected void attribute (String name, Object value) {
-			if (btParser.debug > BehaviorTreeParser.DEBUG_LOW)
+			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
 				System.out.println(lineNumber + ": attribute '" + name + " : " + value + "'");
 			if (isTask) {
 				if (!attributeTask(name, value)) throw new GdxRuntimeException(prevTask.name + ": unknown attribute '" + name + "'");
@@ -498,10 +515,10 @@ public class BehaviorTreeParser<E> {
 			return metadata;
 		}
 
-		private static class StackedTask<E> {
-			String name;
-			Task<E> task;
-			Metadata metadata;
+		protected static class StackedTask<E> {
+			public String name;
+			public Task<E> task;
+			public Metadata metadata;
 
 			StackedTask (String name, Task<E> task, Metadata metadata) {
 				this.name = name;

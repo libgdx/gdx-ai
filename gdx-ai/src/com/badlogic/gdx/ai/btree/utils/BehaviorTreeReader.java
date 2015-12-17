@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -36,14 +37,28 @@ import com.badlogic.gdx.utils.StreamUtils;
  * @author davebaol */
 public abstract class BehaviorTreeReader {
 
-	public boolean debug = false;
+	private static final String LOG_TAG = "BehaviorTreeReader";
+
+	protected boolean debug = false;
 	protected int lineNumber;
+	protected boolean reportsComments;
 
 	protected abstract void startStatement (int indent, String name);
 
 	protected abstract void attribute (String name, Object value);
 
 	protected abstract void endStatement ();
+
+	protected void comment (String text) {
+	}
+
+	public BehaviorTreeReader () {
+		this(false);
+	}
+
+	public BehaviorTreeReader (boolean reportsComments) {
+		this.reportsComments = reportsComments;
+	}
 
 	/** Parses the given string.
 	 * @param string the string
@@ -121,16 +136,14 @@ public abstract class BehaviorTreeReader {
 
 		lineNumber = 1;
 
-		if (debug) System.out.println();
-
 		try {
 		
-// line 127 "BehaviorTreeReader.java"
+// line 140 "BehaviorTreeReader.java"
 	{
 	cs = btree_start;
 	}
 
-// line 131 "BehaviorTreeReader.java"
+// line 144 "BehaviorTreeReader.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -211,20 +224,20 @@ case 1:
 			switch ( _btree_actions[_acts++] )
 			{
 	case 0:
-// line 128 "BehaviorTreeReader.rl"
+// line 141 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
 				if (needsUnescape) value = unescape(value);
 				outer:
 				if (stringIsUnquoted) {
-					if (debug) System.out.println("string: " + attrName + "=" + value);
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=" + value);
 					if (value.equals("true")) {
-						if (debug) System.out.println("boolean: " + attrName + "=true");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=true");
 						attribute(attrName, Boolean.TRUE);
 						break outer;
 					} else if (value.equals("false")) {
-						if (debug) System.out.println("boolean: " + attrName + "=false");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=false");
 						attribute(attrName, Boolean.FALSE);
 						break outer;
 					} else if (value.equals("null")) {
@@ -233,11 +246,11 @@ case 1:
 					} else { // number
 						try {
 							if (containsFloatingPointCharacters(value)) {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Double(value));
 								break outer;
 							} else {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Long(value));
 								break outer;
 							}
@@ -247,16 +260,16 @@ case 1:
 					}
 				}
 				else {
-					if (debug) System.out.println("string: " + attrName + "=\"" + value + "\"");
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=\"" + value + "\"");
 					attribute(attrName, value);
 				}
 				stringIsUnquoted = false;
 			}
 	break;
 	case 1:
-// line 168 "BehaviorTreeReader.rl"
+// line 181 "BehaviorTreeReader.rl"
 	{
-				if (debug) System.out.println("unquotedChars");
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "unquotedChars");
 				s = p;
 				needsUnescape = false;
 				stringIsUnquoted = true;
@@ -272,7 +285,7 @@ case 1:
 					case '\t':
 						break outer;
 					}
-					// if (debug) System.out.println("unquotedChar (value): '" + data[p] + "'");
+					// if (debug) GdxAI.getLogger().info(LOG_TAG, "unquotedChar (value): '" + data[p] + "'");
 					p++;
 					if (p == eof) break;
 				}
@@ -280,9 +293,9 @@ case 1:
 			}
 	break;
 	case 2:
-// line 191 "BehaviorTreeReader.rl"
+// line 204 "BehaviorTreeReader.rl"
 	{
-				if (debug) System.out.println("quotedChars");
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "quotedChars");
 				s = ++p;
 				needsUnescape = false;
 				outer:
@@ -295,7 +308,7 @@ case 1:
 					case '"':
 						break outer;
 					}
-					// if (debug) System.out.println("quotedChar: '" + data[p] + "'");
+					// if (debug) GdxAI.getLogger().info(LOG_TAG, "quotedChar: '" + data[p] + "'");
 					p++;
 					if (p == eof) break;
 				}
@@ -303,66 +316,60 @@ case 1:
 			}
 	break;
 	case 3:
-// line 211 "BehaviorTreeReader.rl"
+// line 224 "BehaviorTreeReader.rl"
 	{
 				indent = 0;
 				statementName = null;
 				taskProcessed = false;
 				lineNumber++;
-				if (debug) System.out.println("****NEWLINE**** "+lineNumber);
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "****NEWLINE**** "+lineNumber);
 			}
 	break;
 	case 4:
-// line 218 "BehaviorTreeReader.rl"
+// line 231 "BehaviorTreeReader.rl"
 	{
 				indent++;
 			}
 	break;
 	case 5:
-// line 221 "BehaviorTreeReader.rl"
+// line 234 "BehaviorTreeReader.rl"
 	{
 				taskProcessed = true;
 				if (statementName != null)
 					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
-// line 227 "BehaviorTreeReader.rl"
+// line 240 "BehaviorTreeReader.rl"
 	{
-				if (debug) System.out.println("# Comment");
+				s = p;
 			}
 	break;
 	case 7:
-// line 230 "BehaviorTreeReader.rl"
+// line 243 "BehaviorTreeReader.rl"
 	{
-				s = p;
-				char c;
-				do {
-					if (++p == eof) break;
-					c = data[p];
-				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '.'  || c == '_'  || c == '?');
-				statementName = new String(data, s, p - s);
-				p--;
-				startStatement(indent, statementName);
+				if (reportsComments) {
+					comment(new String(data, s, p - s));
+				} else {
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "# Comment");
+				}
 			}
 	break;
 	case 8:
-// line 242 "BehaviorTreeReader.rl"
+// line 250 "BehaviorTreeReader.rl"
 	{
-				s = p;
-				char c;
-				do {
-					if (++p == eof) break;
-					c = data[p];
-				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '_' || c == '?');
-				attrName = new String(data, s, p - s);
-				p--;
+				statementName = new String(data, s, p - s);
+				startStatement(indent, statementName);
 			}
 	break;
-// line 363 "BehaviorTreeReader.java"
+	case 9:
+// line 254 "BehaviorTreeReader.rl"
+	{
+				attrName = new String(data, s, p - s);
+			}
+	break;
+// line 370 "BehaviorTreeReader.java"
 			}
 		}
 	}
@@ -384,20 +391,20 @@ case 4:
 	while ( __nacts-- > 0 ) {
 		switch ( _btree_actions[__acts++] ) {
 	case 0:
-// line 128 "BehaviorTreeReader.rl"
+// line 141 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
 				if (needsUnescape) value = unescape(value);
 				outer:
 				if (stringIsUnquoted) {
-					if (debug) System.out.println("string: " + attrName + "=" + value);
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=" + value);
 					if (value.equals("true")) {
-						if (debug) System.out.println("boolean: " + attrName + "=true");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=true");
 						attribute(attrName, Boolean.TRUE);
 						break outer;
 					} else if (value.equals("false")) {
-						if (debug) System.out.println("boolean: " + attrName + "=false");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=false");
 						attribute(attrName, Boolean.FALSE);
 						break outer;
 					} else if (value.equals("null")) {
@@ -406,11 +413,11 @@ case 4:
 					} else { // number
 						try {
 							if (containsFloatingPointCharacters(value)) {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Double(value));
 								break outer;
 							} else {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Long(value));
 								break outer;
 							}
@@ -420,28 +427,45 @@ case 4:
 					}
 				}
 				else {
-					if (debug) System.out.println("string: " + attrName + "=\"" + value + "\"");
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=\"" + value + "\"");
 					attribute(attrName, value);
 				}
 				stringIsUnquoted = false;
 			}
 	break;
 	case 5:
-// line 221 "BehaviorTreeReader.rl"
+// line 234 "BehaviorTreeReader.rl"
 	{
 				taskProcessed = true;
 				if (statementName != null)
 					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
-// line 227 "BehaviorTreeReader.rl"
+// line 240 "BehaviorTreeReader.rl"
 	{
-				if (debug) System.out.println("# Comment");
+				s = p;
 			}
 	break;
-// line 442 "BehaviorTreeReader.java"
+	case 7:
+// line 243 "BehaviorTreeReader.rl"
+	{
+				if (reportsComments) {
+					comment(new String(data, s, p - s));
+				} else {
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "# Comment");
+				}
+			}
+	break;
+	case 8:
+// line 250 "BehaviorTreeReader.rl"
+	{
+				statementName = new String(data, s, p - s);
+				startStatement(indent, statementName);
+			}
+	break;
+// line 466 "BehaviorTreeReader.java"
 		}
 	}
 	}
@@ -451,7 +475,7 @@ case 5:
 	break; }
 	}
 
-// line 270 "BehaviorTreeReader.rl"
+// line 276 "BehaviorTreeReader.rl"
 
 		} catch (RuntimeException ex) {
 			parseRuntimeEx = ex;
@@ -466,37 +490,51 @@ case 5:
 	}
 
 	
-// line 465 "BehaviorTreeReader.java"
+// line 489 "BehaviorTreeReader.java"
 private static byte[] init__btree_actions_0()
 {
 	return new byte [] {
-	    0,    1,    0,    1,    1,    1,    2,    1,    4,    1,    5,    1,
-	    7,    1,    8,    2,    0,    5,    2,    5,    3,    2,    6,    5,
-	    3,    0,    5,    3,    3,    6,    5,    3
+	    0,    1,    0,    1,    1,    1,    2,    1,    3,    1,    4,    1,
+	    5,    1,    6,    1,    8,    1,    9,    2,    0,    5,    2,    5,
+	    3,    2,    7,    5,    2,    8,    5,    3,    0,    5,    3,    3,
+	    6,    7,    5,    3,    7,    5,    3,    3,    8,    5,    3,    4,
+	    6,    7,    5,    3
 	};
 }
 
 private static final byte _btree_actions[] = init__btree_actions_0();
 
 
-private static byte[] init__btree_key_offsets_0()
+private static short[] init__btree_key_offsets_0()
 {
-	return new byte [] {
-	    0,    0,    4,   11,   12,   22,   27,   28,   33,   43
+	return new short [] {
+	    0,    0,    1,   13,   17,   24,   25,   29,   34,   46,   50,   57,
+	   58,   62,   67,   77,   87,   92,   94,   96,  110,  120,  125,  130,
+	  135,  140,  154,  164,  169,  174
 	};
 }
 
-private static final byte _btree_key_offsets[] = init__btree_key_offsets_0();
+private static final short _btree_key_offsets[] = init__btree_key_offsets_0();
 
 
 private static char[] init__btree_trans_keys_0()
 {
 	return new char [] {
-	    9,   13,   32,   58,    9,   10,   13,   32,   34,   35,   58,   34,
-	    9,   10,   13,   32,   35,   95,   65,   90,   97,  122,    9,   10,
-	   13,   32,   35,   10,    9,   10,   13,   32,   35,    9,   10,   13,
-	   32,   35,   95,   65,   90,   97,  122,    9,   10,   13,   32,   35,
-	    0
+	   10,    9,   13,   32,   58,   63,   95,   48,   57,   65,   90,   97,
+	  122,    9,   13,   32,   58,    9,   10,   13,   32,   34,   35,   58,
+	   34,    9,   13,   32,   58,   95,   65,   90,   97,  122,    9,   13,
+	   32,   58,   63,   95,   48,   57,   65,   90,   97,  122,    9,   13,
+	   32,   58,    9,   10,   13,   32,   34,   35,   58,   34,    9,   13,
+	   32,   58,   95,   65,   90,   97,  122,    9,   10,   13,   32,   35,
+	   95,   65,   90,   97,  122,    9,   10,   13,   32,   35,   95,   65,
+	   90,   97,  122,    9,   10,   13,   32,   35,   10,   13,   10,   13,
+	    9,   10,   13,   32,   35,   46,   63,   95,   48,   57,   65,   90,
+	   97,  122,    9,   10,   13,   32,   35,   95,   65,   90,   97,  122,
+	    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,    9,   10,
+	   13,   32,   35,    9,   10,   13,   32,   35,    9,   10,   13,   32,
+	   35,   46,   63,   95,   48,   57,   65,   90,   97,  122,    9,   10,
+	   13,   32,   35,   95,   65,   90,   97,  122,    9,   10,   13,   32,
+	   35,    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,    0
 	};
 }
 
@@ -506,7 +544,9 @@ private static final char _btree_trans_keys[] = init__btree_trans_keys_0();
 private static byte[] init__btree_single_lengths_0()
 {
 	return new byte [] {
-	    0,    4,    7,    1,    6,    5,    1,    5,    6,    5
+	    0,    1,    6,    4,    7,    1,    4,    1,    6,    4,    7,    1,
+	    4,    1,    6,    6,    5,    2,    2,    8,    6,    5,    5,    5,
+	    5,    8,    6,    5,    5,    5
 	};
 }
 
@@ -516,31 +556,46 @@ private static final byte _btree_single_lengths[] = init__btree_single_lengths_0
 private static byte[] init__btree_range_lengths_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    2,    0,    0,    0,    2,    0
+	    0,    0,    3,    0,    0,    0,    0,    2,    3,    0,    0,    0,
+	    0,    2,    2,    2,    0,    0,    0,    3,    2,    0,    0,    0,
+	    0,    3,    2,    0,    0,    0
 	};
 }
 
 private static final byte _btree_range_lengths[] = init__btree_range_lengths_0();
 
 
-private static byte[] init__btree_index_offsets_0()
+private static short[] init__btree_index_offsets_0()
 {
-	return new byte [] {
-	    0,    0,    5,   13,   15,   24,   30,   32,   38,   47
+	return new short [] {
+	    0,    0,    2,   12,   17,   25,   27,   32,   36,   46,   51,   59,
+	   61,   66,   70,   79,   88,   94,   97,  100,  112,  121,  127,  133,
+	  139,  145,  157,  166,  172,  178
 	};
 }
 
-private static final byte _btree_index_offsets[] = init__btree_index_offsets_0();
+private static final short _btree_index_offsets[] = init__btree_index_offsets_0();
 
 
 private static byte[] init__btree_indicies_0()
 {
 	return new byte [] {
-	    0,    0,    0,    2,    1,    2,    1,    2,    2,    4,    1,    1,
-	    3,    5,    1,    6,    7,    8,    6,    9,   10,   10,   10,    1,
-	    8,    7,    8,    8,    9,    1,   11,    9,   12,    7,   12,   12,
-	    9,    1,   12,    7,   12,   12,    9,   13,   13,   13,    1,   14,
-	   15,   14,   14,   16,    1,    0
+	    0,    1,    2,    2,    2,    4,    5,    3,    3,    3,    3,    1,
+	    6,    6,    6,    7,    1,    7,    1,    7,    7,    9,    1,    1,
+	    8,   10,    1,    2,    2,    2,    4,    1,   11,   11,   11,    1,
+	   12,   12,   12,   14,   15,   13,   13,   13,   13,    1,   16,   16,
+	   16,   17,    1,   17,    1,   17,   17,   19,    1,    1,   18,   20,
+	    1,   12,   12,   12,   14,    1,   21,   21,   21,    1,   22,   23,
+	   24,   22,   25,   26,   26,   26,    1,   27,   23,   28,   27,   25,
+	   29,   29,   29,    1,   28,   23,   28,   28,   25,    1,   31,   32,
+	   30,   34,   35,   33,   36,   37,   36,   36,   38,   39,   40,   11,
+	   11,   11,   11,    1,   41,   23,   41,   41,   25,   42,   42,   42,
+	    1,   43,   44,   43,   43,   45,    1,   41,   23,   41,   41,   25,
+	    1,   36,   37,   36,   36,   38,    1,   46,   23,   24,   46,   25,
+	    1,   47,   37,   48,   47,   38,   49,   50,   21,   21,   21,   21,
+	    1,   51,   23,   52,   51,   25,   53,   53,   53,    1,   54,   44,
+	   55,   54,   45,    1,   51,   23,   52,   51,   25,    1,   47,   37,
+	   48,   47,   38,    1,    0
 	};
 }
 
@@ -550,8 +605,11 @@ private static final byte _btree_indicies[] = init__btree_indicies_0();
 private static byte[] init__btree_trans_targs_0()
 {
 	return new byte [] {
-	    1,    0,    2,    9,    3,    7,    4,    4,    5,    6,    7,    4,
-	    8,    1,    8,    4,    6
+	   15,    0,    3,    2,    4,    6,    3,    4,   21,    5,   22,   19,
+	    9,    8,   10,   12,    9,   10,   27,   11,   28,   25,   14,   15,
+	   24,   17,   25,   15,   16,   19,   18,   15,    1,   18,   15,    1,
+	   20,   15,   17,    7,   23,   20,    2,   20,   15,   17,   24,   26,
+	   26,   13,   29,   26,   26,    8,   26,   26
 	};
 }
 
@@ -561,8 +619,11 @@ private static final byte _btree_trans_targs[] = init__btree_trans_targs_0();
 private static byte[] init__btree_trans_actions_0()
 {
 	return new byte [] {
-	    0,    0,    0,    3,    5,    1,    7,   18,    0,    0,   11,   28,
-	    0,   13,    1,   24,    1
+	    7,    0,   17,    0,   17,    0,    0,    0,    3,    5,    1,    0,
+	   17,    0,   17,    0,    0,    0,    3,    5,    1,    0,    9,   22,
+	   11,    0,   13,    9,    0,   13,   13,   47,   35,    0,   39,   25,
+	   15,   43,   15,    0,    0,    0,   13,    1,   31,    1,    0,   15,
+	   28,    0,    0,    0,   11,   13,    1,   19
 	};
 }
 
@@ -572,21 +633,23 @@ private static final byte _btree_trans_actions[] = init__btree_trans_actions_0()
 private static byte[] init__btree_eof_actions_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    9,    9,   21,    9,    9,   15
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,   11,   11,   11,   35,   25,   28,   11,   19,   11,   28,
+	   11,   28,   11,   19,   11,   28
 	};
 }
 
 private static final byte _btree_eof_actions[] = init__btree_eof_actions_0();
 
 
-static final int btree_start = 4;
-static final int btree_first_final = 4;
+static final int btree_start = 14;
+static final int btree_first_final = 14;
 static final int btree_error = 0;
 
-static final int btree_en_main = 4;
+static final int btree_en_main = 14;
 
 
-// line 284 "BehaviorTreeReader.rl"
+// line 290 "BehaviorTreeReader.rl"
 
 	private static boolean containsFloatingPointCharacters (String value) {
 		for (int i = 0, n = value.length(); i < n; i++) {
