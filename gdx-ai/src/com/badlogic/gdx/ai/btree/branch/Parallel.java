@@ -90,12 +90,16 @@ public class Parallel<E> extends BranchTask<E> {
 		lastResult = null;
 		for (currentChildIndex = 0; currentChildIndex < children.size; currentChildIndex++) {
 			Task<E> child = children.get(currentChildIndex);
-			if (child.getStatus() != Status.RUNNING) {
+			if (child.getStatus() == Status.RUNNING) {
+				child.run();
+			} else {
 				child.setControl(this);
 				child.start();
+				if (child.checkGuard(this))
+					child.run();
+				else
+					child.fail();
 			}
-
-			child.run();
 
 			if (lastResult != null) {
 				cancelRunningChildren(noRunningTasks ? currentChildIndex + 1 : 0);

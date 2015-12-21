@@ -41,11 +41,15 @@ public abstract class BehaviorTreeReader {
 	protected int lineNumber;
 	protected boolean reportsComments;
 
-	protected abstract void startStatement (int indent, String name);
+	protected abstract void startLine (int indent);
+
+	protected abstract void startStatement (String name, boolean isSubtreeReference, boolean isGuard);
 
 	protected abstract void attribute (String name, Object value);
 
 	protected abstract void endStatement ();
+
+	protected abstract void endLine ();
 
 	protected void comment (String text) {
 	}
@@ -125,6 +129,9 @@ public abstract class BehaviorTreeReader {
 
 		int s = 0;
 		int indent = 0;
+		int taskIndex = -1;
+		boolean isGuard = false;
+		boolean isSubtreeRef = false;
 		String statementName = null;
 		boolean taskProcessed = false;
 		boolean needsUnescape = false;
@@ -189,6 +196,8 @@ public abstract class BehaviorTreeReader {
 					case '\\':
 						needsUnescape = true;
 						break;
+					case ')':
+					case '(':
 					case ' ':
 					case '\r':
 					case '\n':
@@ -223,6 +232,9 @@ public abstract class BehaviorTreeReader {
 			}
 			action newLine {
 				indent = 0;
+				taskIndex = -1;
+				isGuard = false;
+				isSubtreeRef = false;
 				statementName = null;
 				taskProcessed = false;
 				lineNumber++;
@@ -232,9 +244,12 @@ public abstract class BehaviorTreeReader {
 				indent++;
 			}
 			action endLine {
+				if (taskIndex >= 0) {
+					endStatement(); // Close the last task of the line
+				}
 				taskProcessed = true;
 				if (statementName != null)
-					endStatement();
+					endLine();
 				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 			action savePos {
@@ -248,8 +263,15 @@ public abstract class BehaviorTreeReader {
 				}
 			}
 			action taskName {
+				if (taskIndex++ < 0) {
+					startLine(indent); // First task/guard of the line
+				}
+				else {
+					endStatement();  // Close previous task/guard in line
+				}
 				statementName = new String(data, s, p - s);
-				startStatement(indent, statementName);
+				startStatement(statementName, isSubtreeRef, isGuard);  // Start this task/guard
+				isGuard = false;
 			}
 			action attrName {
 				attrName = new String(data, s, p - s);
@@ -262,11 +284,13 @@ public abstract class BehaviorTreeReader {
 			comment = '#' /[^\r\n]*/ >savePos %comment;
 			indent = [ \t] @indent;
 			attrName = idBegin '?'? %attrName;
-			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"\r\n\t ] >unquotedChars %attrValue;
+			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"()\r\n\t ] >unquotedChars %attrValue;
 			attribute = attrName ws* ':' ws* attrValue;
 			attributes = (ws+ attribute)+;
-			taskName = idBegin ('.' id)* '?'? %taskName;
-			task = taskName attributes?;
+			taskName = idBegin ('.' id)* '?'? %{isSubtreeRef = false;} %taskName;
+			subtreeRef = '$' idBegin '?'? %{isSubtreeRef = true;} %taskName;
+			unguardedTask = taskName attributes? | subtreeRef;  # task with attributes or subtree reference 
+			task = (ws* '(' @{isGuard = true;} ws* unguardedTask? ws* ')' @{isGuard = false;} )* ws* unguardedTask;
 			line = indent* task? ws* comment? %endLine;
 			main := line (nl line)** nl?;
 

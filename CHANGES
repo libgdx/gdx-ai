@@ -1,6 +1,10 @@
 [1.7.1]
 - Updated to libgdx 1.7.2
-- Now the behavior tree parser can report comments, which is useful for certain tools such as graphical editors.
+- API Change and Addition: Behavior Tree API
+  * Added ability to guard any task.
+  * Added branch task DynamicGuardSelector.
+  * Now the text format supports subtree references which, besides improving reuse and readability, allows you to use guards as trees. 
+  * Now the parser can report comments, which is useful for certain tools such as graphical editors.
 
 [1.7.0]
 - Updated to libgdx 1.7.1

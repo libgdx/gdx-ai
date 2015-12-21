@@ -28,6 +28,7 @@ public class BehaviorTree<E> extends Task<E> {
 
 	private Task<E> rootTask;
 	private E object;
+	GuardEvaluator<E> guardEvalutor;
 
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
 	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
@@ -55,6 +56,7 @@ public class BehaviorTree<E> extends Task<E> {
 		this.rootTask = rootTask;
 		this.object = object;
 		this.tree = this;
+		this.guardEvalutor = new GuardEvaluator<E>(this);
 	}
 
 	/** Returns the blackboard object of this behavior tree. */
@@ -111,11 +113,16 @@ public class BehaviorTree<E> extends Task<E> {
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
 	 * the game is real-time, or on entity's turn if the game is turn-based */
 	public void step () {
-		if (rootTask.status != Status.RUNNING) {
+		if (rootTask.status == Status.RUNNING) {
+			rootTask.run();
+		} else {
 			rootTask.setControl(this);
 			rootTask.start();
+			if (rootTask.checkGuard(this))
+				rootTask.run();
+			else
+				rootTask.fail();
 		}
-		rootTask.run();
 	}
 
 	@Override
@@ -161,6 +168,50 @@ public class BehaviorTree<E> extends Task<E> {
 		for (Listener<E> listener : listeners) {
 			listener.childAdded(task, index);
 		}
+	}
+
+	private static final class GuardEvaluator<E> extends Task<E> {
+
+		public GuardEvaluator (BehaviorTree<E> tree) {
+			this.tree = tree;
+		}
+
+		@Override
+		protected int addChildToTask (Task<E> child) {
+			return 0;
+		}
+
+		@Override
+		public int getChildCount () {
+			return 0;
+		}
+
+		@Override
+		public Task<E> getChild (int i) {
+			return null;
+		}
+
+		@Override
+		public void run () {
+		}
+
+		@Override
+		public void childSuccess (Task<E> task) {
+		}
+
+		@Override
+		public void childFail (Task<E> task) {
+		}
+
+		@Override
+		public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		}
+
+		@Override
+		protected Task<E> copyTo (Task<E> task) {
+			return null;
+		}
+
 	}
 
 	/** The listener interface for receiving task events. The class that is interested in processing a task event implements this

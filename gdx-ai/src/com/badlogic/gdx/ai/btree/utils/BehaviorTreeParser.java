@@ -23,6 +23,7 @@ import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
+import com.badlogic.gdx.ai.btree.branch.DynamicGuardSelector;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
 import com.badlogic.gdx.ai.btree.branch.RandomSelector;
 import com.badlogic.gdx.ai.btree.branch.RandomSequence;
@@ -139,6 +140,13 @@ public class BehaviorTreeParser<E> {
 	protected void printTree (Task<E> task, int indent) {
 		for (int i = 0; i < indent; i++)
 			System.out.print(' ');
+		if (task.guard != null) {
+			System.out.println("Guard");
+			indent = indent + 2;
+			printTree(task.guard, indent);
+			for (int i = 0; i < indent; i++)
+				System.out.print(' ');
+		}
 		System.out.println(task.getClass().getSimpleName());
 		for (int i = 0; i < task.getChildCount(); i++) {
 			printTree(task.getChild(i), indent + 2);
@@ -152,6 +160,7 @@ public class BehaviorTreeParser<E> {
 			Class<?>[] classes = new Class<?>[] {// @off - disable libgdx formatter
 				AlwaysFail.class,
 				AlwaysSucceed.class,
+				DynamicGuardSelector.class,
 				Failure.class,
 				Include.class,
 				Invert.class,
@@ -176,27 +185,117 @@ public class BehaviorTreeParser<E> {
 			}
 		}
 
-		private static final int TAG_NONE = -1;
-		private static final int TAG_IMPORT = 0;
-		private static final int TAG_ROOT = 1;
+		enum Statement {
+			Import("import") {
+				@Override
+				protected <E> void enter (DefaultBehaviorTreeReader<E> reader, String name, boolean isGuard) {
+				}
 
-		private static final String[] STATEMENTS = new String[] {"import", "root"};
+				@Override
+				protected <E> boolean attribute (DefaultBehaviorTreeReader<E> reader, String name, Object value) {
+					if (!(value instanceof String)) reader.throwAttributeTypeException(this.name, name, "String");
+					reader.addImport(name, (String)value);
+					return true;
+				}
+
+				@Override
+				protected <E> void exit (DefaultBehaviorTreeReader<E> reader) {
+					return;
+				}
+			},
+			Subtree("subtree") {
+				@Override
+				protected <E> void enter (DefaultBehaviorTreeReader<E> reader, String name, boolean isGuard) {
+				}
+
+				@Override
+				protected <E> boolean attribute (DefaultBehaviorTreeReader<E> reader, String name, Object value) {
+					if (!name.equals("name")) reader.throwAttributeNameException(this.name, name, "name");
+					if (!(value instanceof String)) reader.throwAttributeTypeException(this.name, name, "String");
+					if ("".equals(value)) throw new GdxRuntimeException(this.name + ": the name connot be empty");
+					if (reader.subtreeName != null)
+						throw new GdxRuntimeException(this.name + ": the name has been already specified");
+					reader.subtreeName = (String)value;
+					return true;
+				}
+
+				@Override
+				protected <E> void exit (DefaultBehaviorTreeReader<E> reader) {
+					reader.switchToNewTree(reader.subtreeName);
+					reader.subtreeName = null;
+				}
+			},
+			Root("root") {
+				@Override
+				protected <E> void enter (DefaultBehaviorTreeReader<E> reader, String name, boolean isGuard) {
+					reader.subtreeName = ""; // the root tree has empty name
+				}
+
+				@Override
+				protected <E> boolean attribute (DefaultBehaviorTreeReader<E> reader, String name, Object value) {
+					reader.throwAttributeTypeException(this.name, name, null);
+					return true;
+				}
+
+				@Override
+				protected <E> void exit (DefaultBehaviorTreeReader<E> reader) {
+					reader.switchToNewTree(reader.subtreeName);
+					reader.subtreeName = null;
+				}
+			},
+			TreeTask(null) {
+				@Override
+				protected <E> void enter (DefaultBehaviorTreeReader<E> reader, String name, boolean isGuard) {
+					// Root tree is the default one
+					if (reader.currentTree == null) {
+						reader.switchToNewTree("");
+						reader.subtreeName = null;
+					}
+
+					reader.openTask(name, isGuard);
+				}
+
+				@Override
+				protected <E> boolean attribute (DefaultBehaviorTreeReader<E> reader, String name, Object value) {
+					StackedTask<E> stackedTask = reader.getCurrentTask();
+					AttrInfo ai = stackedTask.metadata.attributes.get(name);
+					if (ai == null) return false;
+					boolean isNew = reader.encounteredAttributes.add(name);
+					if (!isNew) throw reader.stackedTaskException(stackedTask, "attribute '" + name + "' specified more than once");
+					Field attributeField = reader.getField(stackedTask.task.getClass(), ai.fieldName);
+					reader.setField(attributeField, stackedTask.task, value);
+					return true;
+				}
+
+				@Override
+				protected <E> void exit (DefaultBehaviorTreeReader<E> reader) {
+					if (!reader.isSubtreeRef) {
+						reader.checkRequiredAttributes(reader.getCurrentTask());
+						reader.encounteredAttributes.clear();
+					}
+				}
+			};
+			
+			String name;
+			
+			Statement(String name) {
+				this.name = name;
+			}
+			
+			protected abstract <E> void enter (DefaultBehaviorTreeReader<E> reader, String name, boolean isGuard);
+			protected abstract <E> boolean attribute (DefaultBehaviorTreeReader<E> reader, String name, Object value);
+			protected abstract <E> void exit (DefaultBehaviorTreeReader<E> reader);
+
+		} 
 
 		protected BehaviorTreeParser<E> btParser;
-
-		ObjectMap<String, String> userImports = new ObjectMap<String, String>();
 
 		ObjectMap<Class<?>, Metadata> metadataCache = new ObjectMap<Class<?>, Metadata>();
 
 		Task<E> root;
-		protected Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
-		ObjectSet<String> encounteredAttributes = new ObjectSet<String>();
-		int tagType;
-		boolean isTask;
-		int currentDepth;
-		protected StackedTask<E> prevTask;
-		int step;
-		int rootIndent;
+		String subtreeName;
+		Statement statement;
+		private int indent;
 
 		public DefaultBehaviorTreeReader () {
 			this(false);
@@ -217,67 +316,65 @@ public class BehaviorTreeParser<E> {
 		@Override
 		public void parse (char[] data, int offset, int length) {
 			debug = btParser.debugLevel > BehaviorTreeParser.DEBUG_NONE;
-			tagType = TAG_NONE;
-			isTask = false;
-			userImports.clear();
 			root = null;
-			prevTask = null;
-			currentDepth = -1;
-			step = 1;
-			stack.clear();
-			encounteredAttributes.clear();
+			clear();
 			super.parse(data, offset, length);
 
 			// Pop all task from the stack and check their minimum number of children
 			popAndCheckMinChildren(0);
 
+			Subtree<E> rootTree = subtrees.get("");
+			if (rootTree == null) throw new GdxRuntimeException("Missing root tree");
+			root = rootTree.rootTask;
 			if (root == null) throw new GdxRuntimeException("The tree must have at least the root task");
+
+			clear();
+		}
+		
+		@Override
+		protected void startLine (int indent) {
+			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
+				System.out.println(lineNumber + ": <" + indent + ">");
+			this.indent = indent;
 		}
 
+		private Statement checkStatement (String name) {
+			if (name.equals(Statement.Import.name)) return Statement.Import;
+			if (name.equals(Statement.Subtree.name)) return Statement.Subtree;
+			if (name.equals(Statement.Root.name)) return Statement.Root;
+			return Statement.TreeTask;
+		}
+		
 		@Override
-		protected void startStatement (int indent, String name) {
+		protected void startStatement (String name, boolean isSubtreeReference, boolean isGuard) {
 			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
-				System.out.println(lineNumber + ": <" + indent + "> task name '" + name + "'");
-			if (tagType == TAG_ROOT)
-				openTask(indent, name);
-			else {
-				boolean validStatement = openTag(name);
-				if (!validStatement) {
-					if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW) {
-						System.out.println("validStatement: " + validStatement);
-						System.out.println("getImport(name): " + getImport(name));
-					}
-					if (getImport(name) != null) {
-						// root statement is optional
-						tagType = TAG_ROOT;
-						openTask(indent, name);
-						return;
-					}
-					throw new GdxRuntimeException("Unknown tag '" + name + "'");
-				}
+				System.out.println((isGuard? " guard" : " task") + " name '" + name + "'");
+			
+			this.isSubtreeRef = isSubtreeReference;
+			
+			this.statement = isSubtreeReference ? Statement.TreeTask : checkStatement(name);
+			if (isGuard) {
+				if (statement != Statement.TreeTask)
+					throw new GdxRuntimeException(name + ": only tree's tasks can be guarded");
 			}
+
+			System.out.println("Statement = " + statement.name());
+			statement.enter(this, name, isGuard);
 		}
 
 		@Override
 		protected void attribute (String name, Object value) {
 			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
 				System.out.println(lineNumber + ": attribute '" + name + " : " + value + "'");
-			if (isTask) {
-				if (!attributeTask(name, value)) throw new GdxRuntimeException(prevTask.name + ": unknown attribute '" + name + "'");
-			} else {
-				if (!attributeTag(name, value))
-					throw new GdxRuntimeException(STATEMENTS[tagType] + ": unknown attribute '" + name + "'");
+			
+			boolean validAttribute = statement.attribute(this, name, value);
+			if (!validAttribute) {
+				if (statement == Statement.TreeTask) {
+					throw stackedTaskException(getCurrentTask(), "unknown attribute '" + name + "'");
+				} else {
+					throw new GdxRuntimeException(statement.name + ": unknown attribute '" + name + "'");
+				}
 			}
-		}
-
-		private boolean attributeTask (String name, Object value) {
-			AttrInfo ai = prevTask.metadata.attributes.get(name);
-			if (ai == null) return false;
-			boolean isNew = encounteredAttributes.add(name);
-			if (!isNew) throw new GdxRuntimeException(prevTask.name + ": attribute '" + name + "' specified more than once");
-			Field attributeField = getField(prevTask.task.getClass(), ai.fieldName);
-			setField(attributeField, prevTask.task, value);
-			return true;
 		}
 
 		private Field getField (Class<?> clazz, String name) {
@@ -344,18 +441,15 @@ public class BehaviorTreeParser<E> {
 					}
 				}
 			}
-			if (ret == null) throwAttributeTypeException(prevTask.name, field.getName(), type.getSimpleName());
+			if (ret == null) throwAttributeTypeException(getCurrentTask().name, field.getName(), type.getSimpleName());
 			return ret;
 		}
 
-		private boolean attributeTag (String name, Object value) {
-			if (tagType == TAG_IMPORT) {
-				if (value instanceof String)
-					addImport(name, (String)value);
-				else
-					throwAttributeTypeException(STATEMENTS[tagType], name, "String");
-			}
-			return true;
+		private void throwAttributeNameException (String statement, String name, String expectedName) {
+			String expected = " no attribute expected";
+			if (expectedName != null)
+				expected = "expected '" + expectedName + "' instead";
+			throw new GdxRuntimeException(statement + ": attribute '" + name + "' unknown; " + expected);
 		}
 
 		private void throwAttributeTypeException (String statement, String name, String expectedType) {
@@ -363,75 +457,41 @@ public class BehaviorTreeParser<E> {
 		}
 
 		@Override
+		protected void endLine () {
+		}
+
+		@Override
 		protected void endStatement () {
-			if (isTask) {
-				isTask = (stack.size != 0);
-				if (isTask) {
-					checkRequiredAttributes(prevTask);
-					encounteredAttributes.clear();
-				}
-			} else {
-// if (tagType == TAG_IMPORT) {
-// addImport(importTask, importAs);
-// }
-// // Reset the tag type to the parent
-// if (tagType != TAG_NONE) {
-// tagType = TAGS[tagType].parentIndex;
-// }
-			}
+			System.out.println("end statement");
+			statement.exit(this);
 		}
 
-		private void addImport (String alias, String task) {
-			if (task == null) throw new GdxRuntimeException("import: missing task class name.");
-			if (alias == null) {
-				Class<?> clazz = null;
-				try {
-					clazz = ClassReflection.forName(task);
-				} catch (ReflectionException e) {
-					throw new GdxRuntimeException("import: class not found '" + task + "'");
-				}
-				alias = clazz.getSimpleName();
-			}
-			String className = getImport(alias);
-			if (className != null) throw new GdxRuntimeException("import: alias '" + alias + "' previously defined already.");
-			userImports.put(alias, task);
-		}
-
-		private String getImport (String as) {
-			String className = DEFAULT_IMPORTS.get(as);
-			return className != null ? className : userImports.get(as);
-		}
-
-		private boolean openTag (String name) {
-			for (int i = 0; i < STATEMENTS.length; i++) {
-				String tag = STATEMENTS[i];
-				if (name.equals(tag)) {
-					tagType = i;
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private void openTask (int indent, String name) {
-			isTask = true;
-			String className = getImport(name);
-			if (className == null) className = name;
+		private void openTask (String name, boolean isGuard) {
 			try {
-				@SuppressWarnings("unchecked")
-				Task<E> task = (Task<E>)ClassReflection.newInstance(ClassReflection.forName(className));
-
-				if (prevTask == null) {
-					root = task;
-					rootIndent = indent;
+				Task<E> task;
+				if (isSubtreeRef) {
+					task = subtreeRootTaskInstance(name);
+				}
+				else {
+					String className = getImport(name);
+					if (className == null) className = name;
+					@SuppressWarnings("unchecked")
+					Task<E> tmpTask = (Task<E>)ClassReflection.newInstance(ClassReflection.forName(className));
+					task = tmpTask;
+				}
+				
+				if (!currentTree.inited()) {
+					initCurrentTree(task, indent);
 					indent = 0;
-				} else {
-					indent -= rootIndent;
-					if (prevTask.task == root) {
+				} else if (!isGuard) {
+					StackedTask<E> stackedTask = getPrevTask();
+
+					indent -= currentTreeStartIndent;
+					if (stackedTask.task == currentTree.rootTask) {
 						step = indent;
 					}
 					if (indent > currentDepth) {
-						stack.add(prevTask); // push
+						stack.add(stackedTask); // push
 					} else if (indent <= currentDepth) {
 						// Pop tasks from the stack based on indentation
 						// and check their minimum number of children
@@ -443,54 +503,24 @@ public class BehaviorTreeParser<E> {
 					StackedTask<E> stackedParent = stack.peek();
 					int maxChildren = stackedParent.metadata.maxChildren;
 					if (stackedParent.task.getChildCount() >= maxChildren)
-						throw new GdxRuntimeException(stackedParent.name + ": max number of children exceeded ("
+						throw stackedTaskException(stackedParent, "max number of children exceeded ("
 							+ (stackedParent.task.getChildCount() + 1) + " > " + maxChildren + ")");
 
 					// Add child task to the parent
 					stackedParent.task.addChild(task);
 				}
-				prevTask = createStackedTask(name, task);
-				currentDepth = indent;
+				updateCurrentTask(createStackedTask(name, task), indent, isGuard);
 			} catch (ReflectionException e) {
 				throw new GdxRuntimeException("Cannot parse behavior tree!!!", e);
 			}
 		}
-
-		private void popAndCheckMinChildren (int upToFloor) {
-			// Check the minimum number of children in prevTask
-			if (prevTask != null) checkMinChildren(prevTask);
-
-			// Check the minimum number of children while popping up to the specified floor
-			while (stack.size > upToFloor) {
-				StackedTask<E> stackedTask = stack.pop();
-				checkMinChildren(stackedTask);
-			}
-		}
-
-		private void checkMinChildren (StackedTask<E> stackedTask) {
-			// Check the minimum number of children
-			int minChildren = stackedTask.metadata.minChildren;
-			if (stackedTask.task.getChildCount() < minChildren)
-				throw new GdxRuntimeException(stackedTask.name + ": not enough children (" + stackedTask.task.getChildCount() + " < "
-					+ minChildren + ")");
-		}
-
-		private void checkRequiredAttributes (StackedTask<E> stackedTask) {
-			// Check the minimum number of children
-			Entries<String, AttrInfo> entries = stackedTask.metadata.attributes.iterator();
-			while (entries.hasNext()) {
-				Entry<String, AttrInfo> entry = entries.next();
-				if (entry.value.required && !encounteredAttributes.contains(entry.key))
-					throw new GdxRuntimeException(stackedTask.name + ": missing required attribute '" + entry.key + "'");
-			}
-		}
-
+		
 		private StackedTask<E> createStackedTask (String name, Task<E> task) {
 			Metadata metadata = findMetadata(task.getClass());
 			if (metadata == null)
 				throw new GdxRuntimeException(name + ": @TaskConstraint annotation not found in '" + task.getClass().getSimpleName()
 					+ "' class hierarchy");
-			return new StackedTask<E>(name, task, metadata);
+			return new StackedTask<E>(lineNumber, name, task, metadata);
 		}
 
 		private Metadata findMetadata (Class<?> clazz) {
@@ -516,11 +546,13 @@ public class BehaviorTreeParser<E> {
 		}
 
 		protected static class StackedTask<E> {
+			public int lineNumber;
 			public String name;
 			public Task<E> task;
 			public Metadata metadata;
 
-			StackedTask (String name, Task<E> task, Metadata metadata) {
+			StackedTask (int lineNumber, String name, Task<E> task, Metadata metadata) {
+				this.lineNumber = lineNumber;
 				this.name = name;
 				this.task = task;
 				this.metadata = metadata;
@@ -559,5 +591,185 @@ public class BehaviorTreeParser<E> {
 				this.required = required;
 			}
 		}
+
+		protected static class Subtree<E> {
+			String name;  // root tree must have no name
+			Task<E> rootTask;
+			int referenceCount;
+
+			Subtree() {
+				this(null);
+			}
+
+			Subtree(String name) {
+				this.name = name;
+				this.rootTask = null;
+				this.referenceCount = 0;
+			}
+
+			public void init(Task<E> rootTask) {
+				this.rootTask = rootTask;
+			}
+
+			public boolean inited() {
+				return rootTask != null;
+			}
+
+			public boolean isRootTree() {
+				return name == null || "".equals(name);
+			}
+
+			public Task<E> rootTaskInstance () {
+				if (referenceCount++ == 0) {
+					return rootTask;
+				}
+				return rootTask.cloneTask();
+			}
+		}
+
+		ObjectMap<String, String> userImports = new ObjectMap<String, String>();
+
+		ObjectMap<String, Subtree<E>> subtrees = new ObjectMap<String, Subtree<E>>();
+		Subtree<E> currentTree;
+
+		int currentTreeStartIndent;
+		int currentDepth;
+		int step;
+		boolean isSubtreeRef;
+		protected StackedTask<E> prevTask;
+		protected StackedTask<E> guardChain;
+		protected Array<StackedTask<E>> stack = new Array<StackedTask<E>>();
+		ObjectSet<String> encounteredAttributes = new ObjectSet<String>();			
+		boolean isGuard;
+		
+		StackedTask<E> getLastStackedTask() {
+			return stack.peek();
+		}
+		
+		StackedTask<E> getPrevTask() {
+			return prevTask;
+		}
+		
+		StackedTask<E> getCurrentTask() {
+			return isGuard? guardChain : prevTask;
+		}
+		
+		void updateCurrentTask(StackedTask<E> stackedTask, int indent, boolean isGuard) {
+			this.isGuard = isGuard;
+			stackedTask.task.guard = guardChain == null ? null : guardChain.task;
+			if (isGuard) {
+				guardChain = stackedTask;
+			}
+			else {
+				prevTask = stackedTask;
+				guardChain = null;
+				currentDepth = indent;
+			}
+		}
+		
+		void clear() {
+			prevTask = null;
+			guardChain = null;
+			currentTree = null;
+			userImports.clear();
+			subtrees.clear();
+			stack.clear();
+			encounteredAttributes.clear();
+		}
+		
+		//
+		// Subtree
+		//
+		
+		void switchToNewTree(String name) {
+			System.out.println(">>>>>>>>>>>>>>>>>> switchToNewTree '" + name + "'");
+			// TODO chiudere albero precedente
+
+			// Pop all task from the stack and check their minimum number of children
+			popAndCheckMinChildren(0);
+
+			this.currentTree = new Subtree<E>(name);
+			Subtree<E> oldTree = subtrees.put(name, currentTree);
+			if (oldTree != null)
+				throw new GdxRuntimeException("A subtree named '" + name + "' is already defined");
+		}
+		
+		void initCurrentTree(Task<E> rootTask, int startIndent) {
+			currentDepth = -1;
+			step = 1;
+			currentTreeStartIndent = startIndent;
+			this.currentTree.init(rootTask);
+			prevTask = null;
+		}
+		
+		Task<E> subtreeRootTaskInstance(String name) {
+			Subtree<E> tree = subtrees.get(name);
+			if (tree == null)
+				throw new GdxRuntimeException("Undefined subtree with name '" + name + "'");
+			return tree.rootTaskInstance();
+		}
+		
+		//
+		// Import
+		//
+
+		void addImport (String alias, String task) {
+			if (task == null) throw new GdxRuntimeException("import: missing task class name.");
+			if (alias == null) {
+				Class<?> clazz = null;
+				try {
+					clazz = ClassReflection.forName(task);
+				} catch (ReflectionException e) {
+					throw new GdxRuntimeException("import: class not found '" + task + "'");
+				}
+				alias = clazz.getSimpleName();
+			}
+			String className = getImport(alias);
+			if (className != null) throw new GdxRuntimeException("import: alias '" + alias + "' previously defined already.");
+			userImports.put(alias, task);
+		}
+
+		String getImport (String as) {
+			String className = DEFAULT_IMPORTS.get(as);
+			return className != null ? className : userImports.get(as);
+		}
+		
+		//
+		// Integrity checks
+		//
+
+		private void popAndCheckMinChildren (int upToFloor) {
+			// Check the minimum number of children in prevTask
+			if (prevTask != null) checkMinChildren(prevTask);
+
+			// Check the minimum number of children while popping up to the specified floor
+			while (stack.size > upToFloor) {
+				StackedTask<E> stackedTask = stack.pop();
+				checkMinChildren(stackedTask);
+			}
+		}
+
+		private void checkMinChildren (StackedTask<E> stackedTask) {
+			// Check the minimum number of children
+			int minChildren = stackedTask.metadata.minChildren;
+			if (stackedTask.task.getChildCount() < minChildren)
+				throw stackedTaskException(stackedTask, "not enough children (" + stackedTask.task.getChildCount() + " < " + minChildren
+					+ ")");
+		}
+
+		private void checkRequiredAttributes (StackedTask<E> stackedTask) {
+			// Check the minimum number of children
+			Entries<String, AttrInfo> entries = stackedTask.metadata.attributes.iterator();
+			while (entries.hasNext()) {
+				Entry<String, AttrInfo> entry = entries.next();
+				if (entry.value.required && !encounteredAttributes.contains(entry.key))
+					throw stackedTaskException(stackedTask, "missing required attribute '" + entry.key + "'");
+			}
+		}
+
+		private GdxRuntimeException stackedTaskException(StackedTask<E> stackedTask, String message) {
+			return new GdxRuntimeException(stackedTask.name + " at line " + stackedTask.lineNumber + ": " + message);
+		}
+
 	}
 }

@@ -79,6 +79,8 @@ public abstract class Task<E> {
 	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
 
+	public Task<E> guard;
+
 	/** This method will add a child to the list of this task's children
 	 * 
 	 * @param child the child task which will be added
@@ -123,6 +125,27 @@ public abstract class Task<E> {
 	public final void setControl (Task<E> control) {
 		this.control = control;
 		this.tree = control.tree;
+	}
+
+	public boolean checkGuard(Task<E> control) {
+		if (guard != null) {
+			// Check the guard of the guard recursively
+			if (!guard.checkGuard(control)) return false;
+
+			// Use the tree's guard evaluator task to check the guard of this task
+			guard.setControl(control.tree.guardEvalutor);
+			guard.start();
+			guard.run();
+			switch (guard.getStatus()) {
+			case SUCCEEDED:
+				return true;
+			case FAILED:
+				return false;
+			default:
+				throw new RuntimeException();
+			}
+		}
+		return true;
 	}
 
 	/** This method will be called once before this task's first run. */
@@ -226,7 +249,9 @@ public abstract class Task<E> {
 			}
 		}
 		try {
-			return copyTo(ClassReflection.newInstance(this.getClass()));
+			Task<E> clone = copyTo(ClassReflection.newInstance(this.getClass()));
+			clone.guard = guard == null ? null : guard.cloneTask();
+			return clone;
 		} catch (ReflectionException e) {
 			throw new TaskCloneException(e);
 		}

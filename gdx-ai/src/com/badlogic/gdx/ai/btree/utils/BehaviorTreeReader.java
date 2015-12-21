@@ -43,11 +43,15 @@ public abstract class BehaviorTreeReader {
 	protected int lineNumber;
 	protected boolean reportsComments;
 
-	protected abstract void startStatement (int indent, String name);
+	protected abstract void startLine (int indent);
+
+	protected abstract void startStatement (String name, boolean isSubtreeReference, boolean isGuard);
 
 	protected abstract void attribute (String name, Object value);
 
 	protected abstract void endStatement ();
+
+	protected abstract void endLine ();
 
 	protected void comment (String text) {
 	}
@@ -127,6 +131,9 @@ public abstract class BehaviorTreeReader {
 
 		int s = 0;
 		int indent = 0;
+		int taskIndex = -1;
+		boolean isGuard = false;
+		boolean isSubtreeRef = false;
 		String statementName = null;
 		boolean taskProcessed = false;
 		boolean needsUnescape = false;
@@ -138,12 +145,12 @@ public abstract class BehaviorTreeReader {
 
 		try {
 		
-// line 140 "BehaviorTreeReader.java"
+// line 147 "BehaviorTreeReader.java"
 	{
 	cs = btree_start;
 	}
 
-// line 144 "BehaviorTreeReader.java"
+// line 151 "BehaviorTreeReader.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -213,7 +220,6 @@ case 1:
 	}
 	} while (false);
 
-	_trans = _btree_indicies[_trans];
 	cs = _btree_trans_targs[_trans];
 
 	if ( _btree_trans_actions[_trans] != 0 ) {
@@ -224,7 +230,7 @@ case 1:
 			switch ( _btree_actions[_acts++] )
 			{
 	case 0:
-// line 141 "BehaviorTreeReader.rl"
+// line 148 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
@@ -267,7 +273,7 @@ case 1:
 			}
 	break;
 	case 1:
-// line 181 "BehaviorTreeReader.rl"
+// line 188 "BehaviorTreeReader.rl"
 	{
 				if (debug) GdxAI.getLogger().info(LOG_TAG, "unquotedChars");
 				s = p;
@@ -279,6 +285,8 @@ case 1:
 					case '\\':
 						needsUnescape = true;
 						break;
+					case ')':
+					case '(':
 					case ' ':
 					case '\r':
 					case '\n':
@@ -293,7 +301,7 @@ case 1:
 			}
 	break;
 	case 2:
-// line 204 "BehaviorTreeReader.rl"
+// line 213 "BehaviorTreeReader.rl"
 	{
 				if (debug) GdxAI.getLogger().info(LOG_TAG, "quotedChars");
 				s = ++p;
@@ -316,9 +324,12 @@ case 1:
 			}
 	break;
 	case 3:
-// line 224 "BehaviorTreeReader.rl"
+// line 233 "BehaviorTreeReader.rl"
 	{
 				indent = 0;
+				taskIndex = -1;
+				isGuard = false;
+				isSubtreeRef = false;
 				statementName = null;
 				taskProcessed = false;
 				lineNumber++;
@@ -326,28 +337,31 @@ case 1:
 			}
 	break;
 	case 4:
-// line 231 "BehaviorTreeReader.rl"
+// line 243 "BehaviorTreeReader.rl"
 	{
 				indent++;
 			}
 	break;
 	case 5:
-// line 234 "BehaviorTreeReader.rl"
+// line 246 "BehaviorTreeReader.rl"
 	{
+				if (taskIndex >= 0) {
+					endStatement(); // Close the last task of the line
+				}
 				taskProcessed = true;
 				if (statementName != null)
-					endStatement();
+					endLine();
 				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
-// line 240 "BehaviorTreeReader.rl"
+// line 255 "BehaviorTreeReader.rl"
 	{
 				s = p;
 			}
 	break;
 	case 7:
-// line 243 "BehaviorTreeReader.rl"
+// line 258 "BehaviorTreeReader.rl"
 	{
 				if (reportsComments) {
 					comment(new String(data, s, p - s));
@@ -357,19 +371,42 @@ case 1:
 			}
 	break;
 	case 8:
-// line 250 "BehaviorTreeReader.rl"
+// line 265 "BehaviorTreeReader.rl"
 	{
+				if (taskIndex++ < 0) {
+					startLine(indent); // First task/guard of the line
+				}
+				else {
+					endStatement();  // Close previous task/guard in line
+				}
 				statementName = new String(data, s, p - s);
-				startStatement(indent, statementName);
+				startStatement(statementName, isSubtreeRef, isGuard);  // Start this task/guard
+				isGuard = false;
 			}
 	break;
 	case 9:
-// line 254 "BehaviorTreeReader.rl"
+// line 276 "BehaviorTreeReader.rl"
 	{
 				attrName = new String(data, s, p - s);
 			}
 	break;
-// line 370 "BehaviorTreeReader.java"
+	case 10:
+// line 290 "BehaviorTreeReader.rl"
+	{isSubtreeRef = false;}
+	break;
+	case 11:
+// line 291 "BehaviorTreeReader.rl"
+	{isSubtreeRef = true;}
+	break;
+	case 12:
+// line 293 "BehaviorTreeReader.rl"
+	{isGuard = true;}
+	break;
+	case 13:
+// line 293 "BehaviorTreeReader.rl"
+	{isGuard = false;}
+	break;
+// line 407 "BehaviorTreeReader.java"
 			}
 		}
 	}
@@ -391,7 +428,7 @@ case 4:
 	while ( __nacts-- > 0 ) {
 		switch ( _btree_actions[__acts++] ) {
 	case 0:
-// line 141 "BehaviorTreeReader.rl"
+// line 148 "BehaviorTreeReader.rl"
 	{
 				String value = new String(data, s, p - s);
 				s = p;
@@ -434,22 +471,25 @@ case 4:
 			}
 	break;
 	case 5:
-// line 234 "BehaviorTreeReader.rl"
+// line 246 "BehaviorTreeReader.rl"
 	{
+				if (taskIndex >= 0) {
+					endStatement(); // Close the last task of the line
+				}
 				taskProcessed = true;
 				if (statementName != null)
-					endStatement();
+					endLine();
 				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
 			}
 	break;
 	case 6:
-// line 240 "BehaviorTreeReader.rl"
+// line 255 "BehaviorTreeReader.rl"
 	{
 				s = p;
 			}
 	break;
 	case 7:
-// line 243 "BehaviorTreeReader.rl"
+// line 258 "BehaviorTreeReader.rl"
 	{
 				if (reportsComments) {
 					comment(new String(data, s, p - s));
@@ -459,13 +499,28 @@ case 4:
 			}
 	break;
 	case 8:
-// line 250 "BehaviorTreeReader.rl"
+// line 265 "BehaviorTreeReader.rl"
 	{
+				if (taskIndex++ < 0) {
+					startLine(indent); // First task/guard of the line
+				}
+				else {
+					endStatement();  // Close previous task/guard in line
+				}
 				statementName = new String(data, s, p - s);
-				startStatement(indent, statementName);
+				startStatement(statementName, isSubtreeRef, isGuard);  // Start this task/guard
+				isGuard = false;
 			}
 	break;
-// line 466 "BehaviorTreeReader.java"
+	case 10:
+// line 290 "BehaviorTreeReader.rl"
+	{isSubtreeRef = false;}
+	break;
+	case 11:
+// line 291 "BehaviorTreeReader.rl"
+	{isSubtreeRef = true;}
+	break;
+// line 521 "BehaviorTreeReader.java"
 		}
 	}
 	}
@@ -475,7 +530,7 @@ case 5:
 	break; }
 	}
 
-// line 276 "BehaviorTreeReader.rl"
+// line 300 "BehaviorTreeReader.rl"
 
 		} catch (RuntimeException ex) {
 			parseRuntimeEx = ex;
@@ -490,15 +545,17 @@ case 5:
 	}
 
 	
-// line 489 "BehaviorTreeReader.java"
+// line 544 "BehaviorTreeReader.java"
 private static byte[] init__btree_actions_0()
 {
 	return new byte [] {
 	    0,    1,    0,    1,    1,    1,    2,    1,    3,    1,    4,    1,
-	    5,    1,    6,    1,    8,    1,    9,    2,    0,    5,    2,    5,
-	    3,    2,    7,    5,    2,    8,    5,    3,    0,    5,    3,    3,
-	    6,    7,    5,    3,    7,    5,    3,    3,    8,    5,    3,    4,
-	    6,    7,    5,    3
+	    5,    1,    6,    1,    9,    1,   12,    1,   13,    2,    0,    5,
+	    2,    0,   13,    2,    5,    3,    2,    7,    5,    2,   10,    8,
+	    2,   11,    8,    3,    0,    5,    3,    3,    6,    7,    5,    3,
+	    7,    5,    3,    3,   10,    8,    5,    3,   10,    8,   13,    3,
+	   11,    8,    5,    3,   11,    8,   13,    4,    6,    7,    5,    3,
+	    4,   10,    8,    5,    3,    4,   11,    8,    5,    3
 	};
 }
 
@@ -508,9 +565,12 @@ private static final byte _btree_actions[] = init__btree_actions_0();
 private static short[] init__btree_key_offsets_0()
 {
 	return new short [] {
-	    0,    0,    1,   13,   17,   24,   25,   29,   34,   46,   50,   57,
-	   58,   62,   67,   77,   87,   92,   94,   96,  110,  120,  125,  130,
-	  135,  140,  154,  164,  169,  174
+	    0,    0,    1,    6,   16,   21,   33,   37,   47,   59,   63,   72,
+	   73,   77,   82,   86,   99,  108,  120,  124,  133,  137,  138,  142,
+	  146,  151,  155,  160,  170,  175,  187,  191,  201,  213,  217,  226,
+	  227,  231,  236,  240,  253,  262,  274,  278,  287,  291,  292,  296,
+	  300,  305,  309,  321,  333,  345,  347,  349,  362,  367,  372,  386,
+	  396,  401,  406,  411,  423,  436,  441,  446,  460,  470,  475,  480
 	};
 }
 
@@ -520,21 +580,47 @@ private static final short _btree_key_offsets[] = init__btree_key_offsets_0();
 private static char[] init__btree_trans_keys_0()
 {
 	return new char [] {
-	   10,    9,   13,   32,   58,   63,   95,   48,   57,   65,   90,   97,
-	  122,    9,   13,   32,   58,    9,   10,   13,   32,   34,   35,   58,
+	   10,   95,   65,   90,   97,  122,    9,   13,   32,   36,   41,   95,
+	   65,   90,   97,  122,   95,   65,   90,   97,  122,    9,   13,   32,
+	   41,   63,   95,   48,   57,   65,   90,   97,  122,    9,   13,   32,
+	   41,    9,   13,   32,   36,   40,   95,   65,   90,   97,  122,    9,
+	   13,   32,   58,   63,   95,   48,   57,   65,   90,   97,  122,    9,
+	   13,   32,   58,    9,   10,   13,   32,   34,   35,   58,   40,   41,
 	   34,    9,   13,   32,   58,   95,   65,   90,   97,  122,    9,   13,
+	   32,   41,    9,   13,   32,   41,   46,   63,   95,   48,   57,   65,
+	   90,   97,  122,    9,   13,   32,   41,   95,   65,   90,   97,  122,
+	    9,   13,   32,   58,   63,   95,   48,   57,   65,   90,   97,  122,
+	    9,   13,   32,   58,    9,   10,   13,   32,   34,   35,   58,   40,
+	   41,    9,   13,   32,   41,   34,    9,   13,   32,   41,    9,   13,
+	   32,   58,   95,   65,   90,   97,  122,    9,   13,   32,   41,   95,
+	   65,   90,   97,  122,    9,   13,   32,   36,   41,   95,   65,   90,
+	   97,  122,   95,   65,   90,   97,  122,    9,   13,   32,   41,   63,
+	   95,   48,   57,   65,   90,   97,  122,    9,   13,   32,   41,    9,
+	   13,   32,   36,   40,   95,   65,   90,   97,  122,    9,   13,   32,
+	   58,   63,   95,   48,   57,   65,   90,   97,  122,    9,   13,   32,
+	   58,    9,   10,   13,   32,   34,   35,   58,   40,   41,   34,    9,
+	   13,   32,   58,   95,   65,   90,   97,  122,    9,   13,   32,   41,
+	    9,   13,   32,   41,   46,   63,   95,   48,   57,   65,   90,   97,
+	  122,    9,   13,   32,   41,   95,   65,   90,   97,  122,    9,   13,
 	   32,   58,   63,   95,   48,   57,   65,   90,   97,  122,    9,   13,
-	   32,   58,    9,   10,   13,   32,   34,   35,   58,   34,    9,   13,
-	   32,   58,   95,   65,   90,   97,  122,    9,   10,   13,   32,   35,
-	   95,   65,   90,   97,  122,    9,   10,   13,   32,   35,   95,   65,
-	   90,   97,  122,    9,   10,   13,   32,   35,   10,   13,   10,   13,
+	   32,   58,    9,   10,   13,   32,   34,   35,   58,   40,   41,    9,
+	   13,   32,   41,   34,    9,   13,   32,   41,    9,   13,   32,   58,
+	   95,   65,   90,   97,  122,    9,   13,   32,   41,    9,   10,   13,
+	   32,   35,   36,   40,   95,   65,   90,   97,  122,    9,   10,   13,
+	   32,   35,   36,   40,   95,   65,   90,   97,  122,    9,   10,   13,
+	   32,   35,   36,   40,   95,   65,   90,   97,  122,   10,   13,   10,
+	   13,    9,   10,   13,   32,   35,   63,   95,   48,   57,   65,   90,
+	   97,  122,    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,
 	    9,   10,   13,   32,   35,   46,   63,   95,   48,   57,   65,   90,
 	   97,  122,    9,   10,   13,   32,   35,   95,   65,   90,   97,  122,
 	    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,    9,   10,
-	   13,   32,   35,    9,   10,   13,   32,   35,    9,   10,   13,   32,
-	   35,   46,   63,   95,   48,   57,   65,   90,   97,  122,    9,   10,
-	   13,   32,   35,   95,   65,   90,   97,  122,    9,   10,   13,   32,
-	   35,    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,    0
+	   13,   32,   35,    9,   10,   13,   32,   35,   36,   40,   95,   65,
+	   90,   97,  122,    9,   10,   13,   32,   35,   63,   95,   48,   57,
+	   65,   90,   97,  122,    9,   10,   13,   32,   35,    9,   10,   13,
+	   32,   35,    9,   10,   13,   32,   35,   46,   63,   95,   48,   57,
+	   65,   90,   97,  122,    9,   10,   13,   32,   35,   95,   65,   90,
+	   97,  122,    9,   10,   13,   32,   35,    9,   10,   13,   32,   35,
+	    9,   10,   13,   32,   35,    0
 	};
 }
 
@@ -544,9 +630,12 @@ private static final char _btree_trans_keys[] = init__btree_trans_keys_0();
 private static byte[] init__btree_single_lengths_0()
 {
 	return new byte [] {
-	    0,    1,    6,    4,    7,    1,    4,    1,    6,    4,    7,    1,
-	    4,    1,    6,    6,    5,    2,    2,    8,    6,    5,    5,    5,
-	    5,    8,    6,    5,    5,    5
+	    0,    1,    1,    6,    1,    6,    4,    6,    6,    4,    7,    1,
+	    4,    1,    4,    7,    5,    6,    4,    7,    4,    1,    4,    4,
+	    1,    4,    1,    6,    1,    6,    4,    6,    6,    4,    7,    1,
+	    4,    1,    4,    7,    5,    6,    4,    7,    4,    1,    4,    4,
+	    1,    4,    8,    8,    8,    2,    2,    7,    5,    5,    8,    6,
+	    5,    5,    5,    8,    7,    5,    5,    8,    6,    5,    5,    5
 	};
 }
 
@@ -556,9 +645,12 @@ private static final byte _btree_single_lengths[] = init__btree_single_lengths_0
 private static byte[] init__btree_range_lengths_0()
 {
 	return new byte [] {
-	    0,    0,    3,    0,    0,    0,    0,    2,    3,    0,    0,    0,
-	    0,    2,    2,    2,    0,    0,    0,    3,    2,    0,    0,    0,
-	    0,    3,    2,    0,    0,    0
+	    0,    0,    2,    2,    2,    3,    0,    2,    3,    0,    1,    0,
+	    0,    2,    0,    3,    2,    3,    0,    1,    0,    0,    0,    0,
+	    2,    0,    2,    2,    2,    3,    0,    2,    3,    0,    1,    0,
+	    0,    2,    0,    3,    2,    3,    0,    1,    0,    0,    0,    0,
+	    2,    0,    2,    2,    2,    0,    0,    3,    0,    0,    3,    2,
+	    0,    0,    0,    2,    3,    0,    0,    3,    2,    0,    0,    0
 	};
 }
 
@@ -568,48 +660,61 @@ private static final byte _btree_range_lengths[] = init__btree_range_lengths_0()
 private static short[] init__btree_index_offsets_0()
 {
 	return new short [] {
-	    0,    0,    2,   12,   17,   25,   27,   32,   36,   46,   51,   59,
-	   61,   66,   70,   79,   88,   94,   97,  100,  112,  121,  127,  133,
-	  139,  145,  157,  166,  172,  178
+	    0,    0,    2,    6,   15,   19,   29,   34,   43,   53,   58,   67,
+	   69,   74,   78,   83,   94,  102,  112,  117,  126,  131,  133,  138,
+	  143,  147,  152,  156,  165,  169,  179,  184,  193,  203,  208,  217,
+	  219,  224,  228,  233,  244,  252,  262,  267,  276,  281,  283,  288,
+	  293,  297,  302,  313,  324,  335,  338,  341,  352,  358,  364,  376,
+	  385,  391,  397,  403,  414,  425,  431,  437,  449,  458,  464,  470
 	};
 }
 
 private static final short _btree_index_offsets[] = init__btree_index_offsets_0();
 
 
-private static byte[] init__btree_indicies_0()
-{
-	return new byte [] {
-	    0,    1,    2,    2,    2,    4,    5,    3,    3,    3,    3,    1,
-	    6,    6,    6,    7,    1,    7,    1,    7,    7,    9,    1,    1,
-	    8,   10,    1,    2,    2,    2,    4,    1,   11,   11,   11,    1,
-	   12,   12,   12,   14,   15,   13,   13,   13,   13,    1,   16,   16,
-	   16,   17,    1,   17,    1,   17,   17,   19,    1,    1,   18,   20,
-	    1,   12,   12,   12,   14,    1,   21,   21,   21,    1,   22,   23,
-	   24,   22,   25,   26,   26,   26,    1,   27,   23,   28,   27,   25,
-	   29,   29,   29,    1,   28,   23,   28,   28,   25,    1,   31,   32,
-	   30,   34,   35,   33,   36,   37,   36,   36,   38,   39,   40,   11,
-	   11,   11,   11,    1,   41,   23,   41,   41,   25,   42,   42,   42,
-	    1,   43,   44,   43,   43,   45,    1,   41,   23,   41,   41,   25,
-	    1,   36,   37,   36,   36,   38,    1,   46,   23,   24,   46,   25,
-	    1,   47,   37,   48,   47,   38,   49,   50,   21,   21,   21,   21,
-	    1,   51,   23,   52,   51,   25,   53,   53,   53,    1,   54,   44,
-	   55,   54,   45,    1,   51,   23,   52,   51,   25,    1,   47,   37,
-	   48,   47,   38,    1,    0
-	};
-}
-
-private static final byte _btree_indicies[] = init__btree_indicies_0();
-
-
 private static byte[] init__btree_trans_targs_0()
 {
 	return new byte [] {
-	   15,    0,    3,    2,    4,    6,    3,    4,   21,    5,   22,   19,
-	    9,    8,   10,   12,    9,   10,   27,   11,   28,   25,   14,   15,
-	   24,   17,   25,   15,   16,   19,   18,   15,    1,   18,   15,    1,
-	   20,   15,   17,    7,   23,   20,    2,   20,   15,   17,   24,   26,
-	   26,   13,   29,   26,   26,    8,   26,   26
+	   51,    0,   55,   55,   55,    0,    3,    3,    3,    4,    7,   15,
+	   15,   15,    0,    5,    5,    5,    0,    6,    6,    6,    7,   14,
+	    5,    5,    5,    5,    0,    6,    6,    6,    7,    0,    7,    7,
+	    7,    2,    3,   58,   58,   58,    0,    9,    9,    9,   10,   12,
+	    8,    8,    8,    8,    0,    9,    9,    9,   10,    0,   10,    0,
+	   10,   10,   11,    0,    0,    0,   60,   61,    0,    9,    9,    9,
+	   10,    0,   58,   58,   58,    0,    6,    6,    6,    7,    0,   16,
+	   16,   16,    7,   24,   25,   15,   15,   15,   15,    0,   16,   16,
+	   16,    7,   17,   17,   17,    0,   18,   18,   18,   19,   23,   17,
+	   17,   17,   17,    0,   18,   18,   18,   19,    0,   19,    0,   19,
+	   19,   21,    0,    0,    0,   20,   16,   16,   16,    7,    0,   22,
+	    0,   16,   16,   16,    7,    0,   18,   18,   18,   19,    0,   15,
+	   15,   15,    0,   16,   16,   16,    7,    0,   64,   64,   64,    0,
+	   27,   27,   27,   28,   31,   39,   39,   39,    0,   29,   29,   29,
+	    0,   30,   30,   30,   31,   38,   29,   29,   29,   29,    0,   30,
+	   30,   30,   31,    0,   31,   31,   31,   26,   27,   67,   67,   67,
+	    0,   33,   33,   33,   34,   36,   32,   32,   32,   32,    0,   33,
+	   33,   33,   34,    0,   34,    0,   34,   34,   35,    0,    0,    0,
+	   69,   70,    0,   33,   33,   33,   34,    0,   67,   67,   67,    0,
+	   30,   30,   30,   31,    0,   40,   40,   40,   31,   48,   49,   39,
+	   39,   39,   39,    0,   40,   40,   40,   31,   41,   41,   41,    0,
+	   42,   42,   42,   43,   47,   41,   41,   41,   41,    0,   42,   42,
+	   42,   43,    0,   43,    0,   43,   43,   45,    0,    0,    0,   44,
+	   40,   40,   40,   31,    0,   46,    0,   40,   40,   40,   31,    0,
+	   42,   42,   42,   43,    0,   39,   39,   39,    0,   40,   40,   40,
+	   31,    0,   50,   51,   63,   50,   53,   26,   27,   67,   67,   67,
+	    0,   51,   51,   52,   51,   53,    2,    3,   58,   58,   58,    0,
+	   52,   51,   52,   52,   53,    2,    3,   58,   58,   58,    0,   51,
+	    1,   54,   51,    1,   54,   56,   51,   56,   56,   53,   57,   55,
+	   55,   55,   55,    0,   56,   51,   56,   56,   53,    0,   56,   51,
+	   56,   56,   53,    0,   59,   51,   59,   59,   53,   13,   62,   58,
+	   58,   58,   58,    0,   59,   51,   59,   59,   53,    8,    8,    8,
+	    0,   59,   51,   59,   59,   53,    0,   59,   51,   59,   59,   53,
+	    0,   59,   51,   59,   59,   53,    0,   63,   51,   63,   63,   53,
+	   26,   27,   67,   67,   67,    0,   65,   51,   65,   65,   53,   66,
+	   64,   64,   64,   64,    0,   65,   51,   65,   65,   53,    0,   65,
+	   51,   65,   65,   53,    0,   68,   51,   68,   68,   53,   37,   71,
+	   67,   67,   67,   67,    0,   68,   51,   68,   68,   53,   32,   32,
+	   32,    0,   68,   51,   68,   68,   53,    0,   68,   51,   68,   68,
+	   53,    0,   68,   51,   68,   68,   53,    0,    0
 	};
 }
 
@@ -619,11 +724,46 @@ private static final byte _btree_trans_targs[] = init__btree_trans_targs_0();
 private static byte[] init__btree_trans_actions_0()
 {
 	return new byte [] {
-	    7,    0,   17,    0,   17,    0,    0,    0,    3,    5,    1,    0,
-	   17,    0,   17,    0,    0,    0,    3,    5,    1,    0,    9,   22,
-	   11,    0,   13,    9,    0,   13,   13,   47,   35,    0,   39,   25,
-	   15,   43,   15,    0,    0,    0,   13,    1,   31,    1,    0,   15,
-	   28,    0,    0,    0,   11,   13,    1,   19
+	    7,    0,   13,   13,   13,    0,    0,    0,    0,    0,   19,   13,
+	   13,   13,    0,   13,   13,   13,    0,   36,   36,   36,   63,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,   19,    0,    0,    0,
+	    0,    0,   17,   13,   13,   13,    0,   15,   15,   15,   15,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    5,    0,    0,    0,    3,    1,    0,   15,   15,   15,
+	   15,    0,    0,    0,    0,    0,   36,   36,   36,   63,    0,   33,
+	   33,   33,   55,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,   19,   13,   13,   13,    0,   15,   15,   15,   15,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    5,    0,    0,    0,    3,    1,    1,    1,   24,    0,    1,
+	    0,    0,    0,    0,   19,    0,   15,   15,   15,   15,    0,    0,
+	    0,    0,    0,   33,   33,   33,   55,    0,   13,   13,   13,    0,
+	    0,    0,    0,    0,   19,   13,   13,   13,    0,   13,   13,   13,
+	    0,   36,   36,   36,   63,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,   19,    0,    0,    0,    0,    0,   17,   13,   13,   13,
+	    0,   15,   15,   15,   15,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,    5,    0,    0,    0,
+	    3,    1,    0,   15,   15,   15,   15,    0,    0,    0,    0,    0,
+	   36,   36,   36,   63,    0,   33,   33,   33,   55,    0,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,   19,   13,   13,   13,    0,
+	   15,   15,   15,   15,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,    5,    0,    0,    0,    3,
+	    1,    1,    1,   24,    0,    1,    0,    0,    0,    0,   19,    0,
+	   15,   15,   15,   15,    0,    0,    0,    0,    0,   33,   33,   33,
+	   55,    0,    9,   27,   11,    9,    0,    0,   17,   13,   13,   13,
+	    0,    9,   27,    0,    9,    0,    0,   17,   13,   13,   13,    0,
+	    0,   27,    0,    0,    0,    0,   17,   13,   13,   13,    0,   67,
+	   43,   13,   47,   30,    0,   36,   77,   36,   36,   36,    0,    0,
+	    0,    0,    0,    0,    0,   27,    0,    0,    0,    0,   36,   77,
+	   36,   36,   36,    0,   33,   72,   33,   33,   33,    0,    0,    0,
+	    0,    0,    0,    0,    0,   27,    0,    0,    0,   13,   13,   13,
+	    0,    1,   39,    1,    1,    1,    0,    0,   27,    0,    0,    0,
+	    0,   33,   72,   33,   33,   33,    0,    0,   27,   11,    0,    0,
+	    0,   17,   13,   13,   13,    0,   36,   77,   59,   36,   36,    0,
+	    0,    0,    0,    0,    0,    0,   27,   11,    0,    0,    0,   36,
+	   77,   59,   36,   36,    0,   33,   72,   51,   33,   33,    0,    0,
+	    0,    0,    0,    0,    0,    0,   27,   11,    0,    0,   13,   13,
+	   13,    0,    1,   39,   21,    1,    1,    0,    0,   27,   11,    0,
+	    0,    0,   33,   72,   51,   33,   33,    0,    0
 	};
 }
 
@@ -634,22 +774,25 @@ private static byte[] init__btree_eof_actions_0()
 {
 	return new byte [] {
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,   11,   11,   11,   35,   25,   28,   11,   19,   11,   28,
-	   11,   28,   11,   19,   11,   28
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,   11,   11,   11,   43,   30,   59,   11,   59,   51,   11,
+	   21,   11,   51,   11,   59,   11,   59,   51,   11,   21,   11,   51
 	};
 }
 
 private static final byte _btree_eof_actions[] = init__btree_eof_actions_0();
 
 
-static final int btree_start = 14;
-static final int btree_first_final = 14;
+static final int btree_start = 50;
+static final int btree_first_final = 50;
 static final int btree_error = 0;
 
-static final int btree_en_main = 14;
+static final int btree_en_main = 50;
 
 
-// line 290 "BehaviorTreeReader.rl"
+// line 314 "BehaviorTreeReader.rl"
 
 	private static boolean containsFloatingPointCharacters (String value) {
 		for (int i = 0, n = value.length(); i < n; i++) {
