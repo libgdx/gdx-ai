@@ -79,7 +79,8 @@ public abstract class Task<E> {
 	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
 
-	public Task<E> guard;
+	/** The guard of this task */
+	protected Task<E> guard;
 
 	/** This method will add a child to the list of this task's children
 	 * 
@@ -114,6 +115,17 @@ public abstract class Task<E> {
 		return tree.getObject();
 	}
 
+	/** Returns the guard of this task. */
+	public Task<E> getGuard () {
+		return guard;
+	}
+
+	/** Sets the guard of this task.
+	 * @param guard the guard */
+	public void setGuard (Task<E> guard) {
+		this.guard = guard;
+	}
+
 	/** Returns the status of this task. */
 	public final Status getStatus () {
 		return status;
@@ -127,25 +139,30 @@ public abstract class Task<E> {
 		this.tree = control.tree;
 	}
 
-	public boolean checkGuard(Task<E> control) {
-		if (guard != null) {
-			// Check the guard of the guard recursively
-			if (!guard.checkGuard(control)) return false;
+	/** Checks the guard of this task.
+	 * @param control the parent task
+	 * @return {@code true} if guard evaluation succeeds or there's no guard; {@code false} otherwise.
+	 * @throws IllegalStateException if guard evaluation returns any status other than {@link Status#SUCCEEDED} and
+	 *            {@link Status#FAILED}. */
+	public boolean checkGuard (Task<E> control) {
+		// No guard to check
+		if (guard == null) return true;
+		
+		// Check the guard of the guard recursively
+		if (!guard.checkGuard(control)) return false;
 
-			// Use the tree's guard evaluator task to check the guard of this task
-			guard.setControl(control.tree.guardEvalutor);
-			guard.start();
-			guard.run();
-			switch (guard.getStatus()) {
-			case SUCCEEDED:
-				return true;
-			case FAILED:
-				return false;
-			default:
-				throw new RuntimeException();
-			}
+		// Use the tree's guard evaluator task to check the guard of this task
+		guard.setControl(control.tree.guardEvalutor);
+		guard.start();
+		guard.run();
+		switch (guard.getStatus()) {
+		case SUCCEEDED:
+			return true;
+		case FAILED:
+			return false;
+		default:
+			throw new IllegalStateException("Illegal guard status '" + guard.getStatus() + "'. Guards must either succeed or fail in one step.");
 		}
-		return true;
 	}
 
 	/** This method will be called once before this task's first run. */
@@ -166,8 +183,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.RUNNING;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
-		if (control != null)
-			control.childRunning(this, this);
+		if (control != null) control.childRunning(this, this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a success result */
@@ -176,8 +192,7 @@ public abstract class Task<E> {
 		status = Status.SUCCEEDED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		if (control != null)
-			control.childSuccess(this);
+		if (control != null) control.childSuccess(this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a failure result */
@@ -186,8 +201,7 @@ public abstract class Task<E> {
 		status = Status.FAILED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		if (control != null)
-			control.childFail(this);
+		if (control != null) control.childFail(this);
 	}
 
 	/** This method will be called when one of the children of this task succeeds

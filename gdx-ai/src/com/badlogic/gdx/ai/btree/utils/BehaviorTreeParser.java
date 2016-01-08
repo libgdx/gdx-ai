@@ -137,13 +137,13 @@ public class BehaviorTreeParser<E> {
 		return new BehaviorTree<E>(root, object);
 	}
 
-	protected void printTree (Task<E> task, int indent) {
+	protected static <E> void printTree (Task<E> task, int indent) {
 		for (int i = 0; i < indent; i++)
 			System.out.print(' ');
-		if (task.guard != null) {
+		if (task.getGuard() != null) {
 			System.out.println("Guard");
 			indent = indent + 2;
-			printTree(task.guard, indent);
+			printTree(task.getGuard(), indent);
 			for (int i = 0; i < indent; i++)
 				System.out.print(' ');
 		}
@@ -656,7 +656,7 @@ public class BehaviorTreeParser<E> {
 		
 		void updateCurrentTask(StackedTask<E> stackedTask, int indent, boolean isGuard) {
 			this.isGuard = isGuard;
-			stackedTask.task.guard = guardChain == null ? null : guardChain.task;
+			stackedTask.task.setGuard(guardChain == null ? null : guardChain.task);
 			if (isGuard) {
 				guardChain = stackedTask;
 			}
