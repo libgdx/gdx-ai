@@ -48,19 +48,19 @@ public class DistributionAdapters {
 	 * @author davebaol */
 	public static class DistributionFormatException extends RuntimeException {
 
-		/** Constructs an <code>IllegalArgumentException</code> with no detail message. */
+		/** Constructs a <code>DistributionFormatException</code> with no detail message. */
 		public DistributionFormatException () {
 			super();
 		}
 
-		/** Constructs an <code>IllegalArgumentException</code> with the specified detail message.
+		/** Constructs a <code>DistributionFormatException</code> with the specified detail message.
 		 *
 		 * @param s the detail message. */
 		public DistributionFormatException (String s) {
 			super(s);
 		}
 
-		/** Constructs a new exception with the specified detail message and cause.
+		/** Constructs a <code>DistributionFormatException</code> with the specified detail message and cause.
 		 * <p>
 		 * Note that the detail message associated with <code>cause</code> is <i>not</i> automatically incorporated in this
 		 * exception's detail message.
@@ -72,7 +72,7 @@ public class DistributionAdapters {
 			super(message, cause);
 		}
 
-		/** Constructs a new exception with the specified cause and a detail message of
+		/** Constructs a <code>DistributionFormatException</code> with the specified cause and a detail message of
 		 * <tt>(cause==null ? null : cause.toString())</tt> (which typically contains the class and detail message of <tt>cause</tt>
 		 * ). This constructor is useful for exceptions that are little more than wrappers for other throwables.
 		 *
