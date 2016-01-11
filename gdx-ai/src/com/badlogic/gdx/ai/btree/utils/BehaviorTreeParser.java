@@ -221,6 +221,8 @@ public class BehaviorTreeParser<E> {
 
 				@Override
 				protected <E> void exit (DefaultBehaviorTreeReader<E> reader) {
+					if (reader.subtreeName == null)
+						throw new GdxRuntimeException(this.name + ": the name has not been specified");
 					reader.switchToNewTree(reader.subtreeName);
 					reader.subtreeName = null;
 				}
