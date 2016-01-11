@@ -1,5 +1,5 @@
 [1.7.1]
-- Updated to libgdx 1.7.2
+- Updated to libgdx 1.8.0
 - API Change and Addition: Behavior Tree API
   * Added ability to guard any task.
   * Added branch task DynamicGuardSelector.
