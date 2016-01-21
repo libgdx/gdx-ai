@@ -17,31 +17,19 @@
 package com.badlogic.gdx.ai.pfa.indexed;
 
 import com.badlogic.gdx.ai.pfa.HierarchicalGraph;
-import com.badlogic.gdx.utils.Array;
 
-/** A graph for the {@link IndexedAStarPathFinder} that uses an internal {@link Array} to store nodes.
+/** A hierarchical graph for the {@link IndexedAStarPathFinder}.
  * 
- * @param <N> Type of node extending {@link IndexedNode}
+ * @param <N> Type of node
  * 
  * @author davebaol */
-public abstract class IndexedHierarchicalGraph<N extends IndexedNode<N>> extends DefaultIndexedGraph<N> implements HierarchicalGraph<N> {
+public abstract class IndexedHierarchicalGraph<N> implements IndexedGraph<N>, HierarchicalGraph<N> {
 
 	protected int levelCount;
 	protected int level;
 
-	/** Creates an empty {@code IndexedGraph} with the given number of levels. */
+	/** Creates an {@code IndexedHierarchicalGraph} with the given number of levels. */
 	public IndexedHierarchicalGraph (int levelCount) {
-		this(levelCount, new Array<N>());
-	}
-
-	/** Creates an empty {@code IndexedHierarchicalGraph} with the given number of levels and capacity. */
-	public IndexedHierarchicalGraph (int levelCount, int capacity) {
-		this(levelCount, new Array<N>(capacity));
-	}
-
-	/** Creates an {@code IndexedHierarchicalGraph} with the given number of levels and containing the given nodes. */
-	public IndexedHierarchicalGraph (int levelCount, Array<N> nodes) {
-		super(nodes);
 		this.levelCount = levelCount;
 		this.level = 0;
 	}

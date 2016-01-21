@@ -16,12 +16,14 @@
 
 package com.badlogic.gdx.ai.tests.pfa.tests.tiled.hrchy;
 
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedHierarchicalGraph;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.DungeonUtils;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.DungeonUtils.TwoLevelHierarchy;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat.FlatTiledNode;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledGraph;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /** A random generated graph representing a hierarchical tiled map.
  * 
@@ -33,11 +35,14 @@ public class HierarchicalTiledGraph extends IndexedHierarchicalGraph<Hierarchica
 	public static final int[] sizeY = {75, 2};
 	public static final int[] offset = {0, sizeX[0] * sizeY[0]};
 
+	protected Array<HierarchicalTiledNode> nodes;
+
 	public boolean diagonal;
 	public HierarchicalTiledNode startNode;
 
 	public HierarchicalTiledGraph () {
-		super(LEVELS, calculateTotalCapacity());
+		super(LEVELS);
+		this.nodes = new Array<HierarchicalTiledNode>(calculateTotalCapacity());
 		this.diagonal = false;
 		this.startNode = null;
 	}
@@ -172,6 +177,21 @@ public class HierarchicalTiledGraph extends IndexedHierarchicalGraph<Hierarchica
 	@Override
 	public HierarchicalTiledNode getNode (int index) {
 		return nodes.get(index);
+	}
+
+	@Override
+	public int getIndex (HierarchicalTiledNode node) {
+		return node.getIndex();
+	}
+
+	@Override
+	public int getNodeCount () {
+		return nodes.size;
+	}
+
+	@Override
+	public Array<Connection<HierarchicalTiledNode>> getConnections (HierarchicalTiledNode fromNode) {
+		return fromNode.getConnections();
 	}
 
 	private void addLevel0Connection (HierarchicalTiledNode n, int xOffset, int yOffset) {

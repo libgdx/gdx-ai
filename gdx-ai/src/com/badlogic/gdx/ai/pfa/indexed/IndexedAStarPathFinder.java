@@ -36,7 +36,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * node. This operation is something time-consuming.
  * <p>
  * The indexed A* algorithm improves execution speed by using an array of all the node records for every node in the graph. Nodes
- * must be numbered using sequential integers (see {@link IndexedNode#getIndex()}), so we don't need to search for a node in the
+ * must be numbered using sequential integers (see {@link IndexedGraph#getIndex(Object)}), so we don't need to search for a node in the
  * two lists at all. We can simply use the node index to look up its record in the array (creating it if it is missing). This
  * means that the close list is no longer needed. To know whether a node is open or closed, we use the {@link NodeRecord#category
  * category} of the node record. This makes the search step very fast indeed (in fact, there is no search, and we can go straight
@@ -44,10 +44,10 @@ import com.badlogic.gdx.utils.TimeUtils;
  * element with the lowest cost. However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as
  * possible.
  * 
- * @param <N> Type of node extending {@link IndexedNode}
+ * @param <N> Type of node
  * 
  * @author davebaol */
-public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFinder<N> {
+public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	IndexedGraph<N> graph;
 	NodeRecord<N>[] nodeRecords;
 	BinaryHeap<NodeRecord<N>> openList;
@@ -243,7 +243,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		// outPath.clear();
 		while (current.node != startNode) {
 			outPath.add(current.connection);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
+			current = nodeRecords[graph.getIndex(current.connection.getFromNode())];
 		}
 
 		// Reverse the path
@@ -256,7 +256,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		// outPath.clear();
 		while (current.connection != null) {
 			outPath.add(current.node);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
+			current = nodeRecords[graph.getIndex(current.connection.getFromNode())];
 		}
 		outPath.add(startNode);
 
@@ -274,7 +274,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	}
 
 	protected NodeRecord<N> getNodeRecord (N node) {
-		int index = node.getIndex();
+		int index = graph.getIndex(node);
 		NodeRecord<N> nr = nodeRecords[index];
 		if (nr != null) {
 			if (nr.searchId != searchId) {
@@ -298,7 +298,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	 * @param <N> Type of node
 	 * 
 	 * @author davebaol */
-	static class NodeRecord<N extends IndexedNode<N>> extends BinaryHeap.Node {
+	static class NodeRecord<N> extends BinaryHeap.Node {
 		/** The reference to the node. */
 		N node;
 

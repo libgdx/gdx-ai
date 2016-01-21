@@ -17,7 +17,6 @@
 package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
 import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedNode;
 import com.badlogic.gdx.utils.Array;
 
 /** A node for a {@link TiledGraph}.
@@ -25,7 +24,7 @@ import com.badlogic.gdx.utils.Array;
  * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
  * 
  * @author davebaol */
-public abstract class TiledNode<N extends TiledNode<N>> implements IndexedNode<N> {
+public abstract class TiledNode<N extends TiledNode<N>> {
 
 	/** A constant representing an empty tile */
 	public static final int TILE_EMPTY = 0;
@@ -54,10 +53,8 @@ public abstract class TiledNode<N extends TiledNode<N>> implements IndexedNode<N
 		this.connections = connections;
 	}
 
-	@Override
 	public abstract int getIndex ();
 
-	@Override
 	public Array<Connection<N>> getConnections () {
 		return this.connections;
 	}

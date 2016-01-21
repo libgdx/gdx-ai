@@ -20,12 +20,17 @@ import com.badlogic.gdx.ai.pfa.Graph;
 
 /** A graph for the {@link IndexedAStarPathFinder}.
  * 
- * @param <N> Type of node extending {@link IndexedNode}
+ * @param <N> Type of node
  * 
  * @author davebaol */
-public interface IndexedGraph<N extends IndexedNode<N>> extends Graph<N> {
+public interface IndexedGraph<N> extends Graph<N> {
 
-	/** Returns the number of nodes. */
+	/** Returns the unique index of the given node.
+	 * @param node the node whose index will be returned
+	 * @return the unique index of the given node. */
+	public int getIndex (N node);
+
+	/** Returns the number of nodes in this graph. */
 	public int getNodeCount ();
 
 }
