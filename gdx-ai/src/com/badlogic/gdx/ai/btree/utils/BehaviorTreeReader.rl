@@ -289,9 +289,10 @@ public abstract class BehaviorTreeReader {
 			attributes = (ws+ attribute)+;
 			taskName = idBegin ('.' id)* '?'? %{isSubtreeRef = false;} %taskName;
 			subtreeRef = '$' idBegin '?'? %{isSubtreeRef = true;} %taskName;
-			unguardedTask = taskName attributes? | subtreeRef;  # task with attributes or subtree reference 
-			task = ('(' @{isGuard = true;} ws* unguardedTask? ws* ')' @{isGuard = false;} ws* )* unguardedTask;
-			line = indent* task? ws* <: comment? %endLine;
+			task = taskName attributes? | subtreeRef;  # either a task name with attributes or a subtree reference 
+			guard = '(' @{isGuard = true;} ws* task? ws* ')' @{isGuard = false;};
+			guardableTask = (guard ws*)* task;
+			line = indent* guardableTask? ws* <: comment? %endLine;
 			main := line (nl line)** nl?;
 
 
