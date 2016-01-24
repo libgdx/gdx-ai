@@ -360,7 +360,6 @@ public class BehaviorTreeParser<E> {
 					throw new GdxRuntimeException(name + ": only tree's tasks can be guarded");
 			}
 
-			System.out.println("Statement = " + statement.name());
 			statement.enter(this, name, isGuard);
 		}
 
@@ -464,7 +463,6 @@ public class BehaviorTreeParser<E> {
 
 		@Override
 		protected void endStatement () {
-			System.out.println("end statement");
 			statement.exit(this);
 		}
 
@@ -684,9 +682,6 @@ public class BehaviorTreeParser<E> {
 		//
 		
 		void switchToNewTree(String name) {
-			System.out.println(">>>>>>>>>>>>>>>>>> switchToNewTree '" + name + "'");
-			// TODO chiudere albero precedente
-
 			// Pop all task from the stack and check their minimum number of children
 			popAndCheckMinChildren(0);
 
