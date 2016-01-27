@@ -3,10 +3,10 @@
 - API Change and Addition: Pathfinding API
   * Added method getIndex to the interface IndexedGraph.
   * Removed classes DefaultIndexedGraph and IndexedNode.
-- API Change and Addition: Behavior Tree API
+- API Change and Addition: Behavior Tree API extended to make it easier to think and design in terms of states, see https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees
   * Added ability to guard any task.
   * Added branch task DynamicGuardSelector.
-  * Now the text format supports subtree references which, besides improving reuse and readability, allows you to use guards as trees. 
+  * Now the text format supports internal sub-trees that, besides improving reuse and readability, allow you to use composite guards. 
   * Now the parser can report comments, which is useful for certain tools such as graphical editors.
 
 [1.7.0]
