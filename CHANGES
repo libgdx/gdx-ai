@@ -1,5 +1,5 @@
 [1.7.1]
-- Updated to libgdx 1.9.0
+- Updated to libgdx 1.9.1
 - API Change and Addition: Pathfinding API
   * Added method getIndex to the interface IndexedGraph.
   * Removed classes DefaultIndexedGraph and IndexedNode.
