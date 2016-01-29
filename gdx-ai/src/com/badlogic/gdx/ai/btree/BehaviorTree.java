@@ -172,6 +172,11 @@ public class BehaviorTree<E> extends Task<E> {
 
 	private static final class GuardEvaluator<E> extends Task<E> {
 
+		// No argument constructor useful for Kryo serialization
+		@SuppressWarnings("unused")
+		public GuardEvaluator () {
+		}
+
 		public GuardEvaluator (BehaviorTree<E> tree) {
 			this.tree = tree;
 		}
