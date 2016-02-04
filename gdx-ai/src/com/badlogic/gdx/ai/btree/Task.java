@@ -152,7 +152,7 @@ public abstract class Task<E> {
 		if (!guard.checkGuard(control)) return false;
 
 		// Use the tree's guard evaluator task to check the guard of this task
-		guard.setControl(control.tree.guardEvalutor);
+		guard.setControl(control.tree.guardEvaluator);
 		guard.start();
 		guard.run();
 		switch (guard.getStatus()) {

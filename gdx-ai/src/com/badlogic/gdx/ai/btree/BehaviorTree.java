@@ -28,7 +28,7 @@ public class BehaviorTree<E> extends Task<E> {
 
 	private Task<E> rootTask;
 	private E object;
-	GuardEvaluator<E> guardEvalutor;
+	GuardEvaluator<E> guardEvaluator;
 
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
 	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
@@ -56,7 +56,7 @@ public class BehaviorTree<E> extends Task<E> {
 		this.rootTask = rootTask;
 		this.object = object;
 		this.tree = this;
-		this.guardEvalutor = new GuardEvaluator<E>(this);
+		this.guardEvaluator = new GuardEvaluator<E>(this);
 	}
 
 	/** Returns the blackboard object of this behavior tree. */
