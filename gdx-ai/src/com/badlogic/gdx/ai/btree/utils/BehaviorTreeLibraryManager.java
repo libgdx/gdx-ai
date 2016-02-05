@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.SerializationException;
  * the constructor {@link BehaviorTreeLibrary#BehaviorTreeLibrary() BehaviorTreeLibrary()} is used instead.
  * 
  * @author davebaol */
-public class BehaviorTreeLibraryManager {
+public final class BehaviorTreeLibraryManager {
 
 	private static BehaviorTreeLibraryManager instance = new BehaviorTreeLibraryManager();
 
