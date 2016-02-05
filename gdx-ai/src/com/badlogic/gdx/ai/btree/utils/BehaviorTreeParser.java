@@ -19,6 +19,7 @@ package com.badlogic.gdx.ai.btree.utils;
 import java.io.InputStream;
 import java.io.Reader;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
@@ -63,6 +64,8 @@ public class BehaviorTreeParser<E> {
 	public static final int DEBUG_NONE = 0;
 	public static final int DEBUG_LOW = 1;
 	public static final int DEBUG_HIGH = 2;
+
+	private static final String TAG = "BehaviorTreeParser";
 
 	public int debugLevel;
 	public DistributionAdapters distributionAdapters;
@@ -336,7 +339,7 @@ public class BehaviorTreeParser<E> {
 		@Override
 		protected void startLine (int indent) {
 			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
-				System.out.println(lineNumber + ": <" + indent + ">");
+				GdxAI.getLogger().debug(TAG, lineNumber + ": <" + indent + ">");
 			this.indent = indent;
 		}
 
@@ -350,7 +353,7 @@ public class BehaviorTreeParser<E> {
 		@Override
 		protected void startStatement (String name, boolean isSubtreeReference, boolean isGuard) {
 			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
-				System.out.println((isGuard? " guard" : " task") + " name '" + name + "'");
+				GdxAI.getLogger().debug(TAG, (isGuard? " guard" : " task") + " name '" + name + "'");
 			
 			this.isSubtreeRef = isSubtreeReference;
 			
@@ -366,7 +369,7 @@ public class BehaviorTreeParser<E> {
 		@Override
 		protected void attribute (String name, Object value) {
 			if (btParser.debugLevel > BehaviorTreeParser.DEBUG_LOW)
-				System.out.println(lineNumber + ": attribute '" + name + " : " + value + "'");
+				GdxAI.getLogger().debug(TAG, lineNumber + ": attribute '" + name + " : " + value + "'");
 			
 			boolean validAttribute = statement.attribute(this, name, value);
 			if (!validAttribute) {
