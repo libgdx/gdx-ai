@@ -53,10 +53,11 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 			parser = parameter.parser;
 		}
 
+		if (parser == null) parser = new BehaviorTreeParser();
+
 		Reader reader = null;
 		try {
 			reader = file.reader();
-			parser = (parameter.parser == null ? new BehaviorTreeParser() : parameter.parser);
 			this.behaviorTree = parser.parse(reader, blackboard);
 		} finally {
 			StreamUtils.closeQuietly(reader);
