@@ -30,6 +30,8 @@ public class BehaviorTree<E> extends Task<E> {
 	private E object;
 	GuardEvaluator<E> guardEvaluator;
 
+	public Array<Listener<E>> listeners;
+
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
 	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
 	 * respectively. */
@@ -142,8 +144,6 @@ public class BehaviorTree<E> extends Task<E> {
 
 		return task;
 	}
-
-	public Array<Listener<E>> listeners;
 
 	public void addListener (Listener<E> listener) {
 		if (listeners == null) listeners = new Array<Listener<E>>();

@@ -101,7 +101,7 @@ public class Parallel<E> extends BranchTask<E> {
 					child.fail();
 			}
 
-			if (lastResult != null) {
+			if (lastResult != null) { // Current child has finished either with success or fail
 				cancelRunningChildren(noRunningTasks ? currentChildIndex + 1 : 0);
 				if (lastResult)
 					success();

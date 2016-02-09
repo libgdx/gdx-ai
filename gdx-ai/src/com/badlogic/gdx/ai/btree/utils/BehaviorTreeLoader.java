@@ -76,7 +76,7 @@ public class BehaviorTreeLoader extends AsynchronousAssetLoader<BehaviorTree, Be
 		return null;
 	}
 
-	static public class BehaviorTreeParameter extends AssetLoaderParameters<BehaviorTree> {
+	public static class BehaviorTreeParameter extends AssetLoaderParameters<BehaviorTree> {
 		public final Object blackboard;
 		public final BehaviorTreeParser parser;
 

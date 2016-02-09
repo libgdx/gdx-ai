@@ -75,6 +75,7 @@ public class Include<E> extends Decorator<E> {
 	}
 
 	/** Returns a clone of the referenced subtree if this {@code Import} is eager; otherwise returns a clone of itself. */
+	@Override
 	public Task<E> cloneTask () {
 		if (lazy) return super.cloneTask();
 
