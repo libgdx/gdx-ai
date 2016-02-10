@@ -74,6 +74,11 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 		int neighborCount = proximity.findNeighbors(this);
 
 		// If we have no target, then return no steering acceleration
+		//
+		// NOTE: You might think that the condition below always evaluates to true since
+		// firstNeighbor has been set to null when entering this method. In fact, we have just
+		// executed findNeighbors(this) that has possibly set firstNeighbor to a non null value
+		// through the method reportNeighbor defined below.
 		if (neighborCount == 0 || firstNeighbor == null) return steering.setZero();
 
 		// If we're going to hit exactly, or if we're already
@@ -104,7 +109,7 @@ public class CollisionAvoidance<T extends Vector<T>> extends GroupBehavior<T> im
 		float relativeSpeed2 = relativeVelocity.len2();
 
 		// Collision can't happen when the agents have the same linear velocity.
-		// Also, note that timeToTarget would be NaN due to the indeterminate form 0/0 and,
+		// Also, note that timeToCollision would be NaN due to the indeterminate form 0/0 and,
 		// since any comparison involving NaN returns false, it would become the shortestTime,
 		// so defeating the algorithm.
 		if (relativeSpeed2 == 0) return false;
