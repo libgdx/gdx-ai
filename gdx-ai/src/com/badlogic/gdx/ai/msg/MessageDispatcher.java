@@ -31,6 +31,7 @@ public class MessageDispatcher implements Telegraph {
 	private static final String LOG_TAG = MessageDispatcher.class.getSimpleName();
 
 	private static final Pool<Telegram> POOL = new Pool<Telegram>(16) {
+		@Override
 		protected Telegram newObject () {
 			return new Telegram();
 		}

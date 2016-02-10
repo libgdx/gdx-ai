@@ -57,6 +57,10 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	/** The unique ID for each search run. Used to mark nodes. */
 	private int searchId;
 
+	private static final int UNVISITED = 0;
+	private static final int OPEN = 1;
+	private static final int CLOSED = 2;
+
 	public IndexedAStarPathFinder (IndexedGraph<N> graph) {
 		this(graph, false);
 	}
@@ -288,10 +292,6 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 		nr.searchId = searchId;
 		return nr;
 	}
-
-	private static final int UNVISITED = 0;
-	private static final int OPEN = 1;
-	private static final int CLOSED = 2;
 
 	/** This nested class is used to keep track of the information we need for each node during the search.
 	 * 

@@ -77,8 +77,6 @@ public class PathSmoother<N, V extends Vector<V>> {
 		// nodes will pass the ray cast
 		int inputIndex = 2;
 
-		boolean collided = false;
-
 		// Loop until we find the last item in the input
 		while (inputIndex < inputPathLength) {
 			// Set the ray
@@ -86,9 +84,9 @@ public class PathSmoother<N, V extends Vector<V>> {
 			ray.end.set(path.getNodePosition(inputIndex));
 
 			// Do the ray cast
-			collided = raycastCollisionDetector.collides(ray);
+			boolean collides = raycastCollisionDetector.collides(ray);
 
-			if (collided) {
+			if (collides) {
 				// The ray test failed, swap nodes and consider the next output node
 				path.swapNodes(outputIndex, inputIndex - 1);
 				outputIndex++;
