@@ -20,7 +20,7 @@ import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
 
-/** {@code ProximityBase} is the base class for any concrete proximity based on an {@link Array} of agents.
+/** {@code ProximityBase} is the base class for any concrete proximity based on an iterable collection of agents.
  * 
  * @param <T> Type of vector, either 2D or 3D, implementing the {@link Vector} interface
  * 
