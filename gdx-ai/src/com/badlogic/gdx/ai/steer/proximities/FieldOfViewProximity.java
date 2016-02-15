@@ -20,7 +20,6 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.Array;
 
 /** {@code FieldOfViewProximity} emulates the peripheral vision of the owner as if it had eyes. Any agents contained in the
  * specified list that are within the field of view of the owner are considered owner's neighbors. The field of view is determined
@@ -58,7 +57,7 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 	 * @param agents the agents
 	 * @param radius the radius of the cone area
 	 * @param angle the angle in radians of the cone area */
-	public FieldOfViewProximity (Steerable<T> owner, Array<? extends Steerable<T>> agents, float radius, float angle) {
+	public FieldOfViewProximity (Steerable<T> owner, Iterable<? extends Steerable<T>> agents, float radius, float angle) {
 		super(owner, agents);
 		this.radius = radius;
 		setAngle(angle);
@@ -91,7 +90,6 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 	@Override
 	public int findNeighbors (ProximityCallback<T> callback) {
 		int neighborCount = 0;
-		int agentCount = agents.size;
 
 		// If the frame is new then avoid repeating calculations
 		// when this proximity is used by multiple group behaviors.
@@ -106,8 +104,7 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 			owner.angleToVector(ownerOrientation, owner.getOrientation());
 
 			// Scan the agents searching for neighbors
-			for (int i = 0; i < agentCount; i++) {
-				Steerable<T> currentAgent = agents.get(i);
+			for (Steerable<T> currentAgent : agents) {
 
 				// Make sure the agent being examined isn't the owner
 				if (currentAgent != owner) {
@@ -141,8 +138,7 @@ public class FieldOfViewProximity<T extends Vector<T>> extends ProximityBase<T> 
 			}
 		} else {
 			// Scan the agents searching for tagged neighbors
-			for (int i = 0; i < agentCount; i++) {
-				Steerable<T> currentAgent = agents.get(i);
+			for (Steerable<T> currentAgent : agents) {
 
 				// Make sure the agent being examined isn't the owner and that
 				// it's tagged.

@@ -19,7 +19,6 @@ package com.badlogic.gdx.ai.steer.proximities;
 import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.Array;
 
 /** {@code ProximityBase} is the base class for any concrete proximity based on an {@link Array} of agents.
  * 
@@ -28,16 +27,19 @@ import com.badlogic.gdx.utils.Array;
  * @author davebaol */
 public abstract class ProximityBase<T extends Vector<T>> implements Proximity<T> {
 
-	/** The ownerof  this proximity. */
+	/** The owner of  this proximity. */
 	protected Steerable<T> owner;
 
-	/** The array of the agents handled by this proximity. */
-	protected Array<? extends Steerable<T>> agents;
+	/** The collection of the agents handled by this proximity.
+	 * <p>
+	 * Note that, being this field of type {@code Iterable}, you can either use java or libgdx collections. See
+	 * https://github.com/libgdx/gdx-ai/issues/65 */
+	protected Iterable<? extends Steerable<T>> agents;
 
 	/** Creates a {@code ProximityBase} for the specified owner and list of agents.
 	 * @param owner the owner of this proximity
 	 * @param agents the list of agents */
-	public ProximityBase (Steerable<T> owner, Array<? extends Steerable<T>> agents) {
+	public ProximityBase (Steerable<T> owner, Iterable<? extends Steerable<T>> agents) {
 		this.owner = owner;
 		this.agents = agents;
 	}
@@ -52,13 +54,13 @@ public abstract class ProximityBase<T extends Vector<T>> implements Proximity<T>
 		this.owner = owner;
 	}
 
-	/** Returns the array of the agents that represent potential neighbors. */
-	public Array<? extends Steerable<T>> getAgents () {
+	/** Returns the the agents that represent potential neighbors. */
+	public Iterable<? extends Steerable<T>> getAgents () {
 		return agents;
 	}
 
-	/** Sets the array of the agents that represent potential neighbors. */
-	public void setAgents (Array<Steerable<T>> agents) {
+	/** Sets the agents that represent potential neighbors. */
+	public void setAgents (Iterable<Steerable<T>> agents) {
 		this.agents = agents;
 	}
 
