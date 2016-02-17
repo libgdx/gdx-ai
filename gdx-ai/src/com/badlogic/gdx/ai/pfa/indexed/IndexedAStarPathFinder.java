@@ -77,37 +77,31 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	public boolean searchConnectionPath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
 
 		// Perform AStar
-		search(startNode, endNode, heuristic);
+		boolean found = search(startNode, endNode, heuristic);
 
-		// We're here if we've either found the goal, or if we've no more nodes to search, find which
-		if (current.node != endNode) {
-			// We've run out of nodes without finding the goal, so there's no solution
-			return false;
+		if (found) {
+			// Create a path made of connections
+			generateConnectionPath(startNode, outPath);
 		}
 
-		generateConnectionPath(startNode, outPath);
-
-		return true;
+		return found;
 	}
 
 	@Override
 	public boolean searchNodePath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
 
 		// Perform AStar
-		search(startNode, endNode, heuristic);
+		boolean found = search(startNode, endNode, heuristic);
 
-		// We're here if we've either found the goal, or if we've no more nodes to search, find which
-		if (current.node != endNode) {
-			// We've run out of nodes without finding the goal, so there's no solution
-			return false;
+		if (found) {
+			// Create a path made of nodes
+			generateNodePath(startNode, outPath);
 		}
 
-		generateNodePath(startNode, outPath);
-
-		return true;
+		return found;
 	}
 
-	protected void search (N startNode, N endNode, Heuristic<N> heuristic) {
+	protected boolean search (N startNode, N endNode, Heuristic<N> heuristic) {
 
 		initSearch(startNode, endNode, heuristic);
 
@@ -118,11 +112,14 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 			current.category = CLOSED;
 
 			// Terminate if we reached the goal node
-			if (current.node == endNode) return;
+			if (current.node == endNode) return true;
 
 			visitChildren(endNode, heuristic);
 
 		} while (openList.size > 0);
+
+		// We've run out of nodes without finding the goal, so there's no solution
+		return false;
 	}
 
 	@Override
