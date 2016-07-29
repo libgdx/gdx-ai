@@ -87,7 +87,8 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 				runningChild.start();
 				if (!runningChild.checkGuard(this))
 					runningChild.fail();
-				run();
+				else
+					run();
 			} else {
 				// Should never happen; this case must be handled by subclasses in childXXX methods
 			}
