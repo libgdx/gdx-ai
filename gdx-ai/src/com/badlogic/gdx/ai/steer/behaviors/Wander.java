@@ -93,12 +93,6 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 		this.internalTargetPosition = newVector(owner);
 		this.wanderCenter = newVector(owner);
 	}
-	public Wander (Steerable<T> owner, Timepiece timepiece) {
-		super(owner);
-		GdxAI.setTimepiece(timepiece);
-		this.internalTargetPosition = newVector(owner);
-		this.wanderCenter = newVector(owner);
-	}
 
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
