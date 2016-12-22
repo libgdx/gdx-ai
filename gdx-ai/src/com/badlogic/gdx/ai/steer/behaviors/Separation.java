@@ -68,6 +68,8 @@ public class Separation<T extends Vector<T>> extends GroupBehavior<T> implements
 		float distanceSqr = toAgent.len2();
 		float maxAcceleration = getActualLimiter().getMaxLinearAcceleration();
 
+		if(distanceSqr == 0) return true;
+
 		// Calculate the strength of repulsion through inverse square law decay
 		float strength = getDecayCoefficient() / distanceSqr;
 		if (strength > maxAcceleration) strength = maxAcceleration;
