@@ -1,3 +1,10 @@
+[1.8.1-SNAPSHOT]
+- Fix: division by zero in Separation behavior.
+- Fix: in FollowFlowField behavior the predicted position was affecting steering.
+- Fix: stackoverflow in Sequence with guarded Task.
+- API Addition: ability to remove steering behaviors from BlendedSteering.
+- API Addition: method to check the registration of an archetype tree.
+
 [1.8.0]
 - Updated to libgdx 1.9.1
 - API Change and Addition: Pathfinding API
