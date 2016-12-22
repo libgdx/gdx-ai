@@ -105,7 +105,7 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Update the wander orientation
-		float now = GdxAI.getTimepiece().getTime();
+		float now = timepiece.getTime();
 		if (lastTime > 0) {
 			float delta = now - lastTime;
 			wanderOrientation += MathUtils.randomTriangular(wanderRate * delta);
