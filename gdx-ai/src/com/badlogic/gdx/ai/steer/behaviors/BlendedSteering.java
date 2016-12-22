@@ -79,6 +79,23 @@ public class BlendedSteering<T extends Vector<T>> extends SteeringBehavior<T> {
 		return this;
 	}
 
+	/** Removes a steering behavior from the list.
+	 * @param item the steering behavior to remove */
+	public void remove (BehaviorAndWeight<T> item) {
+		list.removeValue(item, true);
+	}
+
+	/** Removes a steering behavior from the list.
+	 * @param behavior the steering behavior to remove */
+	public void remove (SteeringBehavior<T> behavior) {
+		for (int i = 0; i < list.size; i++) {
+			if(list.get(i).behavior == behavior) {
+				list.removeIndex(i);
+				return;
+			}
+		}
+	}
+
 	/** Returns the weighted behavior at the specified index.
 	 * @param index the index of the weighted behavior to return */
 	public BehaviorAndWeight<T> get (int index) {
