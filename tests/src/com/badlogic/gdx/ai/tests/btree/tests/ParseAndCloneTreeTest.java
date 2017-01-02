@@ -67,6 +67,9 @@ public class ParseAndCloneTreeTest extends BehaviorTreeTestBase {
 				public <T> Task<T> cloneTask (Task<T> task) {
 					return KryoUtils.copy(task);
 				}
+				@Override
+				public <T> void freeTask(Task<T> task) {
+				}
 			};
 			BehaviorTree<Dog> tree = (BehaviorTree<Dog>)treeArchetype.cloneTask();
 			tree.setObject(new Dog("Cloned Buddy"));
