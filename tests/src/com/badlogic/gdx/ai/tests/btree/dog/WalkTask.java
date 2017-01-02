@@ -49,5 +49,11 @@ public class WalkTask extends LeafTask<Dog> {
 	protected Task<Dog> copyTo (Task<Dog> task) {
 		return task;
 	}
+	
+	@Override
+	public void reset() {
+		i = 0;
+		super.reset();
+	}
 
 }

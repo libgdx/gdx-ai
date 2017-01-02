@@ -70,5 +70,11 @@ public abstract class BranchTask<E> extends Task<E> {
 
 		return task;
 	}
+	
+	@Override
+	public void reset() {
+		children.clear();
+		super.reset();
+	}
 
 }

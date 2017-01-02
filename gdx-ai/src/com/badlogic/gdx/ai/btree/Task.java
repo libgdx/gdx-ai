@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.btree;
 
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
@@ -28,7 +29,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * @author implicit-invocation
  * @author davebaol */
 @TaskConstraint
-public abstract class Task<E> {
+public abstract class Task<E> implements Poolable {
 
 	/** The enumeration of the values that a task's status can have.
 	 * 
@@ -277,5 +278,13 @@ public abstract class Task<E> {
 	 * @return the given task for chaining
 	 * @throws TaskCloneException if the task cannot be successfully copied. */
 	protected abstract Task<E> copyTo (Task<E> task);
+	
+	@Override
+	public void reset() {
+		control = null;
+		guard = null;
+		status = Status.FRESH;
+		tree = null;
+	}
 
 }

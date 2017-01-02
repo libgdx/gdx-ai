@@ -113,4 +113,9 @@ public class DynamicGuardSelector<E> extends BranchTask<E> {
 		return super.copyTo(task);
 	}
 
+	@Override
+	public void reset() {
+		runningChild = null;
+		super.reset();
+	}
 }

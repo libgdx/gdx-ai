@@ -115,4 +115,10 @@ public class Random<E> extends Decorator<E> {
 		return super.copyTo(task);
 	}
 
+	@Override
+	public void reset() {
+		this.p = 0;
+		this.success = ConstantFloatDistribution.ZERO_POINT_FIVE;
+		super.reset();
+	}
 }

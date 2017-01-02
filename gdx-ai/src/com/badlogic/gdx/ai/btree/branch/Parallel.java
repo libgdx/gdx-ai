@@ -141,6 +141,15 @@ public class Parallel<E> extends BranchTask<E> {
 
 		return super.copyTo(task);
 	}
+	
+	@Override
+	public void reset() {
+		policy = Policy.Sequence;
+		noRunningTasks = true;
+		lastResult = null;
+		currentChildIndex = 0;
+		super.reset();
+	}
 
 	/** The enumeration of the policies supported by the {@link Parallel} task. */
 	public enum Policy {

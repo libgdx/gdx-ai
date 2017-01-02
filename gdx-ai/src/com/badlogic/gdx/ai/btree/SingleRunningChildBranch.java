@@ -129,5 +129,13 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 		System.arraycopy(children.items, 0, rndChildren, 0, children.size);
 		return rndChildren;
 	}
+	
+	@Override
+	public void reset() {
+		this.currentChildIndex = 0;
+		this.runningChild = null;
+		this.randomChildren = null;
+		super.reset();
+	}
 
 }
