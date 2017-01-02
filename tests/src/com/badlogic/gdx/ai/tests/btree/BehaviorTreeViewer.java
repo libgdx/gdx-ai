@@ -135,7 +135,7 @@ public class BehaviorTreeViewer<E> extends Table {
 		resetButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				BehaviorTreeViewer.this.tree.reset();
+				BehaviorTreeViewer.this.tree.resetTask();
 				rebuildDisplayTree();
 			}
 		});

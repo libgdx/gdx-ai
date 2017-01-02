@@ -100,8 +100,8 @@ public class DynamicGuardSelector<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		this.runningChild = null;
 	}
 

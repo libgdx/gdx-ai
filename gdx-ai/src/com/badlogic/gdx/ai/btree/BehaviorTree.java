@@ -132,8 +132,8 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		tree = this;
 	}
 

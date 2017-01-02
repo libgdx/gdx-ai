@@ -108,8 +108,8 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		this.currentChildIndex = 0;
 		this.runningChild = null;
 		this.randomChildren = null;

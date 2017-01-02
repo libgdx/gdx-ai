@@ -110,8 +110,8 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		semaphore = null;
 		semaphoreAcquired = false;
 	}

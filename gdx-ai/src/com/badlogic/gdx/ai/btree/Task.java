@@ -239,10 +239,10 @@ public abstract class Task<E> {
 	}
 
 	/** Resets this task to make it restart from scratch on next run. */
-	public void reset () {
+	public void resetTask () {
 		if (status == Status.RUNNING) cancel();
 		for (int i = 0, n = getChildCount(); i < n; i++) {
-			getChild(i).reset();
+			getChild(i).resetTask();
 		}
 		status = Status.FRESH;
 		tree = null;

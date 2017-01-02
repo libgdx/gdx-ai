@@ -129,8 +129,8 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		noRunningTasks = true;
 	}
 
