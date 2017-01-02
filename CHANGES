@@ -1,4 +1,8 @@
 [1.8.1-SNAPSHOT]
+- API Change and Addition: Allow use of Pool with Behavior Tree
+  * Task reset method renamed resetTask to avoid conflicts with Poolable interface.
+  * Task implements Poolable interface.
+  * Pool based behavior tree library implementation provided.
 - Fix: division by zero in Separation behavior.
 - Fix: in FollowFlowField behavior the predicted position was affecting steering.
 - Fix: stackoverflow in Sequence with guarded Task.
