@@ -392,6 +392,7 @@ public class BehaviorTreeParser<E> {
 		private void setField (Field field, Task<E> task, Object value) {
 			field.setAccessible(true);
 			Object valueObject = castValue(field, value);
+			if (valueObject == null) throwAttributeTypeException(getCurrentTask().name, field.getName(), field.getType().getSimpleName());
 			try {
 				field.set(task, valueObject);
 			} catch (ReflectionException e) {
@@ -399,7 +400,15 @@ public class BehaviorTreeParser<E> {
 			}
 		}
 
-		private Object castValue (Field field, Object value) {
+		/**
+		 * Convert serialized value to java value.
+		 * Parsed value must be assignable to field argument.
+		 * Subclasses may override this method to parse unsupported types.
+		 * @param field task attribute field
+		 * @param value unparsed value (can be Number, String or Boolean)
+		 * @return parsed value or null if field type is not supported.
+		 */
+		protected Object castValue (Field field, Object value) {
 			Class<?> type = field.getType();
 			Object ret = null;
 			if (value instanceof Number) {
@@ -445,7 +454,6 @@ public class BehaviorTreeParser<E> {
 					}
 				}
 			}
-			if (ret == null) throwAttributeTypeException(getCurrentTask().name, field.getName(), type.getSimpleName());
 			return ret;
 		}
 
