@@ -1,4 +1,5 @@
 [1.8.1-SNAPSHOT]
+- Updated to libgdx 1.9.5
 - Fix: division by zero in Separation behavior.
 - Fix: in FollowFlowField behavior the predicted position was affecting steering.
 - Fix: stackoverflow in Sequence with guarded Task.
