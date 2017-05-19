@@ -44,4 +44,9 @@ public final class GaussianFloatDistribution extends FloatDistribution {
 		return standardDeviation;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "gaussian," + mean + "," + standardDeviation;
+	}
+
 }

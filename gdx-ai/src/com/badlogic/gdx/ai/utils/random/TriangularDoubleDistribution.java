@@ -78,4 +78,9 @@ public final class TriangularDoubleDistribution extends DoubleDistribution {
 		return high - Math.sqrt((1 - u) * d * (high - mode));
 	}
 
+	@Override
+	public String toParsableString () {
+		return "triangular," + low + "," + high + "," + mode;
+	}
+
 }

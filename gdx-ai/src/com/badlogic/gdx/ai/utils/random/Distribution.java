@@ -27,4 +27,6 @@ public interface Distribution {
 
 	public double nextDouble ();
 
+	public String toParsableString ();
+
 }

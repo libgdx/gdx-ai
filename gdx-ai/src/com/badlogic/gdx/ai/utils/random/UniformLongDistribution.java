@@ -46,4 +46,9 @@ public final class UniformLongDistribution extends LongDistribution {
 		return high;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "uniform," + low + "," + high;
+	}
+
 }

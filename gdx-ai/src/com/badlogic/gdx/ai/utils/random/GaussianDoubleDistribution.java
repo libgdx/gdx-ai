@@ -44,4 +44,9 @@ public final class GaussianDoubleDistribution extends DoubleDistribution {
 		return standardDeviation;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "gaussian," + mean + "," + standardDeviation;
+	}
+
 }

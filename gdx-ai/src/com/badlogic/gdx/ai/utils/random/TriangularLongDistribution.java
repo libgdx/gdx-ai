@@ -59,4 +59,9 @@ public final class TriangularLongDistribution extends LongDistribution {
 		return mode;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "triangular," + low + "," + high + "," + mode;
+	}
+
 }

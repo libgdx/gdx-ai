@@ -38,4 +38,9 @@ public final class ConstantLongDistribution extends LongDistribution {
 		return value;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "constant," + value;
+	}
+
 }

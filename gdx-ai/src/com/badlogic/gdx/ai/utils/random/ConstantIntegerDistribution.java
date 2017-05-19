@@ -38,4 +38,9 @@ public final class ConstantIntegerDistribution extends IntegerDistribution {
 		return value;
 	}
 
+	@Override
+	public String toParsableString () {
+		return "constant," + value;
+	}
+
 }
