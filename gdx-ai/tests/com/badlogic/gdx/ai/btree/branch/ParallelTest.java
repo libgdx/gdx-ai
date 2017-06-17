@@ -53,7 +53,7 @@ public class ParallelTest {
 		Assert.assertEquals(1, task2.executions);
 		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
 
-		task1.status = Status.SUCCEEDED;
+		task2.status = Status.SUCCEEDED;
 		behaviorTree.step();
 
 		Assert.assertEquals(2, task1.executions);
@@ -66,7 +66,7 @@ public class ParallelTest {
 		Assert.assertEquals(3, task2.executions);
 		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
 
-		task2.status = Status.SUCCEEDED;
+		task1.status = Status.SUCCEEDED;
 		behaviorTree.step();
 
 		Assert.assertEquals(4, task1.executions);
@@ -115,7 +115,7 @@ public class ParallelTest {
 	 * Sequence policy - all tasks have to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testJoinStrategySequencePolicy() {
+	public void testJoinStrategySequencePolicySequentialOrder() {
 		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Strategy.Join, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
@@ -152,6 +152,52 @@ public class ParallelTest {
 		behaviorTree.step();
 		Assert.assertEquals(3, task1.executions);
 		Assert.assertEquals(5, task2.executions);
+		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
+	}
+	
+	/**
+	 * Join stategy - all tasks run until success/failure then don't run again
+	 * until the parallel task has succeeded or failed<br>
+	 * Sequence policy - all tasks have to succeed for the parallel task to succeed
+	 */
+	@Test
+	public void testJoinStrategySequencePolicyInverseOrder() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Strategy.Join, tasks);
+		behaviorTree.addChild(parallel);
+		behaviorTree.step();
+
+		Assert.assertEquals(1, task1.executions);
+		Assert.assertEquals(1, task2.executions);
+		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
+
+		task2.status = Status.SUCCEEDED;
+		behaviorTree.step();
+
+		Assert.assertEquals(2, task1.executions);
+		Assert.assertEquals(2, task2.executions);
+		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
+
+		behaviorTree.step();
+
+		// Join strategy - task 2 will not execute again until the parallel task
+		// succeeds or fails
+		Assert.assertEquals(3, task1.executions);
+		Assert.assertEquals(2, task2.executions);
+		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
+
+		task1.status = Status.SUCCEEDED;
+		behaviorTree.step();
+
+		Assert.assertEquals(4, task1.executions);
+		Assert.assertEquals(2, task2.executions);
+		Assert.assertEquals(Status.SUCCEEDED, parallel.getStatus());
+
+		task1.status = Status.RUNNING;
+		task2.status = Status.RUNNING;
+
+		behaviorTree.step();
+		Assert.assertEquals(5, task1.executions);
+		Assert.assertEquals(3, task2.executions);
 		Assert.assertEquals(Status.RUNNING, parallel.getStatus());
 	}
 

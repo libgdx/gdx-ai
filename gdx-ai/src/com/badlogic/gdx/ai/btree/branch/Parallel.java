@@ -246,7 +246,13 @@ public class Parallel<E> extends BranchTask<E> {
 		Sequence() {
 			@Override
 			public Boolean onChildSuccess (Parallel<?> parallel) {
-				return parallel.noRunningTasks && parallel.currentChildIndex == parallel.children.size - 1 ? Boolean.TRUE : null;
+				switch(parallel.strategy) {
+				case Join:
+					return parallel.noRunningTasks && parallel.children.get(parallel.children.size - 1).getStatus() == Status.SUCCEEDED ? Boolean.TRUE : null;
+				case Resume:
+				default:
+					return parallel.noRunningTasks && parallel.currentChildIndex == parallel.children.size - 1 ? Boolean.TRUE : null;
+				}
 			}
 
 			@Override
