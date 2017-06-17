@@ -23,12 +23,12 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.utils.Array;
 
 /** A {@code Parallel} is a special branch task that runs all children when stepped. 
- * It's actual behavior depends on its {@link strategy} and {@link policy}.<br>
+ * Its actual behavior depends on its {@link orchestrator} and {@link policy}.<br>
  * <br>
- * The execution of the parallel task's children depends on its {@link #strategy}:
+ * The execution of the parallel task's children depends on its {@link #orchestrator}:
  * <ul>
- * <li>{@link Strategy#Resume}: the parallel task restarts or runs each child every step</li>
- * <li>{@link Strategy#Join}: child tasks will run until success or failure but will not re-run until the parallel task has succeeded or failed</li>
+ * <li>{@link Orchestrator#Resume}: the parallel task restarts or runs each child every step</li>
+ * <li>{@link Orchestrator#Join}: child tasks will run until success or failure but will not re-run until the parallel task has succeeded or failed</li>
  * </ul>
  * 
  * The actual result of the parallel task depends on its {@link #policy}:
@@ -49,78 +49,78 @@ public class Parallel<E> extends BranchTask<E> {
 
 	/** Optional task attribute specifying the parallel policy (defaults to {@link Policy#Sequence}) */
 	@TaskAttribute public Policy policy;
-	/** Optional task attribute specifying the execution policy (defaults to {@link Strategy#Resume}) */
-	@TaskAttribute public Strategy strategy;
+	/** Optional task attribute specifying the execution policy (defaults to {@link Orchestrator#Resume}) */
+	@TaskAttribute public Orchestrator orchestrator;
 
 	private boolean noRunningTasks;
 	private Boolean lastResult;
 	private int currentChildIndex;
 
-	/** Creates a parallel task with sequence policy, resume strategy and no children */
+	/** Creates a parallel task with sequence policy, resume orchestrator and no children */
 	public Parallel () {
 		this(new Array<Task<E>>());
 	}
 
-	/** Creates a parallel task with sequence policy, resume strategy and the given children
+	/** Creates a parallel task with sequence policy, resume orchestrator and the given children
 	 * @param tasks the children */
 	public Parallel (Task<E>... tasks) {
 		this(new Array<Task<E>>(tasks));
 	}
 
-	/** Creates a parallel task with sequence policy, resume strategy and the given children
+	/** Creates a parallel task with sequence policy, resume orchestrator and the given children
 	 * @param tasks the children */
 	public Parallel (Array<Task<E>> tasks) {
 		this(Policy.Sequence, tasks);
 	}
 
-	/** Creates a parallel task with the given policy, resume strategy and no children
+	/** Creates a parallel task with the given policy, resume orchestrator and no children
 	 * @param policy the policy */
 	public Parallel (Policy policy) {
 		this(policy, new Array<Task<E>>());
 	}
 
-	/** Creates a parallel task with the given policy, resume strategy and the given children
+	/** Creates a parallel task with the given policy, resume orchestrator and the given children
 	 * @param policy the policy
 	 * @param tasks the children */
 	public Parallel (Policy policy, Task<E>... tasks) {
 		this(policy, new Array<Task<E>>(tasks));
 	}
 
-	/** Creates a parallel task with the given policy, resume strategy and the given children
+	/** Creates a parallel task with the given policy, resume orchestrator and the given children
 	 * @param policy the policy
 	 * @param tasks the children */
 	public Parallel (Policy policy, Array<Task<E>> tasks) {
-		this(policy, Strategy.Resume, tasks);
+		this(policy, Orchestrator.Resume, tasks);
 	}
 
-	/** Creates a parallel task with the given strategy, sequence policy and the given children
-	 * @param strategy the strategy
+	/** Creates a parallel task with the given orchestrator, sequence policy and the given children
+	 * @param orchestrator the orchestrator
 	 * @param tasks the children */
-	public Parallel (Strategy strategy, Array<Task<E>> tasks) {
-		this(Policy.Sequence, strategy, tasks);
+	public Parallel (Orchestrator orchestrator, Array<Task<E>> tasks) {
+		this(Policy.Sequence, orchestrator, tasks);
 	}
 	
-	/** Creates a parallel task with the given strategy, sequence policy and the given children
-	 * @param strategy the strategy
+	/** Creates a parallel task with the given orchestrator, sequence policy and the given children
+	 * @param orchestrator the orchestrator
 	 * @param tasks the children */
-	public Parallel (Strategy strategy, Task<E>... tasks) {
-		this(Policy.Sequence, strategy, new Array<Task<E>>(tasks));
+	public Parallel (Orchestrator orchestrator, Task<E>... tasks) {
+		this(Policy.Sequence, orchestrator, new Array<Task<E>>(tasks));
 	}
 	
-	/** Creates a parallel task with the given strategy, policy and children
+	/** Creates a parallel task with the given orchestrator, policy and children
 	 * @param policy the policy
-	 * @param strategy the strategy
+	 * @param orchestrator the orchestrator
 	 * @param tasks the children */
-	public Parallel (Policy policy, Strategy strategy, Array<Task<E>> tasks) {
+	public Parallel (Policy policy, Orchestrator orchestrator, Array<Task<E>> tasks) {
 		super(tasks);
 		this.policy = policy;
-		this.strategy = strategy;
+		this.orchestrator = orchestrator;
 		noRunningTasks = true;
 	}
 
 	@Override
 	public void run () {
-		strategy.execute(this);
+		orchestrator.execute(this);
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class Parallel<E> extends BranchTask<E> {
 	protected Task<E> copyTo (Task<E> task) {
 		Parallel<E> parallel = (Parallel<E>)task;
 		parallel.policy = policy; // no need to clone since it is immutable
-		parallel.strategy = strategy; // no need to clone since it is immutable
+		parallel.orchestrator = orchestrator; // no need to clone since it is immutable
 		return super.copyTo(task);
 	}
 	
@@ -159,9 +159,9 @@ public class Parallel<E> extends BranchTask<E> {
 		}
 	}
 	
-	/** The enumeration of the child execution strategies supported by the {@link Parallel} task */
-	public enum Strategy {
-		/** The default strategy - starts or resumes all children every single step */
+	/** The enumeration of the child orchestrators supported by the {@link Parallel} task */
+	public enum Orchestrator {
+		/** The default orchestrator - starts or resumes all children every single step */
 		Resume() {
 			@Override
 			public void execute(Parallel<?> parallel) {
@@ -246,7 +246,7 @@ public class Parallel<E> extends BranchTask<E> {
 		Sequence() {
 			@Override
 			public Boolean onChildSuccess (Parallel<?> parallel) {
-				switch(parallel.strategy) {
+				switch(parallel.orchestrator) {
 				case Join:
 					return parallel.noRunningTasks && parallel.children.get(parallel.children.size - 1).getStatus() == Status.SUCCEEDED ? Boolean.TRUE : null;
 				case Resume:

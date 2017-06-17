@@ -24,7 +24,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.Task.Status;
 import com.badlogic.gdx.ai.btree.branch.Parallel.Policy;
-import com.badlogic.gdx.ai.btree.branch.Parallel.Strategy;
+import com.badlogic.gdx.ai.btree.branch.Parallel.Orchestrator;
 import com.badlogic.gdx.utils.Array;
 
 public class ParallelTest {
@@ -40,12 +40,12 @@ public class ParallelTest {
 	}
 
 	/**
-	 * Resume stategy - all tasks start or run on each step<br>
+	 * Resume orchestrator - all tasks start or run on each step<br>
 	 * Sequence policy - all tasks have to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testResumeStrategySequencePolicy() {
-		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Strategy.Resume, tasks);
+	public void testResumeOrchestratorSequencePolicy() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Orchestrator.Resume, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
 
@@ -75,12 +75,12 @@ public class ParallelTest {
 	}
 
 	/**
-	 * Resume stategy - all tasks start or run on each step<br>
+	 * Resume orchestrator - all tasks start or run on each step<br>
 	 * Selector policy - only one task has to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testResumeStrategySelectorPolicy() {
-		Parallel<String> parallel = new Parallel<String>(Policy.Selector, Strategy.Resume, tasks);
+	public void testResumeOrchestratorSelectorPolicy() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Selector, Orchestrator.Resume, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
 
@@ -110,13 +110,13 @@ public class ParallelTest {
 	}
 
 	/**
-	 * Join stategy - all tasks run until success/failure then don't run again
+	 * Join orchestrator - all tasks run until success/failure then don't run again
 	 * until the parallel task has succeeded or failed<br>
 	 * Sequence policy - all tasks have to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testJoinStrategySequencePolicySequentialOrder() {
-		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Strategy.Join, tasks);
+	public void testJoinOrchestratorSequencePolicySequentialOrder() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Orchestrator.Join, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
 
@@ -156,13 +156,13 @@ public class ParallelTest {
 	}
 	
 	/**
-	 * Join stategy - all tasks run until success/failure then don't run again
+	 * Join orchestrator - all tasks run until success/failure then don't run again
 	 * until the parallel task has succeeded or failed<br>
 	 * Sequence policy - all tasks have to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testJoinStrategySequencePolicyInverseOrder() {
-		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Strategy.Join, tasks);
+	public void testJoinOrchestratorSequencePolicyInverseOrder() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Sequence, Orchestrator.Join, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
 
@@ -202,13 +202,13 @@ public class ParallelTest {
 	}
 
 	/**
-	 * Join stategy - all tasks run until success/failure then don't run again
+	 * Join orchestrator - all tasks run until success/failure then don't run again
 	 * until the parallel task has succeeded or failed<br>
 	 * Selector policy - only one task has to succeed for the parallel task to succeed
 	 */
 	@Test
-	public void testJoinStrategySelectorPolicy() {
-		Parallel<String> parallel = new Parallel<String>(Policy.Selector, Strategy.Join, tasks);
+	public void testJoinOrchestratorSelectorPolicy() {
+		Parallel<String> parallel = new Parallel<String>(Policy.Selector, Orchestrator.Join, tasks);
 		behaviorTree.addChild(parallel);
 		behaviorTree.step();
 
