@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 See AUTHORS file.
+ * Copyright 2017 See AUTHORS file.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-
 package com.badlogic.gdx.ai.tests.btree.tests;
 
 import com.badlogic.gdx.Gdx;
@@ -25,7 +24,7 @@ import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Parallel;
-import com.badlogic.gdx.ai.btree.branch.Sequence;
+import com.badlogic.gdx.ai.btree.branch.Parallel.Orchestrator;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.tests.BehaviorTreeTests;
@@ -56,16 +55,16 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** A simple test to demonstrate the difference between Sequence task and Parallel task with sequence policy and join orchestrator.
- * 
- * @author davebaol */
-public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
+/** A simple test to demonstrate the difference between the resume and join orchestrators in the Parallel task
+ * @author Thomas Cashman
+ */
+public class ResumeVsJoinTest extends BehaviorTreeTestBase {
 
 	private BehaviorTreeTests container;
 	private Screen oldScreen;
-
-	public ParallelVsSequenceTest (BehaviorTreeTests container) {
-		super("Predators: Parallel vs. Sequence", "Notice how parallel predator will win most of the times");
+	
+	public ResumeVsJoinTest (BehaviorTreeTests container) {
+		super("Predators: Resume vs. Join", "Notice how join predator will only spin around once after it reaches a target.");
 		this.container = container;
 	}
 
@@ -75,10 +74,10 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 
 		LabelStyle labelStyle = new LabelStyle(skin.get(LabelStyle.class));
 		labelStyle.background = skin.newDrawable("white", .6f, .6f, .6f, 1);
-		String branchChildren = "\n    selectTarget\n    pursue";
+		String branchChildren = "\n    spinAround\n    selectTarget\n    pursue";
 		table.add(new Label("parallel policy:\"sequence\" orchestrator:\"resume\"" + branchChildren, labelStyle)).pad(5);
 		table.add(new Label("vs", skin)).padLeft(10).padRight(10);
-		table.add(new Label("sequence" + branchChildren, labelStyle)).pad(5);
+		table.add(new Label("parallel policy:\"sequence\" orchestrator:\"join\"" + branchChildren, labelStyle)).pad(5);
 
 		table.row().padTop(15);
 
@@ -87,7 +86,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
 				oldScreen = container.getScreen();
-				container.setScreen(new TestScreen(ParallelVsSequenceTest.this, skin));
+				container.setScreen(new TestScreen(ResumeVsJoinTest.this, skin));
 			}
 		});
 		table.add();
@@ -101,11 +100,11 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 	}
 
 	static class TestScreen extends ScreenAdapter {
-		ParallelVsSequenceTest test;
+		ResumeVsJoinTest test;
 
 		Array<Sheep> sheeps;
-		Predator sequencePredator;
-		Predator parallelPredator;
+		Predator resumePredator;
+		Predator joinPredator;
 
 		ShapeRenderer shapeRenderer;
 		TextureRegion greenFishTextureRegion;
@@ -120,7 +119,7 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 		float lastUpdateTime;
 		boolean gameOver;
 
-		public TestScreen (final ParallelVsSequenceTest test, Skin skin) {
+		public TestScreen (final ResumeVsJoinTest test, Skin skin) {
 			this.test = test;
 			this.skin = skin;
 			lastUpdateTime = 0;
@@ -149,16 +148,16 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			statusBar.row().height(26);
 			statusBar.add(pauseButton = new PauseButton(translucentPanel, skin)).width(90).left();
 			statusBar.add(new FpsLabel("FPS: ", skin)).padLeft(15);
-			statusBar.add(new IntValueLabel("Sequence (Fish): ", 0, skin) {
+			statusBar.add(new IntValueLabel("Resume (Fish): ", 0, skin) {
 				@Override
 				public int getValue () {
-					return sequencePredator.score;
+					return resumePredator.score;
 				}
 			}).padLeft(15);
-			statusBar.add(new IntValueLabel("Parallel (Badlogics): ", 0, skin) {
+			statusBar.add(new IntValueLabel("Join (Badlogics): ", 0, skin) {
 				@Override
 				public int getValue () {
-					return parallelPredator.score;
+					return joinPredator.score;
 				}
 			}).padLeft(15);
 			stage.addActor(statusBar);
@@ -205,8 +204,8 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 				sheeps.add(sheep);
 			}
 
-			sequencePredator = createPredator(false);
-			parallelPredator = createPredator(true);
+			resumePredator = createPredator(false);
+			joinPredator = createPredator(true);
 
 			// Create GameOver panel
 			gameOverButton = new TextButton("Game Over", skin);
@@ -220,8 +219,8 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			testTable.add(gameOverButton);
 		}
 
-		private Predator createPredator (boolean parallel) {
-			Predator predator = new Predator(parallel ? badlogicTextureRegion : greenFishTextureRegion, this);
+		private Predator createPredator (boolean join) {
+			Predator predator = new Predator(join ? badlogicTextureRegion : greenFishTextureRegion, this);
 			predator.setPosition(MathUtils.random(stage.getWidth()), MathUtils.random(stage.getHeight()), Align.center);
 			predator.setMaxLinearSpeed(100);
 			predator.setMaxLinearAcceleration(600);
@@ -230,7 +229,8 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			predator.setSteeringBehavior(pursueSB);
 			testTable.addActor(predator);
 
-			BranchTask<Predator> branch = parallel ? new Parallel<Predator>() : new Sequence<Predator>();
+			BranchTask<Predator> branch = join ? new Parallel<Predator>(Orchestrator.Join) : new Parallel<Predator>(Orchestrator.Resume);
+			branch.addChild(new SpinAroundTask());
 			branch.addChild(new SelectTargetTask());
 			branch.addChild(new PursueTask());
 			predator.btree = new BehaviorTree<Predator>(branch, predator);
@@ -249,8 +249,8 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 				GdxAI.getTimepiece().update(delta);
 
 				// Update behavior trees
-				sequencePredator.btree.step();
-				parallelPredator.btree.step();
+				resumePredator.btree.step();
+				joinPredator.btree.step();
 			}
 
 			stage.act(delta);
@@ -265,14 +265,14 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			gameOver = sheeps.size == 0;
 			if (gameOver) {
 				if (!gameOverButton.isVisible()) {
-					String winner = (sequencePredator.score > parallelPredator.score ? "Fish" : "Badlogics") + " wins!!!";
-					if (sequencePredator.score == parallelPredator.score) winner = "There's no winner!!!";
+					String winner = (resumePredator.score > joinPredator.score ? "Fish" : "Badlogics") + " wins!!!";
+					if (resumePredator.score == joinPredator.score) winner = "There's no winner!!!";
 					gameOverButton.setText("Game Over\n\n" + winner);
 					gameOverButton.setVisible(true);
 				}
 			} else {
-				Sheep target1 = sequencePredator.target;
-				Sheep target2 = parallelPredator.target;
+				Sheep target1 = resumePredator.target;
+				Sheep target2 = joinPredator.target;
 				if (target1 != null || target2 != null) {
 					// Draw circles
 					shapeRenderer.begin(ShapeType.Line);
@@ -353,11 +353,27 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 			TestScreen testScreen;
 			BehaviorTree<Predator> btree;
 			int score;
+			float rotationOffset = 0f;
 
 			public Predator (TextureRegion region, TestScreen testScreen) {
 				super(region);
 				this.testScreen = testScreen;
 				this.score = 0;
+			}
+			
+			@Override
+			public float getRotation() {
+				return (super.getRotation() + rotationOffset) % 360f;
+			}
+			
+			public boolean spinAround() {
+				if(rotationOffset < 360f) {
+					rotationOffset += 4f;
+					return false;
+				} else {
+					rotationOffset = 0f;
+					return true;
+				}
 			}
 
 			public void selectTarget () {
@@ -386,6 +402,23 @@ public class ParallelVsSequenceTest extends BehaviorTreeTestBase {
 				testScreen.sheeps.removeValue(target, true);
 				testScreen.testTable.removeActor(target);
 			}
+		}
+		
+		public static class SpinAroundTask extends LeafTask<Predator> {
+
+			@Override
+			public Status execute () {
+				if(getObject().spinAround()) {
+					return Status.SUCCEEDED;
+				}
+				return Status.RUNNING;
+			}
+
+			@Override
+			protected Task<Predator> copyTo (Task<Predator> task) {
+				return task;
+			}
+
 		}
 
 		public static class SelectTargetTask extends LeafTask<Predator> {
