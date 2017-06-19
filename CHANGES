@@ -1,8 +1,13 @@
-[1.8.1-SNAPSHOT]
+[1.8.2-SNAPSHOT]
+- API Addition: parallel task now supports different child execution strategies (orchestrators)
+- API Addition: allow unsupported type parsing for task attributes
 - API Change and Addition: Allow use of Pool with Behavior Tree
   * Task reset method renamed resetTask to avoid conflicts with Poolable interface.
   * Task implements Poolable interface.
   * Pool based behavior tree library implementation provided.
+
+[1.8.1]
+- Updated to libgdx 1.9.5
 - Fix: division by zero in Separation behavior.
 - Fix: in FollowFlowField behavior the predicted position was affecting steering.
 - Fix: stackoverflow in Sequence with guarded Task.
