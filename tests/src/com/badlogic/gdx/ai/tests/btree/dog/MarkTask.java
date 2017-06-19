@@ -46,4 +46,9 @@ public class MarkTask extends LeafTask<Dog> {
 		return task;
 	}
 
+	@Override
+	public void reset() {
+		i = 0;
+		super.reset();
+	}
 }

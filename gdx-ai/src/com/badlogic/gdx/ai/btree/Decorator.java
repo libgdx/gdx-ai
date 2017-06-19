@@ -98,5 +98,11 @@ public abstract class Decorator<E> extends Task<E> {
 
 		return task;
 	}
+	
+	@Override
+	public void reset() {
+		child = null;
+		super.reset();
+	}
 
 }

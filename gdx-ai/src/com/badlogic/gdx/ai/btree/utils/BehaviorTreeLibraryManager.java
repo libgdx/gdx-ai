@@ -80,5 +80,14 @@ public final class BehaviorTreeLibraryManager {
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
 		return library.createBehaviorTree(treeReference, blackboard);
 	}
+	
+	/**
+	 * Dispose behavior tree obtain by this library manager.
+	 * @param treeReference the tree identifier.
+	 * @param behaviorTree the tree to dispose.
+	 */
+	public void disposeBehaviorTree(String treeReference, BehaviorTree<?> behaviorTree){
+		library.disposeBehaviorTree(treeReference, behaviorTree);
+	}
 
 }

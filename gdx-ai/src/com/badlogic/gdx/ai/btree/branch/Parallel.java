@@ -139,8 +139,8 @@ public class Parallel<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		noRunningTasks = true;
 	}
 
@@ -237,6 +237,16 @@ public class Parallel<E> extends BranchTask<E> {
 		 * @param parallel The {@link Parallel} task
 		 */
 		public abstract void execute(Parallel<?> parallel);
+	}
+	
+	@Override
+	public void reset() {
+		policy = Policy.Sequence;
+		orchestrator = Orchestrator.Resume;
+		noRunningTasks = true;
+		lastResult = null;
+		currentChildIndex = 0;
+		super.reset();
 	}
 
 	/** The enumeration of the policies supported by the {@link Parallel} task. */

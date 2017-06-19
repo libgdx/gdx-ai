@@ -26,4 +26,10 @@ public interface TaskCloner {
 	 * @return the cloned task */
 	public <T> Task<T> cloneTask (Task<T> task);
 
+	/**
+	 * Free task previously created by this {@link TaskCloner}
+	 * @param task task to free
+	 */
+	public <T> void freeTask(Task<T> task);
+
 }

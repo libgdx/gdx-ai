@@ -151,5 +151,16 @@ public class BehaviorTreeLibrary {
 	public boolean hasArchetypeTree (String treeReference) {
 		return repository.containsKey(treeReference);
 	}
+	
+	/**
+	 * Dispose behavior tree obtain by this library.
+	 * @param treeReference the tree identifier.
+	 * @param behaviorTree the tree to dispose.
+	 */
+	public void disposeBehaviorTree(String treeReference, BehaviorTree<?> behaviorTree){
+		if(Task.TASK_CLONER != null){
+			Task.TASK_CLONER.freeTask(behaviorTree);
+		}
+	}
 
 }
