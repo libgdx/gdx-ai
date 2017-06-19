@@ -242,6 +242,7 @@ public class Parallel<E> extends BranchTask<E> {
 	@Override
 	public void reset() {
 		policy = Policy.Sequence;
+		orchestrator = Orchestrator.Resume;
 		noRunningTasks = true;
 		lastResult = null;
 		currentChildIndex = 0;
