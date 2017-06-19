@@ -53,4 +53,11 @@ public class BarkTask extends LeafTask<Dog> {
 		return task;
 	}
 
+	@Override
+	public void reset() {
+		times = ConstantIntegerDistribution.ONE;
+		t = 0;
+		super.reset();
+	}
+	
 }

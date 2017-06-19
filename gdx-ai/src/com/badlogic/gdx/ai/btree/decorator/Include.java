@@ -101,4 +101,11 @@ public class Include<E> extends Decorator<E> {
 	private Task<E> createSubtreeRootTask () {
 		return BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
 	}
+	
+	@Override
+	public void reset() {
+		lazy = false;
+		subtree = null;
+		super.reset();
+	}
 }

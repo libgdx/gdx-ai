@@ -132,8 +132,8 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		tree = this;
 	}
 
@@ -168,6 +168,15 @@ public class BehaviorTree<E> extends Task<E> {
 		for (Listener<E> listener : listeners) {
 			listener.childAdded(task, index);
 		}
+	}
+	
+	@Override
+	public void reset() {
+		removeListeners();
+		this.rootTask = null;
+		this.object = null;
+		this.listeners = null;
+		super.reset();
 	}
 
 	private static final class GuardEvaluator<E> extends Task<E> {

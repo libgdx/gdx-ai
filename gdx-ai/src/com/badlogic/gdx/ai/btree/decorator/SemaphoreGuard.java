@@ -110,8 +110,8 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		semaphore = null;
 		semaphoreAcquired = false;
 	}
@@ -124,5 +124,13 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 		semaphoreGuard.semaphoreAcquired = false;
 
 		return super.copyTo(task);
+	}
+	
+	@Override
+	public void reset() {
+		name = null;
+		semaphore = null;
+		semaphoreAcquired = false;
+		super.reset();
 	}
 }

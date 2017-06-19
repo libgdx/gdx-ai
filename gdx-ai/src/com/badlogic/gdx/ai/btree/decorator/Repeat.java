@@ -97,4 +97,11 @@ public class Repeat<E> extends LoopDecorator<E> {
 
 		return super.copyTo(task);
 	}
+	
+	@Override
+	public void reset() {
+		count = 0;
+		times = null;
+		super.reset();
+	}
 }
