@@ -20,9 +20,9 @@ package com.badlogic.gdx.ai.msg;
  * telegrams.
  * 
  * @author davebaol */
-public class MessageManager extends MessageDispatcher {
+public final class MessageManager extends MessageDispatcher {
 
-	private static final MessageManager instance = new MessageManager();
+	private static final MessageManager INSTANCE = new MessageManager();
 
 	/** Don't let anyone else instantiate this class */
 	private MessageManager () {
@@ -30,7 +30,7 @@ public class MessageManager extends MessageDispatcher {
 
 	/** Returns the singleton instance of the message dispatcher. */
 	public static MessageManager getInstance () {
-		return instance;
+		return INSTANCE;
 	}
 
 }

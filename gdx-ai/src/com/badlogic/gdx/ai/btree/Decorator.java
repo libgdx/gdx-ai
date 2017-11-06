@@ -62,11 +62,16 @@ public abstract class Decorator<E> extends Task<E> {
 
 	@Override
 	public void run () {
-		if (child.status != Status.RUNNING) {
+		if (child.status == Status.RUNNING) {
+			child.run();
+		} else {
 			child.setControl(this);
 			child.start();
+			if (child.checkGuard(this))
+				child.run();
+			else
+				child.fail();
 		}
-		child.run();
 	}
 
 	@Override
@@ -92,6 +97,12 @@ public abstract class Decorator<E> extends Task<E> {
 		}
 
 		return task;
+	}
+	
+	@Override
+	public void reset() {
+		child = null;
+		super.reset();
 	}
 
 }

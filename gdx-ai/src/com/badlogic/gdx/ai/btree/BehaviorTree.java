@@ -28,6 +28,9 @@ public class BehaviorTree<E> extends Task<E> {
 
 	private Task<E> rootTask;
 	private E object;
+	GuardEvaluator<E> guardEvaluator;
+
+	public Array<Listener<E>> listeners;
 
 	/** Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
 	 * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setObject(Object) setObject()}
@@ -55,6 +58,7 @@ public class BehaviorTree<E> extends Task<E> {
 		this.rootTask = rootTask;
 		this.object = object;
 		this.tree = this;
+		this.guardEvaluator = new GuardEvaluator<E>(this);
 	}
 
 	/** Returns the blackboard object of this behavior tree. */
@@ -94,25 +98,33 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
-	public final void childRunning (Task<E> runningTask, Task<E> reporter) {
+	public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		running();
 	}
 
 	@Override
-	public final void childFail (Task<E> runningTask) {
+	public void childFail (Task<E> runningTask) {
+		fail();
 	}
 
 	@Override
-	public final void childSuccess (Task<E> runningTask) {
+	public void childSuccess (Task<E> runningTask) {
+		success();
 	}
 
 	/** This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
 	 * the game is real-time, or on entity's turn if the game is turn-based */
 	public void step () {
-		if (rootTask.status != Status.RUNNING) {
+		if (rootTask.status == Status.RUNNING) {
+			rootTask.run();
+		} else {
 			rootTask.setControl(this);
 			rootTask.start();
+			if (rootTask.checkGuard(this))
+				rootTask.run();
+			else
+				rootTask.fail();
 		}
-		rootTask.run();
 	}
 
 	@Override
@@ -120,8 +132,8 @@ public class BehaviorTree<E> extends Task<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		tree = this;
 	}
 
@@ -133,15 +145,13 @@ public class BehaviorTree<E> extends Task<E> {
 		return task;
 	}
 
-	public Array<Listener<E>> listeners;
-
 	public void addListener (Listener<E> listener) {
 		if (listeners == null) listeners = new Array<Listener<E>>();
 		listeners.add(listener);
 	}
 
 	public void removeListener (Listener<E> listener) {
-		if (listeners != null) listeners.removeIndex(listeners.indexOf(listener, true));
+		if (listeners != null) listeners.removeValue(listener, true);
 	}
 
 	public void removeListeners () {
@@ -158,6 +168,64 @@ public class BehaviorTree<E> extends Task<E> {
 		for (Listener<E> listener : listeners) {
 			listener.childAdded(task, index);
 		}
+	}
+	
+	@Override
+	public void reset() {
+		removeListeners();
+		this.rootTask = null;
+		this.object = null;
+		this.listeners = null;
+		super.reset();
+	}
+
+	private static final class GuardEvaluator<E> extends Task<E> {
+
+		// No argument constructor useful for Kryo serialization
+		@SuppressWarnings("unused")
+		public GuardEvaluator () {
+		}
+
+		public GuardEvaluator (BehaviorTree<E> tree) {
+			this.tree = tree;
+		}
+
+		@Override
+		protected int addChildToTask (Task<E> child) {
+			return 0;
+		}
+
+		@Override
+		public int getChildCount () {
+			return 0;
+		}
+
+		@Override
+		public Task<E> getChild (int i) {
+			return null;
+		}
+
+		@Override
+		public void run () {
+		}
+
+		@Override
+		public void childSuccess (Task<E> task) {
+		}
+
+		@Override
+		public void childFail (Task<E> task) {
+		}
+
+		@Override
+		public void childRunning (Task<E> runningTask, Task<E> reporter) {
+		}
+
+		@Override
+		protected Task<E> copyTo (Task<E> task) {
+			return null;
+		}
+
 	}
 
 	/** The listener interface for receiving task events. The class that is interested in processing a task event implements this

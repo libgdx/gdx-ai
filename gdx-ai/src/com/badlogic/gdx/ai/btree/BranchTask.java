@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.Array;
 @TaskConstraint(minChildren = 1)
 public abstract class BranchTask<E> extends Task<E> {
 
-	/** The children of this branch tansk. */
+	/** The children of this branch task. */
 	protected Array<Task<E>> children;
 
 	/** Create a branch task with no children */
@@ -69,6 +69,12 @@ public abstract class BranchTask<E> extends Task<E> {
 		}
 
 		return task;
+	}
+	
+	@Override
+	public void reset() {
+		children.clear();
+		super.reset();
 	}
 
 }

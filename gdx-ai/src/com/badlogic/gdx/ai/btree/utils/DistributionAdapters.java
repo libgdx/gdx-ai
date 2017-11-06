@@ -46,21 +46,22 @@ public class DistributionAdapters {
 	 * string does not have the appropriate format.
 	 * 
 	 * @author davebaol */
+	@SuppressWarnings("serial")
 	public static class DistributionFormatException extends RuntimeException {
 
-		/** Constructs an <code>IllegalArgumentException</code> with no detail message. */
+		/** Constructs a <code>DistributionFormatException</code> with no detail message. */
 		public DistributionFormatException () {
 			super();
 		}
 
-		/** Constructs an <code>IllegalArgumentException</code> with the specified detail message.
+		/** Constructs a <code>DistributionFormatException</code> with the specified detail message.
 		 *
 		 * @param s the detail message. */
 		public DistributionFormatException (String s) {
 			super(s);
 		}
 
-		/** Constructs a new exception with the specified detail message and cause.
+		/** Constructs a <code>DistributionFormatException</code> with the specified detail message and cause.
 		 * <p>
 		 * Note that the detail message associated with <code>cause</code> is <i>not</i> automatically incorporated in this
 		 * exception's detail message.
@@ -72,7 +73,7 @@ public class DistributionAdapters {
 			super(message, cause);
 		}
 
-		/** Constructs a new exception with the specified cause and a detail message of
+		/** Constructs a <code>DistributionFormatException</code> with the specified cause and a detail message of
 		 * <tt>(cause==null ? null : cause.toString())</tt> (which typically contains the class and detail message of <tt>cause</tt>
 		 * ). This constructor is useful for exceptions that are little more than wrappers for other throwables.
 		 *
@@ -155,13 +156,13 @@ public class DistributionAdapters {
 		}
 	}
 
-	private static final ObjectMap<Class<?>, Adapter<?>> adapters = new ObjectMap<Class<?>, Adapter<?>>();
+	private static final ObjectMap<Class<?>, Adapter<?>> ADAPTERS = new ObjectMap<Class<?>, Adapter<?>>();
 	static {
 		//
 		// Constant distributions
 		//
 
-		adapters.put(ConstantDoubleDistribution.class, new DoubleAdapter<ConstantDoubleDistribution>("constant") {
+		ADAPTERS.put(ConstantDoubleDistribution.class, new DoubleAdapter<ConstantDoubleDistribution>("constant") {
 
 			@Override
 			public ConstantDoubleDistribution toDistribution (String[] args) {
@@ -175,7 +176,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(ConstantFloatDistribution.class, new FloatAdapter<ConstantFloatDistribution>("constant") {
+		ADAPTERS.put(ConstantFloatDistribution.class, new FloatAdapter<ConstantFloatDistribution>("constant") {
 
 			@Override
 			public ConstantFloatDistribution toDistribution (String[] args) {
@@ -189,7 +190,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(ConstantIntegerDistribution.class, new IntegerAdapter<ConstantIntegerDistribution>("constant") {
+		ADAPTERS.put(ConstantIntegerDistribution.class, new IntegerAdapter<ConstantIntegerDistribution>("constant") {
 
 			@Override
 			public ConstantIntegerDistribution toDistribution (String[] args) {
@@ -203,7 +204,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(ConstantLongDistribution.class, new LongAdapter<ConstantLongDistribution>("constant") {
+		ADAPTERS.put(ConstantLongDistribution.class, new LongAdapter<ConstantLongDistribution>("constant") {
 
 			@Override
 			public ConstantLongDistribution toDistribution (String[] args) {
@@ -221,7 +222,7 @@ public class DistributionAdapters {
 		// Gaussian distributions
 		//
 
-		adapters.put(GaussianDoubleDistribution.class, new DoubleAdapter<GaussianDoubleDistribution>("gaussian") {
+		ADAPTERS.put(GaussianDoubleDistribution.class, new DoubleAdapter<GaussianDoubleDistribution>("gaussian") {
 
 			@Override
 			public GaussianDoubleDistribution toDistribution (String[] args) {
@@ -235,7 +236,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(GaussianFloatDistribution.class, new FloatAdapter<GaussianFloatDistribution>("gaussian") {
+		ADAPTERS.put(GaussianFloatDistribution.class, new FloatAdapter<GaussianFloatDistribution>("gaussian") {
 
 			@Override
 			public GaussianFloatDistribution toDistribution (String[] args) {
@@ -253,7 +254,7 @@ public class DistributionAdapters {
 		// Triangular distributions
 		//
 
-		adapters.put(TriangularDoubleDistribution.class, new DoubleAdapter<TriangularDoubleDistribution>("triangular") {
+		ADAPTERS.put(TriangularDoubleDistribution.class, new DoubleAdapter<TriangularDoubleDistribution>("triangular") {
 
 			@Override
 			public TriangularDoubleDistribution toDistribution (String[] args) {
@@ -276,7 +277,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(TriangularFloatDistribution.class, new FloatAdapter<TriangularFloatDistribution>("triangular") {
+		ADAPTERS.put(TriangularFloatDistribution.class, new FloatAdapter<TriangularFloatDistribution>("triangular") {
 
 			@Override
 			public TriangularFloatDistribution toDistribution (String[] args) {
@@ -299,7 +300,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(TriangularIntegerDistribution.class, new IntegerAdapter<TriangularIntegerDistribution>("triangular") {
+		ADAPTERS.put(TriangularIntegerDistribution.class, new IntegerAdapter<TriangularIntegerDistribution>("triangular") {
 
 			@Override
 			public TriangularIntegerDistribution toDistribution (String[] args) {
@@ -322,7 +323,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(TriangularLongDistribution.class, new LongAdapter<TriangularLongDistribution>("triangular") {
+		ADAPTERS.put(TriangularLongDistribution.class, new LongAdapter<TriangularLongDistribution>("triangular") {
 
 			@Override
 			public TriangularLongDistribution toDistribution (String[] args) {
@@ -349,7 +350,7 @@ public class DistributionAdapters {
 		// Uniform distributions
 		//
 
-		adapters.put(UniformDoubleDistribution.class, new DoubleAdapter<UniformDoubleDistribution>("uniform") {
+		ADAPTERS.put(UniformDoubleDistribution.class, new DoubleAdapter<UniformDoubleDistribution>("uniform") {
 
 			@Override
 			public UniformDoubleDistribution toDistribution (String[] args) {
@@ -369,7 +370,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(UniformFloatDistribution.class, new FloatAdapter<UniformFloatDistribution>("uniform") {
+		ADAPTERS.put(UniformFloatDistribution.class, new FloatAdapter<UniformFloatDistribution>("uniform") {
 
 			@Override
 			public UniformFloatDistribution toDistribution (String[] args) {
@@ -389,7 +390,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(UniformIntegerDistribution.class, new IntegerAdapter<UniformIntegerDistribution>("uniform") {
+		ADAPTERS.put(UniformIntegerDistribution.class, new IntegerAdapter<UniformIntegerDistribution>("uniform") {
 
 			@Override
 			public UniformIntegerDistribution toDistribution (String[] args) {
@@ -409,7 +410,7 @@ public class DistributionAdapters {
 			}
 		});
 
-		adapters.put(UniformLongDistribution.class, new LongAdapter<UniformLongDistribution>("uniform") {
+		ADAPTERS.put(UniformLongDistribution.class, new LongAdapter<UniformLongDistribution>("uniform") {
 
 			@Override
 			public UniformLongDistribution toDistribution (String[] args) {
@@ -436,7 +437,7 @@ public class DistributionAdapters {
 	public DistributionAdapters () {
 		this.map = new ObjectMap<Class<?>, Adapter<?>>();
 		this.typeMap = new ObjectMap<Class<?>, ObjectMap<String, Adapter<?>>>();
-		for (ObjectMap.Entry<Class<?>, Adapter<?>> e : adapters.entries())
+		for (ObjectMap.Entry<Class<?>, Adapter<?>> e : ADAPTERS.entries())
 			add(e.key, e.value);
 	}
 

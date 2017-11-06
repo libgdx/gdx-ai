@@ -85,7 +85,10 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 				}
 				runningChild.setControl(this);
 				runningChild.start();
-				run();
+				if (!runningChild.checkGuard(this))
+					runningChild.fail();
+				else
+					run();
 			} else {
 				// Should never happen; this case must be handled by subclasses in childXXX methods
 			}
@@ -105,8 +108,8 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 	}
 
 	@Override
-	public void reset () {
-		super.reset();
+	public void resetTask () {
+		super.resetTask();
 		this.currentChildIndex = 0;
 		this.runningChild = null;
 		this.randomChildren = null;
@@ -125,6 +128,14 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 		Task<E>[] rndChildren = new Task[children.size];
 		System.arraycopy(children.items, 0, rndChildren, 0, children.size);
 		return rndChildren;
+	}
+	
+	@Override
+	public void reset() {
+		this.currentChildIndex = 0;
+		this.runningChild = null;
+		this.randomChildren = null;
+		super.reset();
 	}
 
 }

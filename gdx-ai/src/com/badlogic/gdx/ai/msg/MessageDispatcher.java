@@ -30,7 +30,8 @@ public class MessageDispatcher implements Telegraph {
 
 	private static final String LOG_TAG = MessageDispatcher.class.getSimpleName();
 
-	private static final Pool<Telegram> pool = new Pool<Telegram>(16) {
+	private static final Pool<Telegram> POOL = new Pool<Telegram>(16) {
+		@Override
 		protected Telegram newObject () {
 			return new Telegram();
 		}
@@ -179,7 +180,7 @@ public class MessageDispatcher implements Telegraph {
 	/** Removes all the telegrams from the queue and releases them to the internal pool. */
 	public void clearQueue () {
 		for (int i = 0; i < queue.size(); i++) {
-			pool.free(queue.get(i));
+			POOL.free(queue.get(i));
 		}
 		queue.clear();
 	}
@@ -465,7 +466,7 @@ public class MessageDispatcher implements Telegraph {
 			throw new IllegalArgumentException("Sender cannot be null when a return receipt is needed");
 
 		// Get a telegram from the pool
-		Telegram telegram = pool.obtain();
+		Telegram telegram = POOL.obtain();
 		telegram.sender = sender;
 		telegram.receiver = receiver;
 		telegram.message = msg;
@@ -498,7 +499,7 @@ public class MessageDispatcher implements Telegraph {
 			boolean added = queue.add(telegram);
 
 			// Return it to the pool if has been rejected
-			if (!added) pool.free(telegram);
+			if (!added) POOL.free(telegram);
 
 			if (debugEnabled) {
 				if (added)
@@ -597,7 +598,7 @@ public class MessageDispatcher implements Telegraph {
 			discharge(telegram);
 		} else {
 			// Release the telegram to the pool
-			pool.free(telegram);
+			POOL.free(telegram);
 		}
 	}
 

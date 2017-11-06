@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -34,14 +35,32 @@ import com.badlogic.gdx.utils.StreamUtils;
  * @author davebaol */
 public abstract class BehaviorTreeReader {
 
-	public boolean debug = false;
-	protected int lineNumber;
+	private static final String LOG_TAG = "BehaviorTreeReader";
 
-	protected abstract void startStatement (int indent, String name);
+	protected boolean debug = false;
+	protected int lineNumber;
+	protected boolean reportsComments;
+
+	protected abstract void startLine (int indent);
+
+	protected abstract void startStatement (String name, boolean isSubtreeReference, boolean isGuard);
 
 	protected abstract void attribute (String name, Object value);
 
 	protected abstract void endStatement ();
+
+	protected abstract void endLine ();
+
+	protected void comment (String text) {
+	}
+
+	public BehaviorTreeReader () {
+		this(false);
+	}
+
+	public BehaviorTreeReader (boolean reportsComments) {
+		this.reportsComments = reportsComments;
+	}
 
 	/** Parses the given string.
 	 * @param string the string
@@ -110,6 +129,9 @@ public abstract class BehaviorTreeReader {
 
 		int s = 0;
 		int indent = 0;
+		int taskIndex = -1;
+		boolean isGuard = false;
+		boolean isSubtreeRef = false;
 		String statementName = null;
 		boolean taskProcessed = false;
 		boolean needsUnescape = false;
@@ -118,8 +140,6 @@ public abstract class BehaviorTreeReader {
 		String attrName = null;
 
 		lineNumber = 1;
-
-		if (debug) System.out.println();
 
 		try {
 		%%{
@@ -131,13 +151,13 @@ public abstract class BehaviorTreeReader {
 				if (needsUnescape) value = unescape(value);
 				outer:
 				if (stringIsUnquoted) {
-					if (debug) System.out.println("string: " + attrName + "=" + value);
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=" + value);
 					if (value.equals("true")) {
-						if (debug) System.out.println("boolean: " + attrName + "=true");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=true");
 						attribute(attrName, Boolean.TRUE);
 						break outer;
 					} else if (value.equals("false")) {
-						if (debug) System.out.println("boolean: " + attrName + "=false");
+						if (debug) GdxAI.getLogger().info(LOG_TAG, "boolean: " + attrName + "=false");
 						attribute(attrName, Boolean.FALSE);
 						break outer;
 					} else if (value.equals("null")) {
@@ -146,11 +166,11 @@ public abstract class BehaviorTreeReader {
 					} else { // number
 						try {
 							if (containsFloatingPointCharacters(value)) {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Double(value));
 								break outer;
 							} else {
-								if (debug) System.out.println("double: " + attrName + "=" + Double.parseDouble(value));
+								if (debug) GdxAI.getLogger().info(LOG_TAG, "double: " + attrName + "=" + Double.parseDouble(value));
 								attribute(attrName, new Long(value));
 								break outer;
 							}
@@ -160,13 +180,13 @@ public abstract class BehaviorTreeReader {
 					}
 				}
 				else {
-					if (debug) System.out.println("string: " + attrName + "=\"" + value + "\"");
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "string: " + attrName + "=\"" + value + "\"");
 					attribute(attrName, value);
 				}
 				stringIsUnquoted = false;
 			}
 			action unquotedChars {
-				if (debug) System.out.println("unquotedChars");
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "unquotedChars");
 				s = p;
 				needsUnescape = false;
 				stringIsUnquoted = true;
@@ -176,20 +196,22 @@ public abstract class BehaviorTreeReader {
 					case '\\':
 						needsUnescape = true;
 						break;
+					case ')':
+					case '(':
 					case ' ':
 					case '\r':
 					case '\n':
 					case '\t':
 						break outer;
 					}
-					// if (debug) System.out.println("unquotedChar (value): '" + data[p] + "'");
+					// if (debug) GdxAI.getLogger().info(LOG_TAG, "unquotedChar (value): '" + data[p] + "'");
 					p++;
 					if (p == eof) break;
 				}
 				p--;
 			}
 			action quotedChars {
-				if (debug) System.out.println("quotedChars");
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "quotedChars");
 				s = ++p;
 				needsUnescape = false;
 				outer:
@@ -202,7 +224,7 @@ public abstract class BehaviorTreeReader {
 					case '"':
 						break outer;
 					}
-					// if (debug) System.out.println("quotedChar: '" + data[p] + "'");
+					// if (debug) GdxAI.getLogger().info(LOG_TAG, "quotedChar: '" + data[p] + "'");
 					p++;
 					if (p == eof) break;
 				}
@@ -210,58 +232,67 @@ public abstract class BehaviorTreeReader {
 			}
 			action newLine {
 				indent = 0;
+				taskIndex = -1;
+				isGuard = false;
+				isSubtreeRef = false;
 				statementName = null;
 				taskProcessed = false;
 				lineNumber++;
-				if (debug) System.out.println("****NEWLINE**** "+lineNumber);
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "****NEWLINE**** "+lineNumber);
 			}
 			action indent {
 				indent++;
 			}
 			action endLine {
+				if (taskIndex >= 0) {
+					endStatement(); // Close the last task of the line
+				}
 				taskProcessed = true;
 				if (statementName != null)
-					endStatement();
-				if (debug) System.out.println("endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
+					endLine();
+				if (debug) GdxAI.getLogger().info(LOG_TAG, "endLine: indent: " + indent + " taskName: " + statementName + " data[" + p + "] = " + (p >= eof ? "EOF" : "\"" + data[p] + "\""));
+			}
+			action savePos {
+				s = p;
 			}
 			action comment {
-				if (debug) System.out.println("# Comment");
+				if (reportsComments) {
+					comment(new String(data, s, p - s));
+				} else {
+					if (debug) GdxAI.getLogger().info(LOG_TAG, "# Comment");
+				}
 			}
 			action taskName {
-				s = p;
-				char c;
-				do {
-					if (++p == eof) break;
-					c = data[p];
-				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '.'  || c == '_'  || c == '?');
+				if (taskIndex++ < 0) {
+					startLine(indent); // First task/guard of the line
+				}
+				else {
+					endStatement();  // Close previous task/guard in line
+				}
 				statementName = new String(data, s, p - s);
-				p--;
-				startStatement(indent, statementName);
+				startStatement(statementName, isSubtreeRef, isGuard);  // Start this task/guard
+				isGuard = false;
 			}
 			action attrName {
-				s = p;
-				char c;
-				do {
-					if (++p == eof) break;
-					c = data[p];
-				} while ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-							|| c == '_' || c == '?');
 				attrName = new String(data, s, p - s);
-				p--;
 			}
 
 			ws = [ \r\t];
-			nl = '\n' @newLine;
-			comment = '#' /[^\n]*/ %comment;
+			nl = ('\n' | '\r\n') @newLine;
+			id = [a-zA-Z_] [a-zA-Z_0-9]*;
+			idBegin = [a-zA-Z_] >savePos [a-zA-Z_0-9]*;
+			comment = '#' /[^\r\n]*/ >savePos %comment;
 			indent = [ \t] @indent;
-			attrName = [a-zA-Z_] @attrName;
-			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"\r\n\t ] >unquotedChars %attrValue;
+			attrName = idBegin '?'? %attrName;
+			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"()\r\n\t ] >unquotedChars %attrValue;
 			attribute = attrName ws* ':' ws* attrValue;
 			attributes = (ws+ attribute)+;
-			taskName = [a-zA-Z_] @taskName;
-			task = taskName attributes?;
-			line = indent* task? ws* comment? %endLine;
+			taskName = idBegin ('.' id)* '?'? %{isSubtreeRef = false;} %taskName;
+			subtreeRef = '$' idBegin '?'? %{isSubtreeRef = true;} %taskName;
+			task = taskName attributes? | subtreeRef;  # either a task name with attributes or a subtree reference 
+			guard = '(' @{isGuard = true;} ws* task? ws* ')' @{isGuard = false;};
+			guardableTask = (guard ws*)* task;
+			line = indent* guardableTask? ws* <: comment? %endLine;
 			main := line (nl line)** nl?;
 
 

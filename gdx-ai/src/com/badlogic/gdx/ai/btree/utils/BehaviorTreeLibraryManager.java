@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.SerializationException;
  * the constructor {@link BehaviorTreeLibrary#BehaviorTreeLibrary() BehaviorTreeLibrary()} is used instead.
  * 
  * @author davebaol */
-public class BehaviorTreeLibraryManager {
+public final class BehaviorTreeLibraryManager {
 
 	private static BehaviorTreeLibraryManager instance = new BehaviorTreeLibraryManager();
 
@@ -79,6 +79,15 @@ public class BehaviorTreeLibraryManager {
 	 * @throws TaskCloneException if the archetype cannot be successfully parsed. */
 	public <T> BehaviorTree<T> createBehaviorTree (String treeReference, T blackboard) {
 		return library.createBehaviorTree(treeReference, blackboard);
+	}
+	
+	/**
+	 * Dispose behavior tree obtain by this library manager.
+	 * @param treeReference the tree identifier.
+	 * @param behaviorTree the tree to dispose.
+	 */
+	public void disposeBehaviorTree(String treeReference, BehaviorTree<?> behaviorTree){
+		library.disposeBehaviorTree(treeReference, behaviorTree);
 	}
 
 }

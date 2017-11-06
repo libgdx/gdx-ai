@@ -75,6 +75,7 @@ public class Include<E> extends Decorator<E> {
 	}
 
 	/** Returns a clone of the referenced subtree if this {@code Import} is eager; otherwise returns a clone of itself. */
+	@Override
 	public Task<E> cloneTask () {
 		if (lazy) return super.cloneTask();
 
@@ -99,5 +100,12 @@ public class Include<E> extends Decorator<E> {
 
 	private Task<E> createSubtreeRootTask () {
 		return BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
+	}
+	
+	@Override
+	public void reset() {
+		lazy = false;
+		subtree = null;
+		super.reset();
 	}
 }

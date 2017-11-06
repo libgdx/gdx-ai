@@ -16,22 +16,25 @@
 
 package com.badlogic.gdx.ai.tests.pfa.tests.tiled.flat;
 
-import com.badlogic.gdx.ai.pfa.indexed.DefaultIndexedGraph;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.DungeonUtils;
 import com.badlogic.gdx.ai.tests.pfa.tests.tiled.TiledGraph;
+import com.badlogic.gdx.utils.Array;
 
 /** A random generated graph representing a flat tiled map.
  * 
  * @author davebaol */
-public class FlatTiledGraph extends DefaultIndexedGraph<FlatTiledNode> implements TiledGraph<FlatTiledNode> {
+public class FlatTiledGraph implements TiledGraph<FlatTiledNode> {
 	public static final int sizeX = 125; // 200; //100;
 	public static final int sizeY = 75; // 120; //60;
+
+	protected Array<FlatTiledNode> nodes;
 
 	public boolean diagonal;
 	public FlatTiledNode startNode;
 
 	public FlatTiledGraph () {
-		super(sizeX * sizeY);
+		this.nodes = new Array<FlatTiledNode>(sizeX * sizeY);
 		this.diagonal = false;
 		this.startNode = null;
 	}
@@ -66,6 +69,21 @@ public class FlatTiledGraph extends DefaultIndexedGraph<FlatTiledNode> implement
 	@Override
 	public FlatTiledNode getNode (int index) {
 		return nodes.get(index);
+	}
+
+	@Override
+	public int getIndex (FlatTiledNode node) {
+		return node.getIndex();
+	}
+
+	@Override
+	public int getNodeCount () {
+		return nodes.size;
+	}
+
+	@Override
+	public Array<Connection<FlatTiledNode>> getConnections (FlatTiledNode fromNode) {
+		return fromNode.getConnections();
 	}
 
 	private void addConnection (FlatTiledNode n, int xOffset, int yOffset) {

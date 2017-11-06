@@ -26,6 +26,7 @@ import com.badlogic.gdx.ai.tests.btree.tests.ParallelVsSequenceTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseAndCloneTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ParseTreeTest;
 import com.badlogic.gdx.ai.tests.btree.tests.ProgrammaticallyCreatedTreeTest;
+import com.badlogic.gdx.ai.tests.btree.tests.ResumeVsJoinTest;
 import com.badlogic.gdx.ai.tests.btree.tests.SemaphoreGuardTest;
 import com.badlogic.gdx.ai.tests.utils.GdxAiTestUtils;
 import com.badlogic.gdx.ai.tests.utils.scene2d.FpsLabel;
@@ -73,6 +74,7 @@ public class BehaviorTreeTests extends Game {
 			new IncludeSubtreeTest(false),
 			new IncludeSubtreeTest(true),
 			new ParallelVsSequenceTest(BehaviorTreeTests.this),
+			new ResumeVsJoinTest(BehaviorTreeTests.this),
 			new ProgrammaticallyCreatedTreeTest(false),
 			new ProgrammaticallyCreatedTreeTest(true),
 			new SemaphoreGuardTest()

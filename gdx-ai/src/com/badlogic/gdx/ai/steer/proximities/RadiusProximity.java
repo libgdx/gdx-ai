@@ -20,7 +20,6 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.Array;
 
 /** A {@code RadiusProximity} elaborates any agents contained in the specified list that are within the radius of the owner.
  * <p>
@@ -48,7 +47,7 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 	 * @param owner the owner of this proximity
 	 * @param agents the agents
 	 * @param radius the radius of the cone area */
-	public RadiusProximity (Steerable<T> owner, Array<? extends Steerable<T>> agents, float radius) {
+	public RadiusProximity (Steerable<T> owner, Iterable<? extends Steerable<T>> agents, float radius) {
 		super(owner, agents);
 		this.radius = radius;
 		this.lastTime = 0;
@@ -66,7 +65,6 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 
 	@Override
 	public int findNeighbors (ProximityCallback<T> callback) {
-		int agentCount = agents.size;
 		int neighborCount = 0;
 
 		// If the frame is new then avoid repeating calculations
@@ -79,9 +77,7 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 			T ownerPosition = owner.getPosition();
 
 			// Scan the agents searching for neighbors
-			for (int i = 0; i < agentCount; i++) {
-				Steerable<T> currentAgent = agents.get(i);
-
+			for (Steerable<T> currentAgent : agents) {
 				// Make sure the agent being examined isn't the owner
 				if (currentAgent != owner) {
 					float squareDistance = ownerPosition.dst2(currentAgent.getPosition());
@@ -106,9 +102,7 @@ public class RadiusProximity<T extends Vector<T>> extends ProximityBase<T> {
 			}
 		} else {
 			// Scan the agents searching for tagged neighbors
-			for (int i = 0; i < agentCount; i++) {
-				Steerable<T> currentAgent = agents.get(i);
-
+			for (Steerable<T> currentAgent : agents) {
 				// Make sure the agent being examined isn't the owner and that
 				// it's tagged.
 				if (currentAgent != owner && currentAgent.isTagged()) {

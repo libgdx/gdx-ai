@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /** A {@code HierarchicalPathFinder} can find a path in an arbitrary {@link HierarchicalGraph} using the given {@link PathFinder},
@@ -34,6 +35,8 @@ import com.badlogic.gdx.utils.TimeUtils;
  * 
  * @author davebaol */
 public class HierarchicalPathFinder<N> implements PathFinder<N> {
+	private static final String TAG = "HierarchicalPathFinder";
+
 	public static boolean DEBUG = false;
 
 	HierarchicalGraph<N> graph;
@@ -148,7 +151,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 	@Override
 	public boolean search (PathFinderRequest<N> request, long timeToRun) {
-		if (DEBUG) System.out.println("Enter interruptible HPF; request.status = " + request.status);
+		if (DEBUG) GdxAI.getLogger().debug(TAG, "Enter interruptible HPF; request.status = " + request.status);
 
 		// Make sure the level request and its control are instantiated
 		if (levelRequest == null) {
@@ -158,7 +161,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 		// We have to initialize the search if the status has just changed
 		if (request.statusChanged) {
-			if (DEBUG) System.out.println("-- statusChanged");
+			if (DEBUG) GdxAI.getLogger().debug(TAG, "-- statusChanged");
 
 			// Check if we have no path to find
 			if (request.startNode == request.endNode) return true;
@@ -184,11 +187,11 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 		}
 
 		while (levelRequest.currentLevel >= 0) {
-//			if (DEBUG) System.out.println("currentLevel = "+levelRequest.currentLevel);
+//			if (DEBUG) GdxAI.getLogger().debug(TAG, "currentLevel = "+levelRequest.currentLevel);
 
 			boolean finished = levelRequestControl.execute(levelRequest);
-//			if (DEBUG) System.out.println("finished = "+finished);
-//			if (DEBUG) System.out.println("pathFound = "+levelRequest.pathFound);
+//			if (DEBUG) GdxAI.getLogger().debug(TAG, "finished = "+finished);
+//			if (DEBUG) GdxAI.getLogger().debug(TAG, "pathFound = "+levelRequest.pathFound);
 
 //			if (finished && !levelRequest.pathFound) return true;
 			if (!finished) {
@@ -204,7 +207,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 			}
 		}
 
-		if (DEBUG) System.out.println("-- before exit");
+		if (DEBUG) GdxAI.getLogger().debug(TAG, "-- before exit");
 		// If we're here we have finished
 		return true;
 	}
@@ -245,7 +248,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 				// Decrease current level and skip it if start and end node are the same
 				// FIXME the break below is wrong
-				if (DEBUG) System.out.println("LevelPathFinder initializeSearch");
+				if (DEBUG) GdxAI.getLogger().debug(TAG, "LevelPathFinder initializeSearch");
 				levelOfNodes = currentLevel;
 				currentLevel--;
 				if (startNode != endNode) break;
@@ -260,7 +263,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 
 		@Override
 		public boolean search (PathFinder<N> pathFinder, long timeToRun) {
-			if (DEBUG) System.out.println("LevelPathFinder search; status: " + status);
+			if (DEBUG) GdxAI.getLogger().debug(TAG, "LevelPathFinder search; status: " + status);
 			return super.search(pathFinder, timeToRun);
 		}
 
@@ -271,7 +274,7 @@ public class HierarchicalPathFinder<N> implements PathFinder<N> {
 				// Take the first move of this plan and use it for the next run through
 				endNode = resultPath.get(1);
 			}
-			if (DEBUG) System.out.println("LevelPathFinder finalizeSearch; status: " + status);
+			if (DEBUG) GdxAI.getLogger().debug(TAG, "LevelPathFinder finalizeSearch; status: " + status);
 			return true;
 		}
 

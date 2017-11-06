@@ -23,6 +23,7 @@ import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.TaskCloner;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
+import com.badlogic.gdx.ai.btree.utils.DistributionAdapters;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeTestBase;
 import com.badlogic.gdx.ai.tests.btree.BehaviorTreeViewer;
 import com.badlogic.gdx.ai.tests.btree.KryoUtils;
@@ -50,7 +51,14 @@ public class ParseAndCloneTreeTest extends BehaviorTreeTestBase {
 		try {
 			// Parse
 			reader = Gdx.files.internal("data/dog.tree").reader();
-			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
+			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(new DistributionAdapters(), BehaviorTreeParser.DEBUG_HIGH,
+				new BehaviorTreeParser.DefaultBehaviorTreeReader<Dog>(true) {
+				@Override
+				public void comment (String text) {
+					System.out.println("<<<<<"+text+">>>>>");
+				}
+				
+			});
 			BehaviorTree<Dog> treeArchetype = parser.parse(reader, null);
 
 			// Clone
@@ -58,6 +66,9 @@ public class ParseAndCloneTreeTest extends BehaviorTreeTestBase {
 				@Override
 				public <T> Task<T> cloneTask (Task<T> task) {
 					return KryoUtils.copy(task);
+				}
+				@Override
+				public <T> void freeTask(Task<T> task) {
 				}
 			};
 			BehaviorTree<Dog> tree = (BehaviorTree<Dog>)treeArchetype.cloneTask();

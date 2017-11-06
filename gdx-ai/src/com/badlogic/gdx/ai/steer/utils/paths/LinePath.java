@@ -91,8 +91,11 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		tmpC.set(c);
 
 		T ab = tmpB.sub(a);
-		float t = (tmpC.sub(a)).dot(ab) / ab.len2();
-		out.mulAdd(ab, MathUtils.clamp(t, 0, 1));
+		float abLen2 = ab.len2();
+		if (abLen2 != 0) {
+			float t = (tmpC.sub(a)).dot(ab) / abLen2;
+			out.mulAdd(ab, MathUtils.clamp(t, 0, 1));
+		}
 
 		return out.dst2(c);
 	}

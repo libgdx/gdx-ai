@@ -36,7 +36,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * node. This operation is something time-consuming.
  * <p>
  * The indexed A* algorithm improves execution speed by using an array of all the node records for every node in the graph. Nodes
- * must be numbered using sequential integers (see {@link IndexedNode#getIndex()}), so we don't need to search for a node in the
+ * must be numbered using sequential integers (see {@link IndexedGraph#getIndex(Object)}), so we don't need to search for a node in the
  * two lists at all. We can simply use the node index to look up its record in the array (creating it if it is missing). This
  * means that the close list is no longer needed. To know whether a node is open or closed, we use the {@link NodeRecord#category
  * category} of the node record. This makes the search step very fast indeed (in fact, there is no search, and we can go straight
@@ -44,10 +44,10 @@ import com.badlogic.gdx.utils.TimeUtils;
  * element with the lowest cost. However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as
  * possible.
  * 
- * @param <N> Type of node extending {@link IndexedNode}
+ * @param <N> Type of node
  * 
  * @author davebaol */
-public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFinder<N> {
+public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	IndexedGraph<N> graph;
 	NodeRecord<N>[] nodeRecords;
 	BinaryHeap<NodeRecord<N>> openList;
@@ -56,6 +56,10 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 
 	/** The unique ID for each search run. Used to mark nodes. */
 	private int searchId;
+
+	private static final int UNVISITED = 0;
+	private static final int OPEN = 1;
+	private static final int CLOSED = 2;
 
 	public IndexedAStarPathFinder (IndexedGraph<N> graph) {
 		this(graph, false);
@@ -73,37 +77,31 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	public boolean searchConnectionPath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
 
 		// Perform AStar
-		search(startNode, endNode, heuristic);
+		boolean found = search(startNode, endNode, heuristic);
 
-		// We're here if we've either found the goal, or if we've no more nodes to search, find which
-		if (current.node != endNode) {
-			// We've run out of nodes without finding the goal, so there's no solution
-			return false;
+		if (found) {
+			// Create a path made of connections
+			generateConnectionPath(startNode, outPath);
 		}
 
-		generateConnectionPath(startNode, outPath);
-
-		return true;
+		return found;
 	}
 
 	@Override
 	public boolean searchNodePath (N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
 
 		// Perform AStar
-		search(startNode, endNode, heuristic);
+		boolean found = search(startNode, endNode, heuristic);
 
-		// We're here if we've either found the goal, or if we've no more nodes to search, find which
-		if (current.node != endNode) {
-			// We've run out of nodes without finding the goal, so there's no solution
-			return false;
+		if (found) {
+			// Create a path made of nodes
+			generateNodePath(startNode, outPath);
 		}
 
-		generateNodePath(startNode, outPath);
-
-		return true;
+		return found;
 	}
 
-	protected void search (N startNode, N endNode, Heuristic<N> heuristic) {
+	protected boolean search (N startNode, N endNode, Heuristic<N> heuristic) {
 
 		initSearch(startNode, endNode, heuristic);
 
@@ -114,11 +112,14 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 			current.category = CLOSED;
 
 			// Terminate if we reached the goal node
-			if (current.node == endNode) return;
+			if (current.node == endNode) return true;
 
 			visitChildren(endNode, heuristic);
 
 		} while (openList.size > 0);
+
+		// We've run out of nodes without finding the goal, so there's no solution
+		return false;
 	}
 
 	@Override
@@ -243,7 +244,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		// outPath.clear();
 		while (current.node != startNode) {
 			outPath.add(current.connection);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
+			current = nodeRecords[graph.getIndex(current.connection.getFromNode())];
 		}
 
 		// Reverse the path
@@ -256,7 +257,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		// outPath.clear();
 		while (current.connection != null) {
 			outPath.add(current.node);
-			current = nodeRecords[current.connection.getFromNode().getIndex()];
+			current = nodeRecords[graph.getIndex(current.connection.getFromNode())];
 		}
 		outPath.add(startNode);
 
@@ -274,7 +275,7 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 	}
 
 	protected NodeRecord<N> getNodeRecord (N node) {
-		int index = node.getIndex();
+		int index = graph.getIndex(node);
 		NodeRecord<N> nr = nodeRecords[index];
 		if (nr != null) {
 			if (nr.searchId != searchId) {
@@ -289,16 +290,12 @@ public class IndexedAStarPathFinder<N extends IndexedNode<N>> implements PathFin
 		return nr;
 	}
 
-	private static final int UNVISITED = 0;
-	private static final int OPEN = 1;
-	private static final int CLOSED = 2;
-
 	/** This nested class is used to keep track of the information we need for each node during the search.
 	 * 
 	 * @param <N> Type of node
 	 * 
 	 * @author davebaol */
-	static class NodeRecord<N extends IndexedNode<N>> extends BinaryHeap.Node {
+	static class NodeRecord<N> extends BinaryHeap.Node {
 		/** The reference to the node. */
 		N node;
 

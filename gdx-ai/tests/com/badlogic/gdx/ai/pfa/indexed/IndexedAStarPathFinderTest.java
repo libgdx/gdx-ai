@@ -37,11 +37,11 @@ public class IndexedAStarPathFinderTest {
 				"..........";
 		// @on - enable libgdx formatter
 
-		final DefaultIndexedGraph<IndexedNodeFake> graph = createGraphFromTextRepresentation(graphDrawing);
+		final MyGraph graph = createGraphFromTextRepresentation(graphDrawing);
 
-		final IndexedAStarPathFinder<IndexedNodeFake> pathfinder = new IndexedAStarPathFinder<>(graph);
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(graph);
 
-		final GraphPath<IndexedNodeFake> outPath = new DefaultGraphPath<>();
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
 
 		// @off - disable libgdx formatter
 		// 0123456789
@@ -111,11 +111,11 @@ public class IndexedAStarPathFinderTest {
 			"....#...............#......#..";
 		// @on - enable libgdx formatter
 
-		final DefaultIndexedGraph<IndexedNodeFake> graph = createGraphFromTextRepresentation(graphDrawing);
+		final MyGraph graph = createGraphFromTextRepresentation(graphDrawing);
 
-		final IndexedAStarPathFinder<IndexedNodeFake> pathfinder = new IndexedAStarPathFinder<>(graph);
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(graph);
 
-		final GraphPath<IndexedNodeFake> outPath = new DefaultGraphPath<>();
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
 
 		// @off - disable libgdx formatter
 		// 012345678901234567890123456789
@@ -146,11 +146,11 @@ public class IndexedAStarPathFinderTest {
 			".....#....";
 		// @on - enable libgdx formatter
 
-		final DefaultIndexedGraph<IndexedNodeFake> graph = createGraphFromTextRepresentation(graphDrawing);
+		final MyGraph graph = createGraphFromTextRepresentation(graphDrawing);
 
-		final IndexedAStarPathFinder<IndexedNodeFake> pathfinder = new IndexedAStarPathFinder<>(graph);
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(graph);
 
-		final GraphPath<IndexedNodeFake> outPath = new DefaultGraphPath<>();
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
 
 		// @off - disable libgdx formatter
 		// 0123456789
@@ -164,19 +164,19 @@ public class IndexedAStarPathFinderTest {
 		Assert.assertFalse("Unexpected search result", searchResult);
 	}
 
-	private static DefaultIndexedGraph<IndexedNodeFake> createGraphFromTextRepresentation (final String graphTextRepresentation) {
+	private static MyGraph createGraphFromTextRepresentation (final String graphTextRepresentation) {
 		final String[][] tiles = createStringTilesFromGraphTextRepresentation(graphTextRepresentation);
 
 		final int numRows = tiles[0].length;
 		final int numCols = tiles.length;
 
-		final IndexedNodeFake[][] nodes = new IndexedNodeFake[numCols][numRows];
-		final Array<IndexedNodeFake> indexedNodes = new Array<>(numCols * numRows);
+		final MyNode[][] nodes = new MyNode[numCols][numRows];
+		final Array<MyNode> indexedNodes = new Array<>(numCols * numRows);
 
 		int index = 0;
 		for (int y = 0; y < numRows; y++) {
 			for (int x = 0; x < numCols; x++, index++) {
-				nodes[x][y] = new IndexedNodeFake(index, x, y, 4);
+				nodes[x][y] = new MyNode(index, x, y, 4);
 				indexedNodes.add(nodes[x][y]);
 			}
 		}
@@ -188,25 +188,25 @@ public class IndexedAStarPathFinderTest {
 				}
 
 				if (x - 1 >= 0 && tiles[x - 1][y].equals(".")) {
-					nodes[x][y].getConnections().add(new DefaultConnection<IndexedNodeFake>(nodes[x][y], nodes[x - 1][y]));
+					nodes[x][y].getConnections().add(new DefaultConnection<MyNode>(nodes[x][y], nodes[x - 1][y]));
 				}
 
 				if (x + 1 < numCols && tiles[x + 1][y].equals(".")) {
-					nodes[x][y].getConnections().add(new DefaultConnection<IndexedNodeFake>(nodes[x][y], nodes[x + 1][y]));
+					nodes[x][y].getConnections().add(new DefaultConnection<MyNode>(nodes[x][y], nodes[x + 1][y]));
 				}
 
 				if (y - 1 >= 0 && tiles[x][y - 1].equals(".")) {
-					nodes[x][y].getConnections().add(new DefaultConnection<IndexedNodeFake>(nodes[x][y], nodes[x][y - 1]));
+					nodes[x][y].getConnections().add(new DefaultConnection<MyNode>(nodes[x][y], nodes[x][y - 1]));
 				}
 
 				if (y + 1 < numRows && tiles[x][y + 1].equals(".")) {
-					nodes[x][y].getConnections().add(new DefaultConnection<IndexedNodeFake>(nodes[x][y], nodes[x][y + 1]));
+					nodes[x][y].getConnections().add(new DefaultConnection<MyNode>(nodes[x][y], nodes[x][y + 1]));
 				}
 
 			}
 		}
 
-		return new DefaultIndexedGraph<>(indexedNodes);
+		return new MyGraph(indexedNodes);
 	}
 
 	private static String[][] createStringTilesFromGraphTextRepresentation (final String graphTextRepresentation) {
@@ -227,27 +227,25 @@ public class IndexedAStarPathFinderTest {
 		return tiles;
 	}
 
-	private static class IndexedNodeFake implements IndexedNode<IndexedNodeFake> {
+	private static class MyNode {
 
 		private final int index;
 		private final int x;
 		private final int y;
-		private final Array<Connection<IndexedNodeFake>> connections;
+		private final Array<Connection<MyNode>> connections;
 
-		public IndexedNodeFake (final int index, final int x, final int y, final int capacity) {
+		public MyNode (final int index, final int x, final int y, final int capacity) {
 			this.index = index;
 			this.x = x;
 			this.y = y;
 			this.connections = new Array<>(capacity);
 		}
 
-		@Override
 		public int getIndex () {
 			return index;
 		}
 
-		@Override
-		public Array<Connection<IndexedNodeFake>> getConnections () {
+		public Array<Connection<MyNode>> getConnections () {
 			return connections;
 		}
 
@@ -258,9 +256,33 @@ public class IndexedAStarPathFinderTest {
 
 	}
 
-	private static class ManhattanDistance implements Heuristic<IndexedNodeFake> {
+	private static class MyGraph implements IndexedGraph<MyNode> {
+
+		protected Array<MyNode> nodes;
+
+		public MyGraph (Array<MyNode> nodes) {
+			this.nodes = nodes;
+		}
+
 		@Override
-		public float estimate (final IndexedNodeFake node, final IndexedNodeFake endNode) {
+		public int getIndex (MyNode node) {
+			return node.getIndex();
+		}
+
+		@Override
+		public Array<Connection<MyNode>> getConnections (MyNode fromNode) {
+			return fromNode.getConnections();
+		}
+
+		@Override
+		public int getNodeCount () {
+			return nodes.size;
+		}
+	}
+
+	private static class ManhattanDistance implements Heuristic<MyNode> {
+		@Override
+		public float estimate (final MyNode node, final MyNode endNode) {
 			return Math.abs(endNode.x - node.x) + Math.abs(endNode.y - node.y);
 		}
 	}

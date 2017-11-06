@@ -46,7 +46,7 @@ public class ParseTreeTest extends BehaviorTreeTestBase {
 		Reader reader = null;
 		try {
 			reader = Gdx.files.internal("data/dog.tree").reader();
-			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_NONE);
+			BehaviorTreeParser<Dog> parser = new BehaviorTreeParser<Dog>(BehaviorTreeParser.DEBUG_HIGH);
 			BehaviorTree<Dog> tree = parser.parse(reader, new Dog("Buddy"));
 			treeViewer = createTreeViewer(tree.getObject().name, tree, true, skin);
 

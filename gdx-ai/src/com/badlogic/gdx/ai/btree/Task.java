@@ -17,6 +17,7 @@
 package com.badlogic.gdx.ai.btree;
 
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
@@ -28,7 +29,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  * @author implicit-invocation
  * @author davebaol */
 @TaskConstraint
-public abstract class Task<E> {
+public abstract class Task<E> implements Poolable {
 
 	/** The enumeration of the values that a task's status can have.
 	 * 
@@ -79,6 +80,9 @@ public abstract class Task<E> {
 	/** The behavior tree this task belongs to. */
 	protected BehaviorTree<E> tree;
 
+	/** The guard of this task */
+	protected Task<E> guard;
+
 	/** This method will add a child to the list of this task's children
 	 * 
 	 * @param child the child task which will be added
@@ -112,6 +116,17 @@ public abstract class Task<E> {
 		return tree.getObject();
 	}
 
+	/** Returns the guard of this task. */
+	public Task<E> getGuard () {
+		return guard;
+	}
+
+	/** Sets the guard of this task.
+	 * @param guard the guard */
+	public void setGuard (Task<E> guard) {
+		this.guard = guard;
+	}
+
 	/** Returns the status of this task. */
 	public final Status getStatus () {
 		return status;
@@ -123,6 +138,32 @@ public abstract class Task<E> {
 	public final void setControl (Task<E> control) {
 		this.control = control;
 		this.tree = control.tree;
+	}
+
+	/** Checks the guard of this task.
+	 * @param control the parent task
+	 * @return {@code true} if guard evaluation succeeds or there's no guard; {@code false} otherwise.
+	 * @throws IllegalStateException if guard evaluation returns any status other than {@link Status#SUCCEEDED} and
+	 *            {@link Status#FAILED}. */
+	public boolean checkGuard (Task<E> control) {
+		// No guard to check
+		if (guard == null) return true;
+		
+		// Check the guard of the guard recursively
+		if (!guard.checkGuard(control)) return false;
+
+		// Use the tree's guard evaluator task to check the guard of this task
+		guard.setControl(control.tree.guardEvaluator);
+		guard.start();
+		guard.run();
+		switch (guard.getStatus()) {
+		case SUCCEEDED:
+			return true;
+		case FAILED:
+			return false;
+		default:
+			throw new IllegalStateException("Illegal guard status '" + guard.getStatus() + "'. Guards must either succeed or fail in one step.");
+		}
 	}
 
 	/** This method will be called once before this task's first run. */
@@ -143,7 +184,7 @@ public abstract class Task<E> {
 		Status previousStatus = status;
 		status = Status.RUNNING;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
-		control.childRunning(this, this);
+		if (control != null) control.childRunning(this, this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a success result */
@@ -152,7 +193,7 @@ public abstract class Task<E> {
 		status = Status.SUCCEEDED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		control.childSuccess(this);
+		if (control != null) control.childSuccess(this);
 	}
 
 	/** This method will be called in {@link #run()} to inform control that this task has finished running with a failure result */
@@ -161,7 +202,7 @@ public abstract class Task<E> {
 		status = Status.FAILED;
 		if (tree.listeners != null && tree.listeners.size > 0) tree.notifyStatusUpdated(this, previousStatus);
 		end();
-		control.childFail(this);
+		if (control != null) control.childFail(this);
 	}
 
 	/** This method will be called when one of the children of this task succeeds
@@ -199,10 +240,10 @@ public abstract class Task<E> {
 	}
 
 	/** Resets this task to make it restart from scratch on next run. */
-	public void reset () {
+	public void resetTask () {
 		if (status == Status.RUNNING) cancel();
 		for (int i = 0, n = getChildCount(); i < n; i++) {
-			getChild(i).reset();
+			getChild(i).resetTask();
 		}
 		status = Status.FRESH;
 		tree = null;
@@ -223,7 +264,9 @@ public abstract class Task<E> {
 			}
 		}
 		try {
-			return copyTo(ClassReflection.newInstance(this.getClass()));
+			Task<E> clone = copyTo(ClassReflection.newInstance(this.getClass()));
+			clone.guard = guard == null ? null : guard.cloneTask();
+			return clone;
 		} catch (ReflectionException e) {
 			throw new TaskCloneException(e);
 		}
@@ -235,5 +278,13 @@ public abstract class Task<E> {
 	 * @return the given task for chaining
 	 * @throws TaskCloneException if the task cannot be successfully copied. */
 	protected abstract Task<E> copyTo (Task<E> task);
+	
+	@Override
+	public void reset() {
+		control = null;
+		guard = null;
+		status = Status.FRESH;
+		tree = null;
+	}
 
 }

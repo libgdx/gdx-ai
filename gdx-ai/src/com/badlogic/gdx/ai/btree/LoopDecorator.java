@@ -47,11 +47,16 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
 	public void run () {
 		loop = true;
 		while (condition()) {
-			if (child.status != Status.RUNNING) {
+			if (child.status == Status.RUNNING) {
+				child.run();
+			} else {
 				child.setControl(this);
 				child.start();
+				if (child.checkGuard(this))
+					child.run();
+				else
+					child.fail();
 			}
-			child.run();
 		}
 	}
 
@@ -59,6 +64,12 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
 	public void childRunning (Task<E> runningTask, Task<E> reporter) {
 		super.childRunning(runningTask, reporter);
 		loop = false;
+	}
+	
+	@Override
+	public void reset() {
+		loop = false;
+		super.reset();
 	}
 
 }

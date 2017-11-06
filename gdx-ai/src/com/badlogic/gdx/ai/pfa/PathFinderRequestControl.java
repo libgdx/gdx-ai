@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.ai.pfa;
 
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -28,6 +29,8 @@ import com.badlogic.gdx.utils.TimeUtils;
  * @author davebaol */
 public class PathFinderRequestControl<N> {
 
+	private static final String TAG = "PathFinderRequestControl";
+	
 	public static final boolean DEBUG = false;
 
 	Telegraph server;
@@ -47,13 +50,13 @@ public class PathFinderRequestControl<N> {
 		request.executionFrames++;
 
 		while (true) {
-			if (DEBUG) System.out.println("------");
+			if (DEBUG) GdxAI.getLogger().debug(TAG, "------");
 			// Should perform search begin?
 			if (request.status == PathFinderRequest.SEARCH_NEW) {
 				long currentTime = TimeUtils.nanoTime();
 				timeToRun -= currentTime - lastTime;
 				if (timeToRun <= timeTolerance) return false;
-				if (DEBUG) System.out.println("search begin");
+				if (DEBUG) GdxAI.getLogger().debug(TAG, "search begin");
 				if (!request.initializeSearch(timeToRun)) return false;
 				request.changeStatus(PathFinderRequest.SEARCH_INITIALIZED);
 				lastTime = currentTime;
@@ -64,7 +67,7 @@ public class PathFinderRequestControl<N> {
 				long currentTime = TimeUtils.nanoTime();
 				timeToRun -= currentTime - lastTime;
 				if (timeToRun <= timeTolerance) return false;
-				if (DEBUG) System.out.println("search path");
+				if (DEBUG) GdxAI.getLogger().debug(TAG, "search path");
 				if (!request.search(pathFinder, timeToRun)) return false;
 				request.changeStatus(PathFinderRequest.SEARCH_DONE);
 				lastTime = currentTime;
@@ -75,7 +78,7 @@ public class PathFinderRequestControl<N> {
 				long currentTime = TimeUtils.nanoTime();
 				timeToRun -= currentTime - lastTime;
 				if (timeToRun <= timeTolerance) return false;
-				if (DEBUG) System.out.println("search end");
+				if (DEBUG) GdxAI.getLogger().debug(TAG, "search end");
 				if (!request.finalizeSearch(timeToRun)) return false;
 				request.changeStatus(PathFinderRequest.SEARCH_FINALIZED);
 
@@ -88,7 +91,7 @@ public class PathFinderRequestControl<N> {
 				lastTime = currentTime;
 
 				if (request.statusChanged && request.status == PathFinderRequest.SEARCH_NEW) {
-					if (DEBUG) System.out.println("search renew");
+					if (DEBUG) GdxAI.getLogger().debug(TAG, "search renew");
 					continue;
 				}
 			}

@@ -84,7 +84,8 @@ public class BehaviorTreeViewer<E> extends Table {
 			@Override
 			public void statusUpdated (Task<E> task, Task.Status previousStatus) {
 				TaskNode tn = taskNodes.get(task);
-				tn.updateStatus(previousStatus, step);
+				if (tn!= null)
+					tn.updateStatus(previousStatus, step);
 			}
 
 			@Override
@@ -134,7 +135,7 @@ public class BehaviorTreeViewer<E> extends Table {
 		resetButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				BehaviorTreeViewer.this.tree.reset();
+				BehaviorTreeViewer.this.tree.resetTask();
 				rebuildDisplayTree();
 			}
 		});

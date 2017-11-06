@@ -145,4 +145,22 @@ public class BehaviorTreeLibrary {
 		repository.put(treeReference, archetypeTree);
 	}
 
+	/** Returns {@code true} if an archetype tree with the specified reference is registered in this library.
+	 * @param treeReference the tree identifier, typically a path.
+	 * @return {@code true} if the archetype is registered already; {@code false} otherwise. */
+	public boolean hasArchetypeTree (String treeReference) {
+		return repository.containsKey(treeReference);
+	}
+	
+	/**
+	 * Dispose behavior tree obtain by this library.
+	 * @param treeReference the tree identifier.
+	 * @param behaviorTree the tree to dispose.
+	 */
+	public void disposeBehaviorTree(String treeReference, BehaviorTree<?> behaviorTree){
+		if(Task.TASK_CLONER != null){
+			Task.TASK_CLONER.freeTask(behaviorTree);
+		}
+	}
+
 }
