@@ -100,7 +100,7 @@ public class BehaviorTreeTests extends Game {
 			List<String> testList = createTestList();
 			ScrollPane leftScrollPane = new ScrollPane(testList, skin);
 			splitPane = new SplitPane(leftScrollPane, null, false, skin, "default-horizontal");
-			splitPane.setSplitAmount(Math.min((testList.getPrefWidth() + 10) / stage.getWidth(), splitPane.getSplit()));
+			splitPane.setSplitAmount(Math.min((testList.getPrefWidth() + 10) / stage.getWidth(), splitPane.getSplitAmount()));
 
 			// Create layout
 			Table t = new Table(skin);

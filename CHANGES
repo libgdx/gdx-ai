@@ -1,5 +1,5 @@
 [1.8.2-SNAPSHOT]
-- Updated to libgdx 1.9.6
+- Updated to libgdx 1.9.8
 - API Addition: parallel task now supports different child execution strategies (orchestrators)
 - API Addition: allow unsupported type parsing for task attributes
 - API Change and Addition: Allow use of Pool with Behavior Tree
