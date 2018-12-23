@@ -52,6 +52,7 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	NodeRecord<N>[] nodeRecords;
 	BinaryHeap<NodeRecord<N>> openList;
 	NodeRecord<N> current;
+	public StopCondition<N> stopCondition;
 	public Metrics metrics;
 
 	/** The unique ID for each search run. Used to mark nodes. */
@@ -69,7 +70,8 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	public IndexedAStarPathFinder (IndexedGraph<N> graph, boolean calculateMetrics) {
 		this.graph = graph;
 		this.nodeRecords = (NodeRecord<N>[])new NodeRecord[graph.getNodeCount()];
-		this.openList = new BinaryHeap<NodeRecord<N>>();
+		this.openList = new BinaryHeap<>();
+		this.stopCondition = new EqualsByReferenceStopCondition<>();
 		if (calculateMetrics) this.metrics = new Metrics();
 	}
 
@@ -111,8 +113,8 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 			current = openList.pop();
 			current.category = CLOSED;
 
-			// Terminate if we reached the goal node
-			if (current.node == endNode) return true;
+			// Terminate if we reached the stop condition
+			if (stopCondition.shouldStopSearch(current.node, endNode)) return true;
 
 			visitChildren(endNode, heuristic);
 
@@ -145,8 +147,8 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 			current = openList.pop();
 			current.category = CLOSED;
 
-			// Terminate if we reached the goal node; we've found a path.
-			if (current.node == request.endNode) {
+			// Terminate if we reached the stop condition; we've found a path.
+			if (stopCondition.shouldStopSearch(current.node, request.endNode)) {
 				request.pathFound = true;
 
 				generateNodePath(request.startNode, request.resultPath);
@@ -337,6 +339,27 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 			visitedNodes = 0;
 			openListAdditions = 0;
 			openListPeak = 0;
+		}
+	}
+
+	/** This interface is used to define criteria to interrupt the search.
+	 *
+	 * @param <N> Type of node
+	 * 
+	 * @author niemandkun */
+	public interface StopCondition<N> {
+		boolean shouldStopSearch(N currentNode, N endNode);
+	}
+
+	/** Default implementation of {@link StopCondition}, which compares two given nodes by reference.
+	 * 
+	 * @param <N> Type of node
+	 * 
+	 * @author niemandkun */
+	private static class EqualsByReferenceStopCondition<N> implements StopCondition<N> {
+		@Override
+		public boolean shouldStopSearch(N currentNode, N endNode) {
+			return currentNode == endNode;
 		}
 	}
 }
