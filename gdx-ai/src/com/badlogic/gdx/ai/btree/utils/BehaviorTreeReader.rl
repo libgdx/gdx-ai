@@ -287,7 +287,7 @@ public abstract class BehaviorTreeReader {
 			attrValue = '"' @quotedChars %attrValue '"' | ^[#:"()\r\n\t ] >unquotedChars %attrValue;
 			attribute = attrName ws* ':' ws* attrValue;
 			attributes = (ws+ attribute)+;
-			taskName = idBegin ('.' id)* '?'? %{isSubtreeRef = false;} %taskName;
+			taskName = idBegin ('.' id)* ('$' id)* '?'? %{isSubtreeRef = false;} %taskName;
 			subtreeRef = '$' idBegin '?'? %{isSubtreeRef = true;} %taskName;
 			task = taskName attributes? | subtreeRef;  # either a task name with attributes or a subtree reference 
 			guard = '(' @{isGuard = true;} ws* task? ws* ')' @{isGuard = false;};
