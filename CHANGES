@@ -1,5 +1,6 @@
-[1.8.2-SNAPSHOT]
+[1.8.2]
 - Updated to libgdx 1.9.8
+- API Addition: Allow to use inner classes in btree files
 - API Addition: parallel task now supports different child execution strategies (orchestrators)
 - API Addition: allow unsupported type parsing for task attributes
 - API Change and Addition: Allow use of Pool with Behavior Tree
