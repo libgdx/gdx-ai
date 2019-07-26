@@ -5,7 +5,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.badlogicgames.gdx'
-version = '1.8.2'
+version = '1.8.3'
 ext.packaging = 'jar'
 
 def isDevBuild
