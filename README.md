@@ -1,6 +1,6 @@
 ![](https://cloud.githubusercontent.com/assets/2366334/4677025/64ae592a-55e2-11e4-8a31-31c2941ff995.png)
 
-[![Build Status](http://144.76.220.132:8080/job/gdx-ai/badge/icon)](http://144.76.220.132:8080/job/gdx-ai/)
+[![Jenkins build status](https://libgdx.badlogicgames.com/jenkins/buildStatus/icon?job=gdx-ai&.png)](https://libgdx.badlogicgames.com/jenkins/job/gdx-ai/) (Jenkins)
 
 An artificial intelligence framework, entirely written in Java, for game development with [libGDX](https://github.com/libgdx/libgdx).
 

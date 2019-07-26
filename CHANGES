@@ -1,3 +1,5 @@
+[1.8.3-SNAPSHOT]
+
 [1.8.2]
 - Updated to libgdx 1.9.8
 - API Addition: Allow to use inner classes in btree files
