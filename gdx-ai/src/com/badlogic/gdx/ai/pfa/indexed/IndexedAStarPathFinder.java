@@ -112,7 +112,7 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 			current.category = CLOSED;
 
 			// Terminate if we reached the goal node
-			if (current.node == endNode) return true;
+			if (current.node.equals(endNode)) return true;
 
 			visitChildren(endNode, heuristic);
 

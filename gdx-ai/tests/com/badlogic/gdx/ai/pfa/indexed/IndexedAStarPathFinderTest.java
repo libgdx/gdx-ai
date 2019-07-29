@@ -164,6 +164,31 @@ public class IndexedAStarPathFinderTest {
 		Assert.assertFalse("Unexpected search result", searchResult);
 	}
 
+	@Test
+	public void searchNodePath_WhenEndEqualsInsteadOfIdentical_ExpectedEndFound () {
+		// @off - disable libgdx formatter
+		final String graphDrawing =
+			"...\n" +
+			"...\n" +
+			"...";
+		// @on - enable libgdx formatter
+
+		final MyGraph graph = createGraphFromTextRepresentation(graphDrawing);
+
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(graph);
+
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
+
+		final MyNode endNode = new MyNode(8, 2, 2, 2);
+
+		endNode.connections.addAll(graph.getConnections(graph.nodes.get(8)));
+
+		final boolean searchResult = pathfinder.searchNodePath(graph.nodes.get(0), endNode, new ManhattanDistance(),
+				outPath);
+
+		Assert.assertTrue("Unexpected search result", searchResult);
+	}
+
 	private static MyGraph createGraphFromTextRepresentation (final String graphTextRepresentation) {
 		final String[][] tiles = createStringTilesFromGraphTextRepresentation(graphTextRepresentation);
 
@@ -252,6 +277,14 @@ public class IndexedAStarPathFinderTest {
 		@Override
 		public String toString () {
 			return "IndexedNodeFake [index=" + index + ", x=" + x + ", y=" + y + ", connections=" + connections + "]";
+		}
+
+		public boolean equals(Object object) {
+			return object instanceof MyNode &&
+					this.index == ((MyNode) object).index &&
+					this.x == ((MyNode) object).x &&
+					this.y == ((MyNode) object).y &&
+					this.connections.equals(((MyNode) object).connections);
 		}
 
 	}
