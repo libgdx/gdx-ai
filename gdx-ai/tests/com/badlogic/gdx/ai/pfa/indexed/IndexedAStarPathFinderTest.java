@@ -29,7 +29,7 @@ import com.badlogic.gdx.utils.Array;
 public class IndexedAStarPathFinderTest {
 
 	@Test
-	public void searchNodePath_WhenSearchingAdjacentTile_ExpectedOuputPathLengthEquals2 () {
+	public void searchNodePath_WhenSearchingAdjacentTile_ExpectedOutputPathLengthEquals2 () {
 		// @off - disable libgdx formatter
 		final String graphDrawing =
 				"..........\n" +
@@ -96,7 +96,7 @@ public class IndexedAStarPathFinderTest {
 	}
 
 	@Test
-	public void searchNodePath_WhenSearchCanHitDeadEnds_ExpectedOuputPathFound () {
+	public void searchNodePath_WhenSearchCanHitDeadEnds_ExpectedOutputPathFound () {
 		// @off - disable libgdx formatter
 		final String graphDrawing =
 			".#.#.......#..#...............\n" +
@@ -138,7 +138,7 @@ public class IndexedAStarPathFinderTest {
 	}
 
 	@Test
-	public void searchNodePath_WhenDestinationUnreachable_ExpectedNoOuputPathFound () {
+	public void searchNodePath_WhenDestinationUnreachable_ExpectedNoOutputPathFound () {
 		// @off - disable libgdx formatter
 		final String graphDrawing =
 			".....#....\n" +
@@ -162,6 +162,87 @@ public class IndexedAStarPathFinderTest {
 			outPath);
 
 		Assert.assertFalse("Unexpected search result", searchResult);
+	}
+
+	@Test
+	public void searchNodePath_WhenGraphIsUpdatingOnTheFly_ExpectedFailToFindEndByReference() {
+		// @off - disable libgdx formatter
+		final String graphDrawing = 
+			"...";
+		// @on - enable libgdx formatter
+
+		final MyDynamicGraph dynamicGraph = new MyDynamicGraph(
+			createGraphFromTextRepresentation(graphDrawing),
+			new MyNodesFactory() {
+				@Override
+				public MyNode getNewInstance(MyNode old) {
+					MyNode newNode = new MyNode(old.index, old.x, old.y, old.connections.size);
+					newNode.connections.addAll(old.connections);
+					return newNode;
+				}
+			}
+		);
+
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(dynamicGraph);
+
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
+
+		// @off - disable libgdx formatter
+		// 012
+		// S.E 0
+		// @on - enable libgdx formatter
+		final boolean searchResult = pathfinder.searchNodePath(
+			dynamicGraph.graph.nodes.get(0), 
+			dynamicGraph.graph.nodes.get(2), 
+			new ManhattanDistance(),
+			outPath
+		);
+
+		Assert.assertFalse("Unexpected search result", searchResult);
+	}
+
+	@Test
+	public void searchNodePath_WhenGraphIsUpdatedOnTheFly_ExpectedSucceedToFindEndByEquals() {
+		// @off - disable libgdx formatter
+		final String graphDrawing = 
+			"...";
+		// @on - enable libgdx formatter
+
+		final MyDynamicGraph dynamicGraph = new MyDynamicGraph(
+			createGraphFromTextRepresentation(graphDrawing),
+			new MyNodesFactory() {
+				@Override
+				public MyNode getNewInstance(MyNode old) {
+					MyNode newNode = new MyNodeWithEquals(old.index, old.x, old.y, old.connections.size);
+					newNode.connections.addAll(old.connections);
+					return newNode;
+				}
+			}
+		);
+
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(dynamicGraph);
+		pathfinder.stopCondition = new IndexedAStarPathFinder.StopCondition<MyNode>() {
+			@Override
+			public boolean shouldStopSearch(MyNode currentNode, MyNode endNode) {
+				return currentNode.equals(endNode);
+			}
+		};
+
+		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
+
+		// @off - disable libgdx formatter
+		// 012
+		// S.E 0
+		// @on - enable libgdx formatter
+		final boolean searchResult = pathfinder.searchNodePath(
+			dynamicGraph.graph.nodes.get(0), 
+			dynamicGraph.graph.nodes.get(2), 
+			new ManhattanDistance(),
+			outPath
+		);
+
+		Assert.assertTrue("Unexpected search result", searchResult);
+		Assert.assertEquals("Unexpected number of nodes in path", 3, outPath.getCount());
 	}
 
 	private static MyGraph createGraphFromTextRepresentation (final String graphTextRepresentation) {
@@ -229,7 +310,7 @@ public class IndexedAStarPathFinderTest {
 
 	private static class MyNode {
 
-		private final int index;
+		final int index;
 		private final int x;
 		private final int y;
 		private final Array<Connection<MyNode>> connections;
@@ -256,6 +337,22 @@ public class IndexedAStarPathFinderTest {
 
 	}
 
+	private static class MyNodeWithEquals extends MyNode {
+
+		MyNodeWithEquals(int index, int x, int y, int capacity) {
+			super(index, x, y, capacity);
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof MyNode)) {
+				return false;
+			}
+			MyNode otherNode = (MyNode) other;
+			return this.index == otherNode.index;
+		}
+	}
+
 	private static class MyGraph implements IndexedGraph<MyNode> {
 
 		protected Array<MyNode> nodes;
@@ -277,6 +374,49 @@ public class IndexedAStarPathFinderTest {
 		@Override
 		public int getNodeCount () {
 			return nodes.size;
+		}
+	}
+
+	private interface MyNodesFactory {
+
+		MyNode getNewInstance(MyNode old);
+	}
+
+	/** 
+	 * Works like {@link MyGraph}, but each time when {@link MyDynamicGraph#getConnections} is called,
+	 * it creates new instances of {@link MyNode} using given {@link MyNodesFactory}.
+	 */
+	private static class MyDynamicGraph implements IndexedGraph<MyNode> {
+
+		private MyGraph graph;
+		private MyNodesFactory factory;
+		
+		MyDynamicGraph(MyGraph graph, MyNodesFactory factory) {
+			this.graph = graph;
+			this.factory = factory;
+		}
+
+		@Override
+		public Array<Connection<MyNode>> getConnections(MyNode fromNode) {
+			Array<Connection<MyNode>> connections = graph.getConnections(fromNode);
+			Array<Connection<MyNode>> newInstanceConnections = new Array<>(connections.size);
+			for (Connection<MyNode> connection : connections) {
+				newInstanceConnections.add(new DefaultConnection<>(
+					factory.getNewInstance(connection.getFromNode()),
+					factory.getNewInstance(connection.getToNode())
+				));
+			}
+			return newInstanceConnections;
+		}
+
+		@Override
+		public int getIndex(MyNode node) {
+			return graph.getIndex(node);
+		}
+
+		@Override
+		public int getNodeCount() {
+			return graph.getNodeCount();
 		}
 	}
 
