@@ -77,6 +77,8 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 
 	/** The current orientation of the wander target */
 	protected float wanderOrientation;
+	/** the timepiece of the wander */
+	protected Timepiece timepiece = GdxAI.getTimepiece();
 
 	/** The flag indicating whether to use {@link Face} behavior or not. This should be set to {@code true} when independent facing
 	 * is used. */
@@ -93,11 +95,17 @@ public class Wander<T extends Vector<T>> extends Face<T> {
 		this.internalTargetPosition = newVector(owner);
 		this.wanderCenter = newVector(owner);
 	}
+	public Wander (Steerable<T> owner, Timepiece tpiece) {
+		super(owner);
+		this.timepiece = tpiece;
+		this.internalTargetPosition = newVector(owner);
+		this.wanderCenter = newVector(owner);
+	}
 
 	@Override
 	protected SteeringAcceleration<T> calculateRealSteering (SteeringAcceleration<T> steering) {
 		// Update the wander orientation
-		float now = GdxAI.getTimepiece().getTime();
+		float now = timepiece.getTime();
 		if (lastTime > 0) {
 			float delta = now - lastTime;
 			wanderOrientation += MathUtils.randomTriangular(wanderRate * delta);
