@@ -111,7 +111,7 @@ public class Box2dArriveTest extends Box2dSteeringTest {
 		final Label labelTimeToTarget = new Label("Time to Target [" + arriveSB.getTimeToTarget() + " sec.]", container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
-		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
+		Slider timeToTarget = new Slider(0.01f, 3, 0.1f, false, container.skin);
 		timeToTarget.setValue(arriveSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
