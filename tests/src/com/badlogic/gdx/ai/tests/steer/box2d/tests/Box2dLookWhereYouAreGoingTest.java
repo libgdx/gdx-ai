@@ -130,7 +130,7 @@ public class Box2dLookWhereYouAreGoingTest extends Box2dSteeringTest {
 			container.skin);
 		detailTable.add(labelTimeToTarget);
 		detailTable.row();
-		Slider timeToTarget = new Slider(0, 3, 0.1f, false, container.skin);
+		Slider timeToTarget = new Slider(0.01f, 3, 0.1f, false, container.skin);
 		timeToTarget.setValue(lookWhereYouAreGoingSB.getTimeToTarget());
 		timeToTarget.addListener(new ChangeListener() {
 			@Override
