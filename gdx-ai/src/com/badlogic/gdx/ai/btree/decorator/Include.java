@@ -94,12 +94,15 @@ public class Include<E> extends Decorator<E> {
 		Include<E> include = (Include<E>)task;
 		include.subtree = subtree;
 		include.lazy = lazy;
+		include.guard = guard;
 
 		return task;
 	}
 
 	private Task<E> createSubtreeRootTask () {
-		return BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
+		Task<E> rootTask = BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
+		rootTask.setGuard(guard);
+		return rootTask;
 	}
 	
 	@Override
