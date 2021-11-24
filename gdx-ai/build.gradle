@@ -28,6 +28,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+idea.module.excludeDirs += [file("src/com/badlogic/gdx/emu/")]
+[compileJava, compileTestJava, javadoc]*.exclude("com/badlogic/gdx/emu")
+
 eclipse.project {
     name = projectGroup + "-core"
 }

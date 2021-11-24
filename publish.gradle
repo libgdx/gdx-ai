@@ -26,6 +26,7 @@ if(hasProperty("release")) {
     println "Performing snapshot build"
 } else {
     isDevBuild = true
+    version += "-SNAPSHOT"
     println "Performing local build"
 }
 
