@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,9 +25,9 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 
 /** An {@code Include} decorator grafts a subtree. When the subtree is grafted depends on the value of the {@link #lazy} attribute:
  * at clone-time if is {@code false}, at run-time if is {@code true}.
- * 
+ *
  * @param <E> type of the blackboard object that tasks use to read or modify game state
- * 
+ *
  * @author davebaol
  * @author implicit-invocation */
 @TaskConstraint(minChildren = 0, maxChildren = 0)
@@ -61,7 +61,7 @@ public class Include<E> extends Decorator<E> {
 	/** The first call of this method lazily sets its child to the referenced subtree created through the
 	 * {@link BehaviorTreeLibraryManager}. Subsequent calls do nothing since the child has already been set. A
 	 * {@link UnsupportedOperationException} is thrown if this {@code Include} is eager.
-	 * 
+	 *
 	 * @throws UnsupportedOperationException if this {@code Include} is eager */
 	@Override
 	public void start () {
@@ -94,14 +94,21 @@ public class Include<E> extends Decorator<E> {
 		Include<E> include = (Include<E>)task;
 		include.subtree = subtree;
 		include.lazy = lazy;
+		if (guard != null) {
+			include.guard = guard.cloneTask();
+		}
 
 		return task;
 	}
 
 	private Task<E> createSubtreeRootTask () {
-		return BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
+		Task<E> rootTask = BehaviorTreeLibraryManager.getInstance().createRootTask(subtree);
+		if (guard != null) {
+			rootTask.setGuard(guard.cloneTask());
+		}
+		return rootTask;
 	}
-	
+
 	@Override
 	public void reset() {
 		lazy = false;
