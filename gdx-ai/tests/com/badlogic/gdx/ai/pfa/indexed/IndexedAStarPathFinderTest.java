@@ -220,13 +220,8 @@ public class IndexedAStarPathFinderTest {
 			}
 		);
 
-		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(dynamicGraph);
-		pathfinder.stopCondition = new IndexedAStarPathFinder.StopCondition<MyNode>() {
-			@Override
-			public boolean shouldStopSearch(MyNode currentNode, MyNode endNode) {
-				return currentNode.equals(endNode);
-			}
-		};
+		final IndexedAStarPathFinder<MyNode> pathfinder = new IndexedAStarPathFinder<>(dynamicGraph, false,
+				new IndexedAStarPathFinder.EqualsMethodStopCondition<MyNode>());
 
 		final GraphPath<MyNode> outPath = new DefaultGraphPath<>();
 

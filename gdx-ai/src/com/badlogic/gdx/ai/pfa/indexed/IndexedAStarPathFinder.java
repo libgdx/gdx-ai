@@ -43,6 +43,12 @@ import com.badlogic.gdx.utils.TimeUtils;
  * to the information we need). Unfortunately, we can't get rid of the open list because we still need to be able to retrieve the
  * element with the lowest cost. However, we use a {@link BinaryHeap} for the open list in order to keep performance as high as
  * possible.
+ * <p>
+ * This class defaults to comparing {@code N} nodes by reference equality, but you can customize this behavior by
+ * passing a {@link StopCondition} to the constructor, such as a {@link EqualsMethodStopCondition} to use the equals()
+ * method on each node for comparisons. You can also set {@link #stopCondition} after construction, though typically
+ * before finding a path. More elaborate implementations are possible that can stop pathfinding under specific
+ * conditions, like a path moving off-screen.
  * 
  * @param <N> Type of node
  * 
@@ -52,6 +58,12 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	NodeRecord<N>[] nodeRecords;
 	BinaryHeap<NodeRecord<N>> openList;
 	NodeRecord<N> current;
+	/**
+	 * A {@link StopCondition} with the same node type as this IndexedAStarPathFinder;
+	 * defaults to a {@link EqualsByReferenceStopCondition} if unspecified. This is used
+	 * to determine whether two N nodes are equal or some other condition means the search
+	 * must stop at that point.
+	 */
 	public StopCondition<N> stopCondition;
 	public Metrics metrics;
 
@@ -68,10 +80,15 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 
 	@SuppressWarnings("unchecked")
 	public IndexedAStarPathFinder (IndexedGraph<N> graph, boolean calculateMetrics) {
+		this(graph, calculateMetrics, new EqualsByReferenceStopCondition<N>());
+	}
+
+	@SuppressWarnings("unchecked")
+	public IndexedAStarPathFinder (IndexedGraph<N> graph, boolean calculateMetrics, StopCondition<N> stopCondition) {
 		this.graph = graph;
 		this.nodeRecords = (NodeRecord<N>[])new NodeRecord[graph.getNodeCount()];
 		this.openList = new BinaryHeap<>();
-		this.stopCondition = new EqualsByReferenceStopCondition<>();
+		this.stopCondition = stopCondition;
 		if (calculateMetrics) this.metrics = new Metrics();
 	}
 
@@ -343,6 +360,11 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	}
 
 	/** This interface is used to define criteria to interrupt the search.
+	 * Normally, equality is fine as a criterion, but some situations may use
+	 * additional or different criteria, such as a maximum distance from a point
+	 * being reached, or the path moving off-screen.
+	 * <p>
+	 * If you use Java 8 or higher, you can use a lambda as a StopCondition.
 	 *
 	 * @param <N> Type of node
 	 * 
@@ -352,14 +374,29 @@ public class IndexedAStarPathFinder<N> implements PathFinder<N> {
 	}
 
 	/** Default implementation of {@link StopCondition}, which compares two given nodes by reference.
-	 * 
+	 * User code typically doesn't need to create one of these StopConditions, because
+	 * {@link IndexedAStarPathFinder#IndexedAStarPathFinder(IndexedGraph, boolean)} creates one by default.
+	 *
 	 * @param <N> Type of node
 	 * 
 	 * @author niemandkun */
-	private static class EqualsByReferenceStopCondition<N> implements StopCondition<N> {
+	public static class EqualsByReferenceStopCondition<N> implements StopCondition<N> {
 		@Override
 		public boolean shouldStopSearch(N currentNode, N endNode) {
 			return currentNode == endNode;
+		}
+	}
+	/** A {@link StopCondition} which compares two given nodes by calling {@code currentNode.equals(endNode)}
+	 * if currentNode is not null. If currentNode is null, then this always returns false (meaning a null
+	 * node is not equal to anything, including a null endNode).
+	 *
+	 * @param <N> Type of node
+	 *
+	 * @author tommyettinger */
+	public static class EqualsMethodStopCondition<N> implements StopCondition<N> {
+		@Override
+		public boolean shouldStopSearch(N currentNode, N endNode) {
+			return currentNode != null && currentNode.equals(endNode);
 		}
 	}
 }
