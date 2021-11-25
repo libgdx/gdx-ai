@@ -541,7 +541,7 @@ public class BehaviorTreeParser<E> {
 				if (tca != null) {
 					TaskConstraint taskConstraint = tca.getAnnotation(TaskConstraint.class);
 					ObjectMap<String, AttrInfo> taskAttributes = new ObjectMap<String, AttrInfo>();
-					Field[] fields = ClassReflection.getDeclaredFields(clazz);
+					Field[] fields = ClassReflection.getFields(clazz);// TODO: We may want to check private fields too.
 					for (Field f : fields) {
 						Annotation a = f.getDeclaredAnnotation(TaskAttribute.class);
 						if (a != null) {
@@ -578,7 +578,7 @@ public class BehaviorTreeParser<E> {
 			/** Creates a {@code Metadata} for a task accepting from {@code minChildren} to {@code maxChildren} children and the given
 			 * attributes.
 			 * @param minChildren the minimum number of children (defaults to 0 if negative)
-			 * @param maxChildren the maximum number of children (defaults to {@link Integer.MAX_VALUE} if negative)
+			 * @param maxChildren the maximum number of children (defaults to {@link Integer#MAX_VALUE} if negative)
 			 * @param attributes the attributes */
 			Metadata (int minChildren, int maxChildren, ObjectMap<String, AttrInfo> attributes) {
 				this.minChildren = minChildren < 0 ? 0 : minChildren;
