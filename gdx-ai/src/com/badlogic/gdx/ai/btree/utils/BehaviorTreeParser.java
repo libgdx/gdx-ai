@@ -541,7 +541,7 @@ public class BehaviorTreeParser<E> {
 				if (tca != null) {
 					TaskConstraint taskConstraint = tca.getAnnotation(TaskConstraint.class);
 					ObjectMap<String, AttrInfo> taskAttributes = new ObjectMap<String, AttrInfo>();
-					Field[] fields = ClassReflection.getFields(clazz);
+					Field[] fields = ClassReflection.getDeclaredFields(clazz);
 					for (Field f : fields) {
 						Annotation a = f.getDeclaredAnnotation(TaskAttribute.class);
 						if (a != null) {
