@@ -37,8 +37,7 @@ Currently supported features are:
 
 ### News & Community
 
-Check the [libGDX blog](http://www.badlogicgames.com/) for news and updates.
-You can get help on the [libGDX forum](http://www.badlogicgames.com/forum/) and talk to other users on the IRC channel #libgdx at irc.freenode.net.
+Check the [libGDX blog](https://libgdx.com/news/) for news and updates. You can get help on our [Discord server](https://libgdx.com/community/discord/).
 
 ### Reporting Issues
 
@@ -47,7 +46,7 @@ Something not working quite as expected? Do you need a feature that has not been
 ### Contributing
 
 Awesome! If you would like to contribute with a new feature or a bugfix, [fork this repo](https://help.github.com/articles/fork-a-repo) and [submit a pull request](https://help.github.com/articles/using-pull-requests).
-Also, before we can accept substantial code contributions, we need you to sign the [libGDX Contributor License Agreement](https://github.com/libgdx/libgdx/wiki/Contributing#contributor-license-agreement).
+Also, before we can accept substantial code contributions, we need you to sign the [libGDX Contributor License Agreement](https://libgdx.com/dev/contributing/#contributor-license-agreement).
 
 ### License
 
