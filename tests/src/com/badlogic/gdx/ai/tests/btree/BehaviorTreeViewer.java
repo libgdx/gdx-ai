@@ -207,7 +207,7 @@ public class BehaviorTreeViewer<E> extends Table {
 		tree.listeners = null;
 
 		IntArray taskSteps = new IntArray();
-		fill(taskSteps, (TaskNode)displayTree.getNodes().get(0));
+		fill(taskSteps, (TaskNode)displayTree.getRootNodes().get(0));
 		KryoUtils.save(new SaveObject<E>(tree, step, taskSteps));
 
 		tree.listeners = listeners;
@@ -227,7 +227,7 @@ public class BehaviorTreeViewer<E> extends Table {
 
 	private void fill (IntArray taskSteps, TaskNode taskNode) {
 		taskSteps.add(taskNode.step);
-		for (Node child : taskNode.getChildren()) {
+		for (Object child : taskNode.getChildren()) {
 			fill(taskSteps, (TaskNode)child);
 		}
 	}
