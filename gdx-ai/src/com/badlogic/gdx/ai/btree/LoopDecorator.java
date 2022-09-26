@@ -49,14 +49,20 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
 		while (condition()) {
 			if (child.status == Status.RUNNING) {
 				child.run();
-			} else {
-				child.setControl(this);
+			}
+			else {
+				if(child.status == Status.FRESH) {
+					child.setControl(this);
+				} else {
+					child.reset();
+				}
 				child.start();
 				if (child.checkGuard(this))
 					child.run();
 				else
 					child.fail();
 			}
+
 		}
 	}
 

@@ -85,7 +85,7 @@ public class Wait<E> extends LeafTask<E> {
 
 	@Override
 	public void reset() {
-		//seconds = ConstantFloatDistribution.ZERO;
+		seconds = ConstantFloatDistribution.ZERO;
 		startTime = 0;
 		timeout = 0;
 		super.reset();
