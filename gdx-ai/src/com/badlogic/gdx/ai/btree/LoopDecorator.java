@@ -54,7 +54,7 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
 				if(child.status == Status.FRESH) {
 					child.setControl(this);
 				} else {
-					child.reset();
+					child.resetTask();
 				}
 				child.start();
 				if (child.checkGuard(this))
