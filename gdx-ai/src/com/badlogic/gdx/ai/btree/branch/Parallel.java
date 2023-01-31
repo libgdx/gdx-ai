@@ -173,11 +173,11 @@ public class Parallel<E> extends BranchTask<E> {
 						child.run();
 					} else {
 						child.setControl(parallel);
-						child.start();
-						if (child.checkGuard(parallel))
+						if (child.checkGuard(parallel)) {
+							child.start();
 							child.run();
-						else
-							child.fail();
+						} else
+							parallel.childFail(null); // actually child has not failed but child guard has failed
 					}
 
 					if (parallel.lastResult != null) { // Current child has finished either with success or fail
@@ -210,11 +210,11 @@ public class Parallel<E> extends BranchTask<E> {
 						break;
 					default:
 						child.setControl(parallel);
-						child.start();
-						if (child.checkGuard(parallel))
+						if (child.checkGuard(parallel)) {
+							child.start();
 							child.run();
-						else
-							child.fail();
+						} else
+							parallel.childFail(null); // actually child has not failed but child guard has failed
 						break;
 					}
 					

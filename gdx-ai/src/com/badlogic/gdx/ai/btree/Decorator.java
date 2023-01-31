@@ -66,11 +66,11 @@ public abstract class Decorator<E> extends Task<E> {
 			child.run();
 		} else {
 			child.setControl(this);
-			child.start();
-			if (child.checkGuard(this))
+			if (child.checkGuard(this)) {
+				child.start();
 				child.run();
-			else
-				child.fail();
+			} else
+				childFail(null); // actually child has not failed but child guard has failed
 		}
 	}
 
