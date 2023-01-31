@@ -23,7 +23,7 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.utils.Array;
 
 /** A {@code Parallel} is a special branch task that runs all children when stepped. 
- * Its actual behavior depends on its {@link orchestrator} and {@link policy}.<br>
+ * Its actual behavior depends on its {@link #orchestrator} and {@link #policy}.<br>
  * <br>
  * The execution of the parallel task's children depends on its {@link #orchestrator}:
  * <ul>
