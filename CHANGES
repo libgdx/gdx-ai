@@ -1,5 +1,6 @@
 [1.8.3-SNAPSHOT]
 - Updated to libgdx 1.11.0
+- Start guarded task only if the guard succeeds
 
 [1.8.2]
 - Updated to libgdx 1.9.8

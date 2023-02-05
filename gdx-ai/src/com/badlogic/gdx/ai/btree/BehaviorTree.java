@@ -119,11 +119,11 @@ public class BehaviorTree<E> extends Task<E> {
 			rootTask.run();
 		} else {
 			rootTask.setControl(this);
-			rootTask.start();
-			if (rootTask.checkGuard(this))
+			if (rootTask.checkGuard(this)) {
+				rootTask.start();
 				rootTask.run();
-			else
-				rootTask.fail();
+			} else
+				childFail(null); // actually child has not failed but child guard has failed
 		}
 	}
 
