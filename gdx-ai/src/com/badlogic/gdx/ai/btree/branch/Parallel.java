@@ -155,7 +155,7 @@ public class Parallel<E> extends BranchTask<E> {
 	public void resetAllChildren() {
 		for (int i = 0, n = getChildCount(); i < n; i++) {
 			Task<E> child = getChild(i);
-			child.reset();
+			child.resetTask();
 		}
 	}
 	
