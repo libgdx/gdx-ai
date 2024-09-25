@@ -37,7 +37,7 @@ public class MessageDispatcher implements Telegraph {
 		}
 	};
 
-	private final Pool<Telegram> POOL;
+	private final Pool<Telegram> pool;
 
 	private PriorityQueue<Telegram> queue;
 
@@ -55,7 +55,7 @@ public class MessageDispatcher implements Telegraph {
 	public MessageDispatcher (Pool<Telegram> pool) {
 		if (pool == null)
 			throw new IllegalArgumentException("pool cannot be null");
-		POOL = pool;
+		this.pool = pool;
 		this.queue = new PriorityQueue<Telegram>();
 		this.msgListeners = new IntMap<Array<Telegraph>>();
 		this.msgProviders = new IntMap<Array<TelegramProvider>>();
@@ -189,7 +189,7 @@ public class MessageDispatcher implements Telegraph {
 	/** Removes all the telegrams from the queue and releases them to the internal pool. */
 	public void clearQueue () {
 		for (int i = 0; i < queue.size(); i++) {
-			POOL.free(queue.get(i));
+			pool.free(queue.get(i));
 		}
 		queue.clear();
 	}
@@ -475,7 +475,7 @@ public class MessageDispatcher implements Telegraph {
 			throw new IllegalArgumentException("Sender cannot be null when a return receipt is needed");
 
 		// Get a telegram from the pool
-		Telegram telegram = POOL.obtain();
+		Telegram telegram = pool.obtain();
 		telegram.sender = sender;
 		telegram.receiver = receiver;
 		telegram.message = msg;
@@ -508,7 +508,7 @@ public class MessageDispatcher implements Telegraph {
 			boolean added = queue.add(telegram);
 
 			// Return it to the pool if has been rejected
-			if (!added) POOL.free(telegram);
+			if (!added) pool.free(telegram);
 
 			if (debugEnabled) {
 				if (added)
@@ -607,7 +607,7 @@ public class MessageDispatcher implements Telegraph {
 			discharge(telegram);
 		} else {
 			// Release the telegram to the pool
-			POOL.free(telegram);
+			pool.free(telegram);
 		}
 	}
 
