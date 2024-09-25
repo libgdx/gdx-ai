@@ -53,6 +53,8 @@ public class MessageDispatcher implements Telegraph {
 	}
 
 	public MessageDispatcher (Pool<Telegram> pool) {
+		if (pool == null)
+			throw new IllegalArgumentException("pool cannot be null");
 		POOL = pool;
 		this.queue = new PriorityQueue<Telegram>();
 		this.msgListeners = new IntMap<Array<Telegraph>>();
