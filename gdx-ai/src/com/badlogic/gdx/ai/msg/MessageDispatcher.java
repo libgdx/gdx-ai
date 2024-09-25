@@ -30,12 +30,14 @@ public class MessageDispatcher implements Telegraph {
 
 	private static final String LOG_TAG = MessageDispatcher.class.getSimpleName();
 
-	private static final Pool<Telegram> POOL = new Pool<Telegram>(16) {
+	private static final Pool<Telegram> POOL_GLOBAL = new Pool<Telegram>(16) {
 		@Override
 		protected Telegram newObject () {
 			return new Telegram();
 		}
 	};
+
+	private final Pool<Telegram> POOL;
 
 	private PriorityQueue<Telegram> queue;
 
@@ -47,6 +49,11 @@ public class MessageDispatcher implements Telegraph {
 
 	/** Creates a {@code MessageDispatcher} */
 	public MessageDispatcher () {
+		this(POOL_GLOBAL);
+	}
+
+	public MessageDispatcher (Pool<Telegram> pool) {
+		POOL = pool;
 		this.queue = new PriorityQueue<Telegram>();
 		this.msgListeners = new IntMap<Array<Telegraph>>();
 		this.msgProviders = new IntMap<Array<TelegramProvider>>();
