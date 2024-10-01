@@ -1,4 +1,3 @@
-apply plugin: "java"
 
 sourceCompatibility = 1.7
 
@@ -9,7 +8,7 @@ sourceSets {
         }
 
         resources {
-            srcDirs = [ "src/" ]
+            srcDirs = [ "src/**.*xml" ]
         }
     }
 

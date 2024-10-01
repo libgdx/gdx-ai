@@ -56,11 +56,28 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 project(":gdx-ai") {
-    apply from: '../publish.gradle'
+    version project.getProperty('version') + (isReleaseBuild() ? "" : "-SNAPSHOT")
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test).configureEach {
+        systemProperty 'file.encoding', 'UTF-8'
+    }
+
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
+
+    apply from: '../publish.gradle'
+
 }
 
 project(":tests") {

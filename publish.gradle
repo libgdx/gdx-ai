@@ -5,7 +5,16 @@ apply plugin: 'signing'
 afterEvaluate { project ->
     publishing {
         publications {
-            withType(MavenPublication) {
+            mavenJava(MavenPublication) {
+                from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
                 pom {
                     name = POM_NAME
                     description = POM_DESCRIPTION
@@ -27,21 +36,6 @@ afterEvaluate { project ->
                         connection = POM_SCM_CONNECTION
                         developerConnection = POM_SCM_DEV_CONNECTION
                         url = POM_SCM_URL
-                    }
-                }
-            }
-            //Check if we are a gradle plugin, if we are skip mavenJava
-            if (!plugins.hasPlugin('java-gradle-plugin')) {
-                mavenJava(MavenPublication) {
-
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            fromResolutionResult()
-                        }
                     }
                 }
             }
