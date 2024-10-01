@@ -1,110 +1,69 @@
-import org.gradle.api.XmlProvider
-import org.gradle.api.artifacts.maven.MavenDeployment
-
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-group = 'com.badlogicgames.gdx'
-version = '1.8.3'
-ext.packaging = 'jar'
 
-def isDevBuild
-def isCiBuild
-def isReleaseBuild
-
-def sonatypeRepositoryUrl
-
-//set build variables based on build type (release, continuous integration, development)
-if(hasProperty("release")) {
-    isReleaseBuild = true
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-    println "Performing release build"
-} else if (hasProperty("snapshot")) {
-    isCiBuild = true
-    version += "-SNAPSHOT"
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-    println "Performing snapshot build"
-} else {
-    isDevBuild = true
-    version += "-SNAPSHOT"
-    println "Performing local build"
-}
-
-repositories {
-    mavenCentral()
-}
-
-task artifactDocs(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task artifactSources(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives jar
-    archives artifactDocs
-    archives artifactSources
-}
-
-if(isReleaseBuild) {
-    signing {
-        sign configurations.archives
-    }
-} else {
-    task signArchives {
-        // do nothing
-    }
-}
-
-uploadArchives {
-    repositories {
-        if (isDevBuild) {
-            mavenLocal()
-        }
-        else {
-            mavenDeployer {
-                if(isReleaseBuild) {
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+afterEvaluate { project ->
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
                 }
-
-                repository(url: sonatypeRepositoryUrl) {
-                  authentication(userName: sonatypeUsername, password: sonatypePassword)
+                pom {
+                    name = POM_NAME
+                    description = POM_DESCRIPTION
+                    url = POM_URL
+                    licenses {
+                        license {
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                            distribution = POM_LICENCE_DIST
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "davebaol"
+                            name = "davebaol"
+                        }
+                    }
+                    scm {
+                        connection = POM_SCM_CONNECTION
+                        developerConnection = POM_SCM_DEV_CONNECTION
+                        url = POM_SCM_URL
+                    }
                 }
-
-                pom.version = version
-                pom.packaging = 'jar'
-
-                pom.project {
-                   name 'libGDX AI'
-                   description 'AI algorithms for libGDX'
-                   url 'https://github.com/libgdx/gdx-ai'
-
-                   scm {
-                       url 'scm:git@github.com:libgdx/gdx-ai.git'
-                       connection 'scm:git@github.com:libgdx/gdx-ai.git'
-                       developerConnection 'scm:git@github.com:libgdx/gdx-ai.git'
-                   }
-
-                   licenses {
-                       license {
-                           name 'The Apache Software License, Version 2.0'
-                           url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                           distribution 'repo'
-                       }
-                   }
-
-                   developers {
-                       developer {
-                           id 'davebaol'
-                           name 'davebaol'
-                       }
-                   }
-               }
             }
+        }
+
+        repositories {
+            maven {
+                url = version.endsWith('SNAPSHOT') ? getSnapshotRepositoryUrl() : getReleaseRepositoryUrl()
+
+                if (getRepositoryUsername() || getRepositoryPassword()) {
+                    credentials {
+                        username = getRepositoryUsername()
+                        password = getRepositoryPassword()
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd()
+        sign publishing.publications
+    }
+
+    //Simply using "required" in signing block doesn't work because taskGraph isn't ready yet.
+    gradle.taskGraph.whenReady {
+        tasks.withType(Sign) {
+            onlyIf { isReleaseBuild() }
         }
     }
 }
