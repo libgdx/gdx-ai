@@ -6,10 +6,6 @@ sourceSets {
         java {
             srcDirs = [ "src/" ]
         }
-
-        resources {
-            srcDirs = [ "src/**.*xml" ]
-        }
     }
 
     test {
