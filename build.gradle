@@ -8,7 +8,7 @@ buildscript {
 allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'java'
+    apply plugin: 'java-library'
 
     repositories {
         mavenCentral()
@@ -19,8 +19,31 @@ allprojects {
 }
 
 ext {
-	projectGroup = "gdx-ai"
-	gdxVersion = '1.11.0'
+    projectGroup = "gdx-ai"
+    gdxVersion = '1.11.0'
+
+    isReleaseBuild = {
+        return project.hasProperty("RELEASE")
+    }
+
+    getReleaseRepositoryUrl = {
+        return project.hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
+                : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    }
+
+    getSnapshotRepositoryUrl = {
+        return project.hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
+                : "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+
+    getRepositoryUsername = {
+        return project.hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
+    }
+
+    getRepositoryPassword = {
+        return project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
+    }
+
 }
 
 /** needed to disable Java 8 doclint which throws errors **/
@@ -33,18 +56,18 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 project(":gdx-ai") {
-    apply from : '../publish.gradle'
+    apply from: '../publish.gradle'
 
     dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
 }
 
 project(":tests") {
     dependencies {
-        compile project(":gdx-ai")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        implementation project(":gdx-ai")
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     }
 }
 
