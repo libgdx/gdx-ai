@@ -1,5 +1,6 @@
 [1.8.3-SNAPSHOT]
 - Updated to libgdx 1.11.0
+- Fix: Parallel.Orchestrator.Join calls reset() instead of resetTask() on its children.
 
 [1.8.2]
 - Updated to libgdx 1.9.8
