@@ -23,7 +23,7 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 import com.badlogic.gdx.utils.Array;
 
 /** A {@code Parallel} is a special branch task that runs all children when stepped. 
- * Its actual behavior depends on its {@link orchestrator} and {@link policy}.<br>
+ * Its actual behavior depends on its {@link #orchestrator} and {@link #policy}.<br>
  * <br>
  * The execution of the parallel task's children depends on its {@link #orchestrator}:
  * <ul>
@@ -173,11 +173,11 @@ public class Parallel<E> extends BranchTask<E> {
 						child.run();
 					} else {
 						child.setControl(parallel);
-						child.start();
-						if (child.checkGuard(parallel))
+						if (child.checkGuard(parallel)) {
+							child.start();
 							child.run();
-						else
-							child.fail();
+						} else
+							parallel.childFail(null); // actually child has not failed but child guard has failed
 					}
 
 					if (parallel.lastResult != null) { // Current child has finished either with success or fail
@@ -210,11 +210,11 @@ public class Parallel<E> extends BranchTask<E> {
 						break;
 					default:
 						child.setControl(parallel);
-						child.start();
-						if (child.checkGuard(parallel))
+						if (child.checkGuard(parallel)) {
+							child.start();
 							child.run();
-						else
-							child.fail();
+						} else
+							parallel.childFail(null); // actually child has not failed but child guard has failed
 						break;
 					}
 					

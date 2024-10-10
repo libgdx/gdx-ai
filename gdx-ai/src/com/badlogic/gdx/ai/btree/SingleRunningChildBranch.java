@@ -84,11 +84,12 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
 					runningChild = children.get(currentChildIndex);
 				}
 				runningChild.setControl(this);
-				runningChild.start();
 				if (!runningChild.checkGuard(this))
-					runningChild.fail();
-				else
+					childFail(null); // actually child has not failed but child guard has failed
+				else {
+					runningChild.start();
 					run();
+				}
 			} else {
 				// Should never happen; this case must be handled by subclasses in childXXX methods
 			}
