@@ -128,9 +128,10 @@ public class SemaphoreGuard<E> extends Decorator<E> {
 	
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		name = null;
 		semaphore = null;
 		semaphoreAcquired = false;
-		super.reset();
 	}
 }

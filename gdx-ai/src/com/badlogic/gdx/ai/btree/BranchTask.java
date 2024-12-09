@@ -73,8 +73,9 @@ public abstract class BranchTask<E> extends Task<E> {
 	
 	@Override
 	public void reset() {
-		children.clear();
+		// first call super reset to free child
 		super.reset();
+		children.clear();
 	}
 
 }

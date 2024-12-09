@@ -111,8 +111,9 @@ public class Include<E> extends Decorator<E> {
 
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		lazy = false;
 		subtree = null;
-		super.reset();
 	}
 }

@@ -241,12 +241,13 @@ public class Parallel<E> extends BranchTask<E> {
 	
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		policy = Policy.Sequence;
 		orchestrator = Orchestrator.Resume;
 		noRunningTasks = true;
 		lastResult = null;
 		currentChildIndex = 0;
-		super.reset();
 	}
 
 	/** The enumeration of the policies supported by the {@link Parallel} task. */

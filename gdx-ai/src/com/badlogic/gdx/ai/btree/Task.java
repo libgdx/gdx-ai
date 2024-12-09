@@ -18,6 +18,7 @@ package com.badlogic.gdx.ai.btree;
 
 import com.badlogic.gdx.ai.btree.annotation.TaskConstraint;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
@@ -69,7 +70,7 @@ public abstract class Task<E> implements Poolable {
 	 *    };
 	 * </code>
 	 * </pre> */
-	public static TaskCloner TASK_CLONER = null;
+	public static TaskCloner TASK_CLONER = new PoolsTaskCloner();
 
 	/** The status of this task. */
 	protected Status status = Status.FRESH;
@@ -281,10 +282,32 @@ public abstract class Task<E> implements Poolable {
 	
 	@Override
 	public void reset() {
+		// free child
+		if (TASK_CLONER != null) {
+			int childCount = getChildCount();
+			for (int i = 0; i < childCount; i++) {
+				TASK_CLONER.freeTask(getChild(i));
+			}
+		}
 		control = null;
 		guard = null;
 		status = Status.FRESH;
 		tree = null;
 	}
 
+	public static class PoolsTaskCloner implements TaskCloner{
+
+		@Override
+		public <T> Task<T> cloneTask(Task<T> task) {
+			Task poolTask = Pools.obtain(task.getClass());
+			task.copyTo(poolTask);
+			poolTask.guard = task.guard == null ? null : task.guard.cloneTask();
+			return poolTask;
+		}
+
+		@Override
+		public <T> void freeTask(Task<T> task) {
+			Pools.free(task);
+		}
+	}
 }

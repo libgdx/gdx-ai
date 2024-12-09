@@ -100,8 +100,9 @@ public class Repeat<E> extends LoopDecorator<E> {
 	
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		count = 0;
 		times = null;
-		super.reset();
 	}
 }

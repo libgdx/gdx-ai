@@ -68,8 +68,9 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
 	
 	@Override
 	public void reset() {
-		loop = false;
+		// first call super reset to free child
 		super.reset();
+		loop = false;
 	}
 
 }

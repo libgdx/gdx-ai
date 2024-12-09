@@ -101,8 +101,9 @@ public abstract class Decorator<E> extends Task<E> {
 	
 	@Override
 	public void reset() {
-		child = null;
+		// first call super reset to free child
 		super.reset();
+		child = null;
 	}
 
 }

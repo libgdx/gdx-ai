@@ -117,8 +117,9 @@ public class Random<E> extends Decorator<E> {
 
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		this.p = 0;
 		this.success = ConstantFloatDistribution.ZERO_POINT_FIVE;
-		super.reset();
 	}
 }

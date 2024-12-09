@@ -172,11 +172,12 @@ public class BehaviorTree<E> extends Task<E> {
 	
 	@Override
 	public void reset() {
+		// first call super reset to free child
+		super.reset();
 		removeListeners();
 		this.rootTask = null;
 		this.object = null;
 		this.listeners = null;
-		super.reset();
 	}
 
 	private static final class GuardEvaluator<E> extends Task<E> {
