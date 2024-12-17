@@ -4,6 +4,11 @@ sourceCompatibility = 1.7
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 
+// add below setting for gdx-ai
+sourceSets.main.resources.srcDirs = ["./"]
+project.ext.assetsDir = new File(".")
+
+
 dependencies {
     implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"

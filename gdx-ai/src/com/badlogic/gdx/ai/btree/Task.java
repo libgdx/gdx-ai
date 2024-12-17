@@ -246,7 +246,6 @@ public abstract class Task<E> implements Poolable {
 			getChild(i).resetTask();
 		}
 		status = Status.FRESH;
-		tree = null;
 		control = null;
 	}
 

@@ -220,7 +220,7 @@ public class Parallel<E> extends BranchTask<E> {
 					
 					if (parallel.lastResult != null) { // Current child has finished either with success or fail
 						parallel.cancelRunningChildren(parallel.noRunningTasks ? parallel.currentChildIndex + 1 : 0);
-						parallel.resetAllChildren();
+						parallel.resetTask();
 						if (parallel.lastResult)
 							parallel.success();
 						else
