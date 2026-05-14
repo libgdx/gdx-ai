@@ -19,7 +19,7 @@ package com.badlogic.gdx.ai.tests.utils.scene2d;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.CharArray;
 
 /** A label continuously showing the most up-to-date integer value prefixed by a constant string.
  * 
@@ -58,7 +58,7 @@ public abstract class IntValueLabel extends Label {
 		int newValue = getValue();
 		if (oldValue != newValue) {
 			oldValue = newValue;
-			StringBuilder sb = getText();
+			CharArray sb = getText();
 			sb.setLength(appendIndex);
 			sb.append(oldValue);
 			invalidateHierarchy();

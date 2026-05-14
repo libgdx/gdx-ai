@@ -18,7 +18,6 @@ package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.StringBuilder;
 
 /** Utility class to generate flat and hierarchical random dungeons.
  * 
