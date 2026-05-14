@@ -32,12 +32,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
-import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.CharArray;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.reflect.Annotation;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
@@ -196,7 +195,7 @@ public class BehaviorTreeViewer<E> extends Table {
 	}
 
 	private void updateStepLabel () {
-		StringBuilder sb = stepLabel.getText();
+		CharArray sb = stepLabel.getText();
 		sb.setLength(LABEL_STEP.length());
 		sb.append(step);
 		stepLabel.invalidateHierarchy();
